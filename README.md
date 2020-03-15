@@ -1,2 +1,2 @@
-# tictactoe
-Tictactoe developed based on RL algorithm
+# Tic-Tac-Toe Game
+A Tictactoe game developed based on RL algorithms
