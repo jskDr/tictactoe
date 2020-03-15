@@ -5,6 +5,19 @@ import pickle
 
 # TicTacToe game has nine stateus with nine actions. An user can put his ston on any postion in the borad except 
 
+class color:
+   PURPLE = '\033[95m'
+   CYAN = '\033[96m'
+   DARKCYAN = '\033[36m'
+   BLUE = '\033[94m'
+   GREEN = '\033[92m'
+   YELLOW = '\033[93m'
+   RED = '\033[91m'
+   BOLD = '\033[1m'
+   UNDERLINE = '\033[4m'
+   END = '\033[0m'
+
+
 def set_state_inplace(S, action, P_no): 
     ''' S is numpy array.'''
     assert S[action] == 0, 'position should be empty to put a new stone' 
@@ -92,14 +105,27 @@ class Q_System:
         Sa = []
         for s in S:
             if s == 1:
-                Sa.append('X')
+                Sa.append('A')
             elif s == 2:
-                Sa.append('O')
+                Sa.append('B')
             else:
                 Sa.append('')
         for a in action_list:
             Sa[a] = f'{a}'
-        print(np.array(Sa).reshape(-1,Sq_N_A))   
+        Sa_array = np.array(Sa).reshape(-1,Sq_N_A)
+        print()
+        print('------------------------')
+        for ii in range(Sq_N_A):
+            for jj in range(Sq_N_A):
+                if Sa_array[ii,jj] == 'A':
+                    print(color.BLUE + color.BOLD + f'{Sa_array[ii,jj]}' + color.END, end=' ')
+                elif Sa_array[ii,jj] == 'B':
+                    print(color.RED + color.BOLD + f'{Sa_array[ii,jj]}' + color.END, end=' ')
+                else:
+                    print(f'{Sa_array[ii,jj]}', end=' ')
+            print()
+        print('------------------------')
+        print()
 
     def check_available_win_action(self, P_no, S, action_list):
         """
