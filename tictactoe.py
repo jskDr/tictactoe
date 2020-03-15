@@ -718,8 +718,8 @@ def plot_cnt_trace(cnt_trace):
         cnt_d['P1'][i] = cnt[1]
         cnt_d['P2'][i] = cnt[2]
     plt.plot(range(N_cnt), cnt_d['Equal'], label='Equal')
-    plt.plot(range(N_cnt), cnt_d['P1'], label='Plyaer1 wins')
-    plt.plot(range(N_cnt), cnt_d['P2'], label='Plyaer2 wins')
+    plt.plot(range(N_cnt), cnt_d['P1'], label='Player1 wins')
+    plt.plot(range(N_cnt), cnt_d['P2'], label='Player2 wins')
     plt.xlabel('Episode')
     plt.ylabel('Count')
     plt.legend(loc=0)
