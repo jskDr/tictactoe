@@ -114,7 +114,7 @@ class Q_System:
             Sa[a] = f'{a}'
         Sa_array = np.array(Sa).reshape(-1,Sq_N_A)
         print()
-        print('--------------------')
+        print('-------------------')
         for ii in range(Sq_N_A):
             for jj in range(Sq_N_A):
                 if Sa_array[ii,jj] == 'A':
@@ -124,7 +124,7 @@ class Q_System:
                 else:
                     print(f'{Sa_array[ii,jj]}', end=' ')
             print()
-        print('--------------------')
+        print('-------------------')
         print()
 
     def check_available_win_action(self, P_no, S, action_list):
