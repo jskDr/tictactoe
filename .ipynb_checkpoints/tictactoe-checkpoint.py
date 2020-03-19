@@ -17,7 +17,7 @@ class color:
    UNDERLINE = '\033[4m'
    END = '\033[0m'
 
-def generate_all_states(stack=[], N_A=3):
+def generate_all_states(stack=[], N_A=9):
     for i in range(N_A):
         if i not in stack:
             stack.append(i)
@@ -134,27 +134,6 @@ class Q_System:
             self.N_A = None
             self.N_Symbols = None
             self.epsilon = None
-
-    def _yield_all_possible_ttt_states(self, stack=[], N_A=9):
-        for i in range(N_A):
-            if i not in stack:
-                stack.append(i)
-                yield stack
-                Buff = self.play_by_scenario(P_no=1,action_list=stack)
-                if Buff['r'][-1] == 0:
-                    self.yield_all_possible_ttt_states(stack, N_A)
-                stack.pop()              
-
-    def yield_all_possible_ttt_states(self, stack=[], N_A=9):
-        for i in range(N_A):
-            if i not in stack:
-                stack.append(i)
-                yield stack
-                # Buff = self.play_by_scenario(P_no=1,action_list=stack)
-                # if Buff['r'][-1] == 0:
-                #    self.yield_all_possible_ttt_states(stack, N_A)
-                stack.pop()              
-
 
     def save(self):
         f = open('tictactoe_data.pckl', 'wb')
@@ -864,7 +843,7 @@ def check_play_by_scenario():
     my_Q_System =  Q_System(N_A, N_Symbols)
 
     Buff = my_Q_System.play_by_scenario(
-        P_no=1, action_list=[4,1,3,5,6,2,0])
+        P_no=1, action_list=[4,1,3, 5, 6, 2, 0])
     print('---------------------------')
     print('Buff')
     print(Buff)

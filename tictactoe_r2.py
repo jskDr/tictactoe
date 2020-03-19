@@ -26,6 +26,24 @@ def generate_all_states(stack=[], N_A=3):
             stack.pop()
 
 
+def yield_all_states(stack=[], N_A=3):
+    for i in range(N_A):
+        if i not in stack:
+            stack.append(i)
+            yield stack
+            yield_all_states(stack, N_A)
+            stack.pop() 
+
+
+def yield_gen_all_states(stack=[], N_A=3):
+    for i in range(N_A):
+        if i not in stack:
+            stack.append(i)
+            yield stack
+            generate_all_states(stack, N_A)
+            stack.pop() 
+
+
 def set_state_inplace(S, action, P_no): 
     ''' S is numpy array.'''
     assert S[action] == 0, 'position should be empty to put a new stone' 

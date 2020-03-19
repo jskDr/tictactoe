@@ -17,21 +17,12 @@ class color:
    UNDERLINE = '\033[4m'
    END = '\033[0m'
 
-def generate_all_states(stack=[], N_A=3):
-    for i in range(N_A):
-        if i not in stack:
-            stack.append(i)
-            print(stack)
-            generate_all_states(stack, N_A)
-            stack.pop()
-
 
 def set_state_inplace(S, action, P_no): 
     ''' S is numpy array.'''
     assert S[action] == 0, 'position should be empty to put a new stone' 
     S[action] = P_no # User numpy to insert action in the specific position
     
-
 def calc_reward(S):
     mask_l = tf.constant([[1,1,1,0,0,0,0,0,0], [0,0,0,1,1,1,0,0,0], [0,0,0,0,0,0,1,1,1],
                          [1,0,0,1,0,0,1,0,0], [0,1,0,0,1,0,0,1,0], [0,0,1,0,0,1,0,0,1],
@@ -49,7 +40,6 @@ def calc_reward(S):
                 return player
     return 0    
 
-
 def calc_reward_tf(S):
     mask_l = tf.constant([[1,1,1,0,0,0,0,0,0], [0,0,0,1,1,1,0,0,0], [0,0,0,0,0,0,1,1,1],
                          [1,0,0,1,0,0,1,0,0], [0,1,0,0,1,0,0,1,0], [0,0,1,0,0,1,0,0,1],
@@ -66,7 +56,6 @@ def calc_reward_tf(S):
     
     return 0
 
-
 def one_of_amax(arr, disp_flag=False):
     results = np.where(arr == np.amax(arr))[0]
 
@@ -75,42 +64,6 @@ def one_of_amax(arr, disp_flag=False):
     
     action = results[np.random.randint(0, len(results), 1)[0]]   
     return action
-
-
-def buff_depart(Buff, disp_flag=False):
-    Buff_dual = [{'S':[], 'a':[], 'r':[], 'S_next':[]}, {'S':[], 'a':[], 'r':[], 'S_next':[]}]
-    for i, (p, S, a, r, S_next) in enumerate(zip(Buff['P_no'], Buff['S'], Buff['a'], Buff['r'], Buff['S_next'])):
-        if i > 0:
-            # final reward for a player is reward of a next player
-            prev_p = 2 if p==1 else 1
-            #Buff_dual[prev_p-1]['r'][-1] = -r # 1 for player#2 --> -1 for player#1, vice versa
-            Ratio_lose_per_win = 10.0
-            Buff_dual[prev_p-1]['r'][-1] = -r * Ratio_lose_per_win
-            if disp_flag:
-                print('i, prev_p, Buff_dual[prev_p-1]')
-                print(i, prev_p, Buff_dual[prev_p-1])
-        Buff_dual[p-1]['S'].append(S)
-        Buff_dual[p-1]['a'].append(a)
-        Buff_dual[p-1]['r'].append(r)  
-        Buff_dual[p-1]['S_next'].append(S_next)
-        if disp_flag:
-            print('i, p, Buff_dual[p-1]')
-            print(i, p, Buff_dual[p-1])                
-    return Buff_dual                
-
-
-def discounted_inplace(Buff_r, ff):
-    """discounted_inplace(Buff_r): 
-    Convert a reward vector to a discounted return vector using ff,
-    where ff means forgeting factor.
-
-    [Input] Buff_r = Buff[r]: stores rewards in each episode
-    """
-    g_prev = 0
-    for i, r_l in enumerate(reversed(Buff_r)):
-        # print(g_prev, i, r_l, Buff_r)
-        Buff_r[-i-1] = r_l + ff * g_prev
-        g_prev = Buff_r[-i-1]
 
 
 class Q_System:
@@ -134,27 +87,6 @@ class Q_System:
             self.N_A = None
             self.N_Symbols = None
             self.epsilon = None
-
-    def _yield_all_possible_ttt_states(self, stack=[], N_A=9):
-        for i in range(N_A):
-            if i not in stack:
-                stack.append(i)
-                yield stack
-                Buff = self.play_by_scenario(P_no=1,action_list=stack)
-                if Buff['r'][-1] == 0:
-                    self.yield_all_possible_ttt_states(stack, N_A)
-                stack.pop()              
-
-    def yield_all_possible_ttt_states(self, stack=[], N_A=9):
-        for i in range(N_A):
-            if i not in stack:
-                stack.append(i)
-                yield stack
-                # Buff = self.play_by_scenario(P_no=1,action_list=stack)
-                # if Buff['r'][-1] == 0:
-                #    self.yield_all_possible_ttt_states(stack, N_A)
-                stack.pop()              
-
 
     def save(self):
         f = open('tictactoe_data.pckl', 'wb')
@@ -467,63 +399,6 @@ class Q_System:
 
         return Buff    
 
-    def play_by_scenario(self, P_no=1, action_list=[4, 1, 3, 5, 6, 2, 0]):
-        """ 
-        Buff = play(self, P_no)
-        
-        [Inputs]  
-            P_no: player number, which is 1 or 2
-
-        [Returns]
-            Buff = {'P_no': [], 'S':[], 'a':[], 'r':[], 'S_next': []}: gathered information during learning
-                where S, a, r, S_next are state, action, rewrd, and next state
-
-        [Examples]
-            1. Buff = self.play(1)
-            2. Buff = self.play(2)
-        """
-        def get_action_by_scenario():
-            action = action_list.pop(0)
-            done = False if len(action_list) else True
-            return action, done
-
-        N_A = self.N_A
-        Buff = {'P_no': [], 'S':[], 'a':[], 'r':[], 'S_next': []}
-
-        S = np.zeros((N_A,),dtype='int16') # #state == #action
-        
-        if self.disp_flag:
-            print('S:', S)
-        
-        done = False
-        while done == False:
-            action, done = get_action_by_scenario()
-            Buff['P_no'].append(P_no)
-            Buff['S'].append(S.copy())
-            Buff['a'].append(action)
-            set_state_inplace(S, action, P_no)    
-            Buff['S_next'].append(S.copy())   
-            
-            if self.disp_flag:
-                print('S:', S)
-            
-            win_player = calc_reward_tf(S)
-            reward = 0 if win_player == 0 else 1
-            Buff['r'].append(reward)
-            P_no = 1 if P_no == 2 else 2
-
-            if win_player:
-                done = True                
-
-        if self.disp_flag:        
-            if win_player:
-                print(f'player {win_player} win')
-            else:
-                print(f'Tie game')
-
-        return Buff 
-
-
     def play_with_human(self, player_human=1):
         """ 
         Buff = play_with_human(self, P_no)
@@ -586,32 +461,84 @@ class Q_System:
             print('Tie game')
 
         return Buff    
-
-    def updateQsa_inplace(self, Qsa_player, Buff_player, lr):    
-        if self.disp_flag:            
-            print('---------------------------------------')
-            print('S, S_idx, a, lr * r, Qsa_player[S_idx,a]')
-
-        for S, a, r in zip(Buff_player['S'], Buff_player['a'], Buff_player['r']):        
-            S_idx = self.calc_S_idx(S)
-            Qsa_player[S_idx,a] += lr * r
-
-            if self.disp_flag:
-                print(S.reshape(-1, self.N_Symbols))
-                print(S_idx, a, f'{lr * r:.1e}', f'{Qsa_player[S_idx,a]:.1e}')
-
+    
     def update_Qsa_inplace(self, Buff, ff=0.9, lr=0.01):
-        Buff_dual = buff_depart(Buff, disp_flag=self.disp_flag)
+
+        def discounted_inplace(Buff_r):
+            """discounted_inplace(Buff_r): 
+            Convert a reward vector to a discounted return vector using ff,
+            where ff means forgeting factor.
+
+            [Input] Buff_r = Buff[r]: stores rewards in each episode
+            """
+            g_prev = 0
+            for i, r_l in enumerate(reversed(Buff_r)):
+                Buff_r[-i-1] = r_l + ff * g_prev
+                g_prev = Buff_r[-i-1]
+
+        def updateQsa_inplace(Qsa_player, Buff_player):    
+            if self.disp_flag:            
+                print('---------------------------------------')
+                print('S, S_idx, a, lr * r, Qsa_player[S_idx,a]')
+
+            for S, a, r in zip(Buff_player['S'], Buff_player['a'], Buff_player['r']):        
+                S_idx = self.calc_S_idx(S)
+                Qsa_player[S_idx,a] += lr * r
+
+                if self.disp_flag:
+                    print(S, S_idx, a, lr * r, Qsa_player[S_idx,a])
+                
+        # def updateQsa_stages_inplace(player, Qsa_player, Buff_player, disp_flag=True):
+
+        def _buff_depart(Buff):
+            Buff_dual = [{'S':[], 'a':[], 'r':[]}, {'S':[], 'a':[], 'r':[]}]
+            for i, (p, S, a, r) in enumerate(zip(Buff['P_no'], Buff['S'], Buff['a'], Buff['r'])):
+                if i > 0:
+                    # final reward for a player is reward of a next player
+                    prev_p = 2 if p==1 else 1
+                    Buff_dual[prev_p-1]['r'][-1] = -r # 1 for player#2 --> -1 for player#1, vice versa
+                    if self.disp_flag:
+                        print('i, prev_p, Buff_dual[prev_p-1]')
+                        print(i, prev_p, Buff_dual[prev_p-1])
+                Buff_dual[p-1]['S'].append(S)
+                Buff_dual[p-1]['a'].append(a)
+                Buff_dual[p-1]['r'].append(r)  
+                if self.disp_flag:
+                    print('i, p, Buff_dual[p-1]')
+                    print(i, p, Buff_dual[p-1])                
+            return Buff_dual                
+
+        def buff_depart(Buff):
+            Buff_dual = [{'S':[], 'a':[], 'r':[]}, {'S':[], 'a':[], 'r':[]}]
+            for i, (p, S, a, r) in enumerate(zip(Buff['P_no'], Buff['S'], Buff['a'], Buff['r'])):
+                if i > 0:
+                    # final reward for a player is reward of a next player
+                    prev_p = 2 if p==1 else 1
+                    #Buff_dual[prev_p-1]['r'][-1] = -r # 1 for player#2 --> -1 for player#1, vice versa
+                    Ratio_lose_per_win = 10.0
+                    Buff_dual[prev_p-1]['r'][-1] = -r * Ratio_lose_per_win
+                    if self.disp_flag:
+                        print('i, prev_p, Buff_dual[prev_p-1]')
+                        print(i, prev_p, Buff_dual[prev_p-1])
+                Buff_dual[p-1]['S'].append(S)
+                Buff_dual[p-1]['a'].append(a)
+                Buff_dual[p-1]['r'].append(r)  
+                if self.disp_flag:
+                    print('i, p, Buff_dual[p-1]')
+                    print(i, p, Buff_dual[p-1])                
+            return Buff_dual                
+
+        Buff_dual = buff_depart(Buff)
         
         # player#1
         for player in [1,2]:
-            discounted_inplace(Buff_dual[player-1]['r'], ff) # for player#1
+            discounted_inplace(Buff_dual[player-1]['r']) # for player#1
 
             if self.disp_flag:
                 print('player:', player)
                 print("Buff_dual[player-1]['r']", Buff_dual[player-1]['r'])
             
-            self.updateQsa_inplace(self.Qsa[player-1], Buff_dual[player-1], lr)
+            updateQsa_inplace(self.Qsa[player-1], Buff_dual[player-1])
             # updateQsa_stages_inplace(player, self.Qsa_stages[player-1], Buff_dual[player-1])
 
     def _learning(self, N_episodes=2, ff=0.9, lr=0.01, print_cnt=10):
@@ -854,34 +781,6 @@ def input_default(str, defalut_value, dtype=int):
         return defalut_value
     else:
         return dtype(answer)
-
-
-def check_play_by_scenario():
-    ff = 0.9
-    lr = 0.01
-    N_Symbols = 3 # 0=empty, 1=plyaer1, 2=player2
-    N_A = 9 # (0,0), (0,1), ..., (2,2)
-    my_Q_System =  Q_System(N_A, N_Symbols)
-
-    Buff = my_Q_System.play_by_scenario(
-        P_no=1, action_list=[4,1,3,5,6,2,0])
-    print('---------------------------')
-    print('Buff')
-    print(Buff)
-
-    Buff_dual= buff_depart(Buff)
-    print('---------------------------')
-    print('Buff_dual')
-    print(Buff_dual)
-
-    player = 1
-    discounted_inplace(Buff_dual[player-1]['r'], ff)
-    print('---------------------------')
-    print("Buff_dual[player-1]['r'] with player=1")
-    print(Buff_dual[player-1]['r'])       
-
-    my_Q_System.disp_flag = True
-    my_Q_System.updateQsa_inplace(my_Q_System.Qsa[player-1], Buff_dual[player-1], lr)
 
 
 def main():
