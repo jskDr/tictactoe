@@ -2,6 +2,8 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
+import numba
+from numba import jit
 
 # TicTacToe game has nine stateus with nine actions. An user can put his ston on any postion in the borad except 
 
@@ -17,18 +19,28 @@ class color:
    UNDERLINE = '\033[4m'
    END = '\033[0m'
 
-def generate_all_states(stack=[], N_A=3):
-    for i in range(N_A):
-        if i not in stack:
-            stack.append(i)
-            print(stack)
-            generate_all_states(stack, N_A)
-            stack.pop()
-
 
 def set_state_inplace(S, action, P_no): 
-    ''' S is numpy array.'''
-    assert S[action] == 0, 'position should be empty to put a new stone' 
+    """ 
+    set_state_inplace(S, action, P_no)
+
+    [Inputs] 
+    S is numpy array.
+    """
+    # assert S[action] == 0, 'position should be empty to put a new stone' 
+    S[action] = P_no # User numpy to insert action in the specific position
+
+
+@jit # No speed advantage compared to pure Python code
+def set_state_inplace_numba(S, action, P_no): 
+    """ 
+    set_state_inplace_numba(S, action, P_no)
+    - No speed advantage compared to pure Python code
+
+    [Inputs] 
+    S is numpy array.
+    """
+    # assert S[action] == 0, 'position should be empty to put a new stone' 
     S[action] = P_no # User numpy to insert action in the specific position
     
 
@@ -65,6 +77,34 @@ def calc_reward_tf(S):
             return player
     
     return 0
+
+MASK_L = np.array([[1,1,1,0,0,0,0,0,0], [0,0,0,1,1,1,0,0,0], [0,0,0,0,0,0,1,1,1],
+                         [1,0,0,1,0,0,1,0,0], [0,1,0,0,1,0,0,1,0], [0,0,1,0,0,1,0,0,1],
+                         [1,0,0,0,1,0,0,0,1], [0,0,1,0,1,0,1,0,0]], dtype=int)
+
+@jit
+def calc_reward_numba(mask_l, S):
+    for i in range(len(mask_l)):
+        mask = mask_l[i]
+        mask_S = mask * S
+
+        for player in [1,2]:
+            abserr = np.sum(np.abs(mask_S - player * mask))
+            if abserr == 0:
+                return player
+    return 0    
+
+
+def _calc_reward_numba(mask_l, S):
+    for i in range(len(mask_l)):
+        mask = mask_l[i]
+        mask_S = mask * S
+
+        for player in [1,2]:
+            abserr = np.sum(np.abs(mask_S - player * mask))
+            if abserr == 0:
+                return player
+    return 0    
 
 
 def one_of_amax(arr, disp_flag=False):
@@ -134,27 +174,6 @@ class Q_System:
             self.N_A = None
             self.N_Symbols = None
             self.epsilon = None
-
-    def _yield_all_possible_ttt_states(self, stack=[], N_A=9):
-        for i in range(N_A):
-            if i not in stack:
-                stack.append(i)
-                yield stack
-                Buff = self.play_by_scenario(P_no=1,action_list=stack)
-                if Buff['r'][-1] == 0:
-                    self.yield_all_possible_ttt_states(stack, N_A)
-                stack.pop()              
-
-    def yield_all_possible_ttt_states(self, stack=[], N_A=9):
-        for i in range(N_A):
-            if i not in stack:
-                stack.append(i)
-                yield stack
-                # Buff = self.play_by_scenario(P_no=1,action_list=stack)
-                # if Buff['r'][-1] == 0:
-                #    self.yield_all_possible_ttt_states(stack, N_A)
-                stack.pop()              
-
 
     def save(self):
         f = open('tictactoe_data.pckl', 'wb')
@@ -848,6 +867,139 @@ def learning_stage(N_episodes=100, save_flag=True, fig_flag=False):
     return my_Q_System
 
 
+def generate_action_list_fn(action_list, N_A=3, stack=[]):
+    for i in range(N_A):
+        if i not in stack:
+            stack.append(i)            
+            # print(stack)
+            action_list.append(stack.copy())
+            # print(action_list)
+            generate_action_list_fn(action_list, N_A, stack)
+            stack.pop()
+
+
+def generate_action_list(N_A=3): #N_A = 9 is for tictactoe
+    action_list = []
+    generate_action_list_fn(action_list, N_A=N_A)
+    return action_list
+
+
+def _generate_avaliable_action_list_fn(my_Q_System, action_list_collection, N_A=3, stack=[]):
+    for i in range(N_A):
+        if i not in stack:
+            stack.append(i)            
+            # print(stack)
+            Buff = my_Q_System.play_by_scenario(1, action_list=stack)
+            action_list_collection.append(stack.copy())
+            if Buff['r'][-1] == 0:
+                _generate_avaliable_action_list_fn(my_Q_System, action_list_collection, N_A, stack)
+            else:
+                print(stack, Buff['r'][-1])
+            stack.pop()
+
+def play_by_scenario_fn(action_list, N_A=9):
+    """
+    win_player = play_by_scenario_fn(stack)
+    - Equivalent to self.play_by_scenario()
+
+    Return win_player, which could be 1 or 2 depending on win player index
+    """
+    P_no = 1
+    S = np.zeros((N_A,),dtype='int16')
+    for action in action_list:
+        # action, done = get_action_by_scenario()
+        set_state_inplace(S, action, P_no)
+        win_player = calc_reward_tf(S)
+        if win_player:
+            return win_player
+        P_no = 1 if P_no == 2 else 2
+    return 0
+
+
+def play_by_scenario_fn_numba(action_list, N_A:int=9) -> int:
+    """
+    win_player = play_by_scenario_fn_numba(stack)
+    - Equivalent to self.play_by_scenario()
+
+    Return win_player, which could be 1 or 2 depending on win player index
+    """
+    P_no = 1
+    S = np.zeros((N_A,),dtype='int16')
+    for action in action_list:
+        # action, done = get_action_by_scenario()
+        set_state_inplace(S, action, P_no)
+        win_player = calc_reward_numba(MASK_L, S)
+        if win_player:
+            return win_player
+        P_no = 1 if P_no == 2 else 2
+    return 0
+
+
+def generate_avaliable_action_list_fn(action_list_collection, N_A=9, stack=[]):
+    for i in range(N_A):
+        if i not in stack:
+            stack.append(i)            
+            # print(stack)
+            win_player = play_by_scenario_fn_numba(stack)
+            action_list_collection.append(stack.copy())
+            if win_player == 0:
+                generate_avaliable_action_list_fn(action_list_collection, N_A, stack)
+            stack.pop()
+
+
+def generate_avaliable_action_list(): #N_A = 9 is for tictactoe
+    """
+    Generate all avaiable action list in the tictactoe game. 
+    This is used for Bellman expectation equation.
+    - Performing for the first playing case only. The second playing case will be considered later. 
+    """
+    N_A = 9
+    action_list_collection = []
+    generate_avaliable_action_list_fn(action_list_collection, N_A=N_A)
+    return action_list_collection
+
+
+def Bellman_expectation_fn(do_action, N_A=9, action_list=[]):
+    for action in range(N_A):
+        if action not in action_list:
+            action_list.append(action)
+            win_player = do_action.perform_action(action)            
+            if win_player == 0:
+                Bellman_expectation_fn(do_action, N_A, action_list)
+            action_list.pop()
+
+class DoAction:
+    def __init__(self, N_A=9):
+        self.player = 1
+        self.S = np.zeros((N_A,),dtype=int)
+        self.action_cnt = 0
+        self.N_A = N_A
+    def perform_action(self, action):
+        self.action_cnt += 1
+        set_state_inplace(self.S, action, self.player)
+        win_player = calc_reward_numba(MASK_L, S)
+        # Remind tictactoe has sparse reward. 
+
+        
+
+        if win_player != 0 or self.action_cnt == self.N_A:
+            # no reward, yet
+            pass
+        else:
+            reward = ((-1 if win_player==2 else win_player) + 1)/2 # else -> lose
+        self.player = 2 if self.player==1 else 1
+
+def Bellman_expectation(): #N_A = 9 is for tictactoe
+    """
+    Generate all avaiable action list in the tictactoe game. 
+    This is used for Bellman expectation equation.
+    - Performing for the first playing case only. The second playing case will be considered later. 
+    """
+    N_A = 9
+    do_action = DoAction(N_A=N_A)
+    Bellman_expectation_fn(do_action, N_A=N_A)
+
+
 def input_default(str, defalut_value, dtype=int):
     answer = input(str)
     if answer == '':
@@ -882,7 +1034,6 @@ def check_play_by_scenario():
 
     my_Q_System.disp_flag = True
     my_Q_System.updateQsa_inplace(my_Q_System.Qsa[player-1], Buff_dual[player-1], lr)
-
 
 def main():
     Q1 = input_default('1. Loading a trained agent (0) or Learning a new agent (1)? (default=0) ', 0, int)
