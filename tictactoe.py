@@ -977,10 +977,8 @@ class DoAction:
     def perform_action(self, action):
         self.action_cnt += 1
         set_state_inplace(self.S, action, self.player)
-        win_player = calc_reward_numba(MASK_L, S)
+        win_player = calc_reward_numba(MASK_L, self.S)
         # Remind tictactoe has sparse reward. 
-
-        
 
         if win_player != 0 or self.action_cnt == self.N_A:
             # no reward, yet
@@ -988,6 +986,7 @@ class DoAction:
         else:
             reward = ((-1 if win_player==2 else win_player) + 1)/2 # else -> lose
         self.player = 2 if self.player==1 else 1
+
 
 def Bellman_expectation(): #N_A = 9 is for tictactoe
     """
