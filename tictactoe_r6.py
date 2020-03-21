@@ -964,15 +964,88 @@ class Bellman:
             S = action_list_2_state(action_list)
             for action in range(self.N_A):
                 if action not in action_list:
-                    done = Bellman_exp_inplace(self.Qsa, S, action, action_list, ff=self.ff, N_A=self.N_A, N_Symbols=self.N_Symbols, disp_flag=disp_flag)    
+                    done = Bellman_exp_inplace(self.Qsa, S, action, action_list, ff=self.ff, N_A=self.N_A, N_Symbols=self.N_Symbols)    
                     if not done:
                         action_list.append(action)
                         # print('Enter: action_list:', action_list)
                         self.update(action_list, max_actions=max_actions)
                         action_list.pop()  
 
+def Bellman_exp_inplace(Qsa, S, action, action_list, ff=0.9, N_A=9, N_Symbols=3):
+    """Evaluate q(s,a) using ``S`` and ``action``.    
 
-def Bellman_exp_inplace(Qsa, S, action, action_list, ff=0.9, N_A=9, N_Symbols=3, disp_flag=False):
+    Returns q(s,a).
+
+    Parameters
+    ----------
+    S : numpy.ndarray, shape=(N_A,)
+        State matrix <--> state index, ``S_Idx``
+    action : int
+        action value in [0, 1, ..., N_A]
+
+    Returns
+    -------
+    q(s,a): numpy.ndarray, shape=(N_S, N_A)
+            q-value w.r.t. S and action
+
+    Notes
+    -----
+    This function calls Bellman_exp_fn.
+
+    References
+    ----------
+    .. [1] t.b.d.
+           Retrieved from https://t.b.d
+
+    Examples
+    --------
+    Exmaples will be described.
+
+    >>> import tictactoe # below will be updated. 
+    >>> x = np.array([[1., 2., 3.],
+    ...               [4., 5., 6.],
+    ...               [7., 8., 9.]])
+    >>> y = np.array([[1., 2., 3.],
+    ...               [4., 5., 6.]])
+    >>> pairwise_dists(x, y)
+    array([[ 0.        ,  5.19615242],
+           [ 5.19615242,  0.        ],
+           [10.39230485,  5.19615242]])
+    """
+    P_no = 1    
+    Sa = set_state(S, action, P_no)
+    win_player = calc_reward_numba(MASK_L, Sa)
+    action_list.append(action)
+    # Notice that R could not be changed by player 2. It is only determined by player 1.
+    done = False
+    E_V_Saa = 0. # Saa -> S(t+1) for Player1 
+    if win_player == P_no: # P_no <- 1
+        E_R = 1.0
+        done = True
+    elif len(action_list) == N_A: # no more following action.
+        E_R = 0.5
+        done = True
+    else:
+        E_R = 0.
+        # get v(S_t+1)
+        # Here, pro means proponent
+        P_no_pro = 2 if P_no == 1 else 1
+        for action_pro in range(N_A): 
+            if action_pro not in action_list:
+                Saa = set_state(Sa, action_pro, P_no_pro)
+                win_player_pro = calc_reward_numba(MASK_L, Saa)
+                action_list.append(action_pro)                
+                if win_player_pro != P_no_pro and len(action_list) != N_A:
+                    D_E_V_Saa = get_Vs(Qsa, Saa, action_list, N_A=N_A, N_Symbols=N_Symbols, disp_flag=disp_flag)
+                    E_V_Saa += D_E_V_Saa
+                action_list.pop()
+    action_list.pop()
+    S_Idx = calc_S_idx_numba(S, N_Symbols=N_Symbols)
+    Qsa[S_Idx, action] = E_R + ff*E_V_Saa
+    return done
+
+
+def Bellman_exp_inplace_prt(Qsa, S, action, action_list, ff=0.9, N_A=9, N_Symbols=3, disp_flag=False):
     """Evaluate q(s,a) using ``S`` and ``action``.    
 
     Returns q(s,a).
