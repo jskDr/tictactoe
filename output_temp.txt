@@ -1,0 +1,2177 @@
+#################################################
+# 2020-3-21, 7:55pm
+#################################################
+Top: action_list: []
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  0  in  []
+Sa: [1 0 0 0 0 0 0 0 0]
+[Saa]
+[1 2 0 0 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[1 2 0 0 0 0 0 0 0], 2] =  0.0
+Qsa[[1 2 0 0 0 0 0 0 0], 3] =  0.0
+Qsa[[1 2 0 0 0 0 0 0 0], 4] =  0.0
+Qsa[[1 2 0 0 0 0 0 0 0], 5] =  0.0
+Qsa[[1 2 0 0 0 0 0 0 0], 6] =  0.0
+Qsa[[1 2 0 0 0 0 0 0 0], 7] =  0.0
+Qsa[[1 2 0 0 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[1 0 2 0 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[1 0 2 0 0 0 0 0 0], 1] =  0.0
+Qsa[[1 0 2 0 0 0 0 0 0], 3] =  0.0
+Qsa[[1 0 2 0 0 0 0 0 0], 4] =  0.0
+Qsa[[1 0 2 0 0 0 0 0 0], 5] =  0.0
+Qsa[[1 0 2 0 0 0 0 0 0], 6] =  0.0
+Qsa[[1 0 2 0 0 0 0 0 0], 7] =  0.0
+Qsa[[1 0 2 0 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[1 0 0 2 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[1 0 0 2 0 0 0 0 0], 1] =  0.0
+Qsa[[1 0 0 2 0 0 0 0 0], 2] =  0.0
+Qsa[[1 0 0 2 0 0 0 0 0], 4] =  0.0
+Qsa[[1 0 0 2 0 0 0 0 0], 5] =  0.0
+Qsa[[1 0 0 2 0 0 0 0 0], 6] =  0.0
+Qsa[[1 0 0 2 0 0 0 0 0], 7] =  0.0
+Qsa[[1 0 0 2 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[1 0 0 0 2 0 0 0 0]
+win_player_pro = 0
+Qsa[[1 0 0 0 2 0 0 0 0], 1] =  0.0
+Qsa[[1 0 0 0 2 0 0 0 0], 2] =  0.0
+Qsa[[1 0 0 0 2 0 0 0 0], 3] =  0.0
+Qsa[[1 0 0 0 2 0 0 0 0], 5] =  0.0
+Qsa[[1 0 0 0 2 0 0 0 0], 6] =  0.0
+Qsa[[1 0 0 0 2 0 0 0 0], 7] =  0.0
+Qsa[[1 0 0 0 2 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[1 0 0 0 0 2 0 0 0]
+win_player_pro = 0
+Qsa[[1 0 0 0 0 2 0 0 0], 1] =  0.0
+Qsa[[1 0 0 0 0 2 0 0 0], 2] =  0.0
+Qsa[[1 0 0 0 0 2 0 0 0], 3] =  0.0
+Qsa[[1 0 0 0 0 2 0 0 0], 4] =  0.0
+Qsa[[1 0 0 0 0 2 0 0 0], 6] =  0.0
+Qsa[[1 0 0 0 0 2 0 0 0], 7] =  0.0
+Qsa[[1 0 0 0 0 2 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[1 0 0 0 0 0 2 0 0]
+win_player_pro = 0
+Qsa[[1 0 0 0 0 0 2 0 0], 1] =  0.0
+Qsa[[1 0 0 0 0 0 2 0 0], 2] =  0.0
+Qsa[[1 0 0 0 0 0 2 0 0], 3] =  0.0
+Qsa[[1 0 0 0 0 0 2 0 0], 4] =  0.0
+Qsa[[1 0 0 0 0 0 2 0 0], 5] =  0.0
+Qsa[[1 0 0 0 0 0 2 0 0], 7] =  0.0
+Qsa[[1 0 0 0 0 0 2 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[1 0 0 0 0 0 0 2 0]
+win_player_pro = 0
+Qsa[[1 0 0 0 0 0 0 2 0], 1] =  0.0
+Qsa[[1 0 0 0 0 0 0 2 0], 2] =  0.0
+Qsa[[1 0 0 0 0 0 0 2 0], 3] =  0.0
+Qsa[[1 0 0 0 0 0 0 2 0], 4] =  0.0
+Qsa[[1 0 0 0 0 0 0 2 0], 5] =  0.0
+Qsa[[1 0 0 0 0 0 0 2 0], 6] =  0.0
+Qsa[[1 0 0 0 0 0 0 2 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[1 0 0 0 0 0 0 0 2]
+win_player_pro = 0
+Qsa[[1 0 0 0 0 0 0 0 2], 1] =  0.0
+Qsa[[1 0 0 0 0 0 0 0 2], 2] =  0.0
+Qsa[[1 0 0 0 0 0 0 0 2], 3] =  0.0
+Qsa[[1 0 0 0 0 0 0 0 2], 4] =  0.0
+Qsa[[1 0 0 0 0 0 0 0 2], 5] =  0.0
+Qsa[[1 0 0 0 0 0 0 0 2], 6] =  0.0
+Qsa[[1 0 0 0 0 0 0 0 2], 7] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [0]
+Top: action_list: [0]
+-----------------------
+S: [1 0 0 0 0 0 0 0 0]  with action:  1  in  [0]
+Sa: [1 1 0 0 0 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [0, 1]
+Top: action_list: [0, 1]
+Return: action_list: [0, 1]
+-----------------------
+S: [1 0 0 0 0 0 0 0 0]  with action:  2  in  [0]
+Sa: [1 0 1 0 0 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [0, 2]
+Top: action_list: [0, 2]
+Return: action_list: [0, 2]
+-----------------------
+S: [1 0 0 0 0 0 0 0 0]  with action:  3  in  [0]
+Sa: [1 0 0 1 0 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [0, 3]
+Top: action_list: [0, 3]
+Return: action_list: [0, 3]
+-----------------------
+S: [1 0 0 0 0 0 0 0 0]  with action:  4  in  [0]
+Sa: [1 0 0 0 1 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [0, 4]
+Top: action_list: [0, 4]
+Return: action_list: [0, 4]
+-----------------------
+S: [1 0 0 0 0 0 0 0 0]  with action:  5  in  [0]
+Sa: [1 0 0 0 0 1 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [0, 5]
+Top: action_list: [0, 5]
+Return: action_list: [0, 5]
+-----------------------
+S: [1 0 0 0 0 0 0 0 0]  with action:  6  in  [0]
+Sa: [1 0 0 0 0 0 1 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [0, 6]
+Top: action_list: [0, 6]
+Return: action_list: [0, 6]
+-----------------------
+S: [1 0 0 0 0 0 0 0 0]  with action:  7  in  [0]
+Sa: [1 0 0 0 0 0 0 1 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [0, 7]
+Top: action_list: [0, 7]
+Return: action_list: [0, 7]
+-----------------------
+S: [1 0 0 0 0 0 0 0 0]  with action:  8  in  [0]
+Sa: [1 0 0 0 0 0 0 0 1]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [0, 8]
+Top: action_list: [0, 8]
+Return: action_list: [0, 8]
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  1  in  []
+Sa: [0 1 0 0 0 0 0 0 0]
+[Saa]
+[2 1 0 0 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[2 1 0 0 0 0 0 0 0], 2] =  0.0
+Qsa[[2 1 0 0 0 0 0 0 0], 3] =  0.0
+Qsa[[2 1 0 0 0 0 0 0 0], 4] =  0.0
+Qsa[[2 1 0 0 0 0 0 0 0], 5] =  0.0
+Qsa[[2 1 0 0 0 0 0 0 0], 6] =  0.0
+Qsa[[2 1 0 0 0 0 0 0 0], 7] =  0.0
+Qsa[[2 1 0 0 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 1 2 0 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 1 2 0 0 0 0 0 0], 0] =  0.0
+Qsa[[0 1 2 0 0 0 0 0 0], 3] =  0.0
+Qsa[[0 1 2 0 0 0 0 0 0], 4] =  0.0
+Qsa[[0 1 2 0 0 0 0 0 0], 5] =  0.0
+Qsa[[0 1 2 0 0 0 0 0 0], 6] =  0.0
+Qsa[[0 1 2 0 0 0 0 0 0], 7] =  0.0
+Qsa[[0 1 2 0 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 1 0 2 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 1 0 2 0 0 0 0 0], 0] =  0.0
+Qsa[[0 1 0 2 0 0 0 0 0], 2] =  0.0
+Qsa[[0 1 0 2 0 0 0 0 0], 4] =  0.0
+Qsa[[0 1 0 2 0 0 0 0 0], 5] =  0.0
+Qsa[[0 1 0 2 0 0 0 0 0], 6] =  0.0
+Qsa[[0 1 0 2 0 0 0 0 0], 7] =  0.0
+Qsa[[0 1 0 2 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 1 0 0 2 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 1 0 0 2 0 0 0 0], 0] =  0.0
+Qsa[[0 1 0 0 2 0 0 0 0], 2] =  0.0
+Qsa[[0 1 0 0 2 0 0 0 0], 3] =  0.0
+Qsa[[0 1 0 0 2 0 0 0 0], 5] =  0.0
+Qsa[[0 1 0 0 2 0 0 0 0], 6] =  0.0
+Qsa[[0 1 0 0 2 0 0 0 0], 7] =  0.0
+Qsa[[0 1 0 0 2 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 1 0 0 0 2 0 0 0]
+win_player_pro = 0
+Qsa[[0 1 0 0 0 2 0 0 0], 0] =  0.0
+Qsa[[0 1 0 0 0 2 0 0 0], 2] =  0.0
+Qsa[[0 1 0 0 0 2 0 0 0], 3] =  0.0
+Qsa[[0 1 0 0 0 2 0 0 0], 4] =  0.0
+Qsa[[0 1 0 0 0 2 0 0 0], 6] =  0.0
+Qsa[[0 1 0 0 0 2 0 0 0], 7] =  0.0
+Qsa[[0 1 0 0 0 2 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 1 0 0 0 0 2 0 0]
+win_player_pro = 0
+Qsa[[0 1 0 0 0 0 2 0 0], 0] =  0.0
+Qsa[[0 1 0 0 0 0 2 0 0], 2] =  0.0
+Qsa[[0 1 0 0 0 0 2 0 0], 3] =  0.0
+Qsa[[0 1 0 0 0 0 2 0 0], 4] =  0.0
+Qsa[[0 1 0 0 0 0 2 0 0], 5] =  0.0
+Qsa[[0 1 0 0 0 0 2 0 0], 7] =  0.0
+Qsa[[0 1 0 0 0 0 2 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 1 0 0 0 0 0 2 0]
+win_player_pro = 0
+Qsa[[0 1 0 0 0 0 0 2 0], 0] =  0.0
+Qsa[[0 1 0 0 0 0 0 2 0], 2] =  0.0
+Qsa[[0 1 0 0 0 0 0 2 0], 3] =  0.0
+Qsa[[0 1 0 0 0 0 0 2 0], 4] =  0.0
+Qsa[[0 1 0 0 0 0 0 2 0], 5] =  0.0
+Qsa[[0 1 0 0 0 0 0 2 0], 6] =  0.0
+Qsa[[0 1 0 0 0 0 0 2 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 1 0 0 0 0 0 0 2]
+win_player_pro = 0
+Qsa[[0 1 0 0 0 0 0 0 2], 0] =  0.0
+Qsa[[0 1 0 0 0 0 0 0 2], 2] =  0.0
+Qsa[[0 1 0 0 0 0 0 0 2], 3] =  0.0
+Qsa[[0 1 0 0 0 0 0 0 2], 4] =  0.0
+Qsa[[0 1 0 0 0 0 0 0 2], 5] =  0.0
+Qsa[[0 1 0 0 0 0 0 0 2], 6] =  0.0
+Qsa[[0 1 0 0 0 0 0 0 2], 7] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [1]
+Top: action_list: [1]
+-----------------------
+S: [0 1 0 0 0 0 0 0 0]  with action:  0  in  [1]
+Sa: [1 1 0 0 0 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [1, 0]
+Top: action_list: [1, 0]
+Return: action_list: [1, 0]
+-----------------------
+S: [0 1 0 0 0 0 0 0 0]  with action:  2  in  [1]
+Sa: [0 1 1 0 0 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [1, 2]
+Top: action_list: [1, 2]
+Return: action_list: [1, 2]
+-----------------------
+S: [0 1 0 0 0 0 0 0 0]  with action:  3  in  [1]
+Sa: [0 1 0 1 0 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [1, 3]
+Top: action_list: [1, 3]
+Return: action_list: [1, 3]
+-----------------------
+S: [0 1 0 0 0 0 0 0 0]  with action:  4  in  [1]
+Sa: [0 1 0 0 1 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [1, 4]
+Top: action_list: [1, 4]
+Return: action_list: [1, 4]
+-----------------------
+S: [0 1 0 0 0 0 0 0 0]  with action:  5  in  [1]
+Sa: [0 1 0 0 0 1 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [1, 5]
+Top: action_list: [1, 5]
+Return: action_list: [1, 5]
+-----------------------
+S: [0 1 0 0 0 0 0 0 0]  with action:  6  in  [1]
+Sa: [0 1 0 0 0 0 1 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [1, 6]
+Top: action_list: [1, 6]
+Return: action_list: [1, 6]
+-----------------------
+S: [0 1 0 0 0 0 0 0 0]  with action:  7  in  [1]
+Sa: [0 1 0 0 0 0 0 1 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [1, 7]
+Top: action_list: [1, 7]
+Return: action_list: [1, 7]
+-----------------------
+S: [0 1 0 0 0 0 0 0 0]  with action:  8  in  [1]
+Sa: [0 1 0 0 0 0 0 0 1]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [1, 8]
+Top: action_list: [1, 8]
+Return: action_list: [1, 8]
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  2  in  []
+Sa: [0 0 1 0 0 0 0 0 0]
+[Saa]
+[2 0 1 0 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[2 0 1 0 0 0 0 0 0], 1] =  0.0
+Qsa[[2 0 1 0 0 0 0 0 0], 3] =  0.0
+Qsa[[2 0 1 0 0 0 0 0 0], 4] =  0.0
+Qsa[[2 0 1 0 0 0 0 0 0], 5] =  0.0
+Qsa[[2 0 1 0 0 0 0 0 0], 6] =  0.0
+Qsa[[2 0 1 0 0 0 0 0 0], 7] =  0.0
+Qsa[[2 0 1 0 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 2 1 0 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 2 1 0 0 0 0 0 0], 0] =  0.0
+Qsa[[0 2 1 0 0 0 0 0 0], 3] =  0.0
+Qsa[[0 2 1 0 0 0 0 0 0], 4] =  0.0
+Qsa[[0 2 1 0 0 0 0 0 0], 5] =  0.0
+Qsa[[0 2 1 0 0 0 0 0 0], 6] =  0.0
+Qsa[[0 2 1 0 0 0 0 0 0], 7] =  0.0
+Qsa[[0 2 1 0 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 1 2 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 1 2 0 0 0 0 0], 0] =  0.0
+Qsa[[0 0 1 2 0 0 0 0 0], 1] =  0.0
+Qsa[[0 0 1 2 0 0 0 0 0], 4] =  0.0
+Qsa[[0 0 1 2 0 0 0 0 0], 5] =  0.0
+Qsa[[0 0 1 2 0 0 0 0 0], 6] =  0.0
+Qsa[[0 0 1 2 0 0 0 0 0], 7] =  0.0
+Qsa[[0 0 1 2 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 1 0 2 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 1 0 2 0 0 0 0], 0] =  0.0
+Qsa[[0 0 1 0 2 0 0 0 0], 1] =  0.0
+Qsa[[0 0 1 0 2 0 0 0 0], 3] =  0.0
+Qsa[[0 0 1 0 2 0 0 0 0], 5] =  0.0
+Qsa[[0 0 1 0 2 0 0 0 0], 6] =  0.0
+Qsa[[0 0 1 0 2 0 0 0 0], 7] =  0.0
+Qsa[[0 0 1 0 2 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 1 0 0 2 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 1 0 0 2 0 0 0], 0] =  0.0
+Qsa[[0 0 1 0 0 2 0 0 0], 1] =  0.0
+Qsa[[0 0 1 0 0 2 0 0 0], 3] =  0.0
+Qsa[[0 0 1 0 0 2 0 0 0], 4] =  0.0
+Qsa[[0 0 1 0 0 2 0 0 0], 6] =  0.0
+Qsa[[0 0 1 0 0 2 0 0 0], 7] =  0.0
+Qsa[[0 0 1 0 0 2 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 1 0 0 0 2 0 0]
+win_player_pro = 0
+Qsa[[0 0 1 0 0 0 2 0 0], 0] =  0.0
+Qsa[[0 0 1 0 0 0 2 0 0], 1] =  0.0
+Qsa[[0 0 1 0 0 0 2 0 0], 3] =  0.0
+Qsa[[0 0 1 0 0 0 2 0 0], 4] =  0.0
+Qsa[[0 0 1 0 0 0 2 0 0], 5] =  0.0
+Qsa[[0 0 1 0 0 0 2 0 0], 7] =  0.0
+Qsa[[0 0 1 0 0 0 2 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 1 0 0 0 0 2 0]
+win_player_pro = 0
+Qsa[[0 0 1 0 0 0 0 2 0], 0] =  0.0
+Qsa[[0 0 1 0 0 0 0 2 0], 1] =  0.0
+Qsa[[0 0 1 0 0 0 0 2 0], 3] =  0.0
+Qsa[[0 0 1 0 0 0 0 2 0], 4] =  0.0
+Qsa[[0 0 1 0 0 0 0 2 0], 5] =  0.0
+Qsa[[0 0 1 0 0 0 0 2 0], 6] =  0.0
+Qsa[[0 0 1 0 0 0 0 2 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 1 0 0 0 0 0 2]
+win_player_pro = 0
+Qsa[[0 0 1 0 0 0 0 0 2], 0] =  0.0
+Qsa[[0 0 1 0 0 0 0 0 2], 1] =  0.0
+Qsa[[0 0 1 0 0 0 0 0 2], 3] =  0.0
+Qsa[[0 0 1 0 0 0 0 0 2], 4] =  0.0
+Qsa[[0 0 1 0 0 0 0 0 2], 5] =  0.0
+Qsa[[0 0 1 0 0 0 0 0 2], 6] =  0.0
+Qsa[[0 0 1 0 0 0 0 0 2], 7] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [2]
+Top: action_list: [2]
+-----------------------
+S: [0 0 1 0 0 0 0 0 0]  with action:  0  in  [2]
+Sa: [1 0 1 0 0 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [2, 0]
+Top: action_list: [2, 0]
+Return: action_list: [2, 0]
+-----------------------
+S: [0 0 1 0 0 0 0 0 0]  with action:  1  in  [2]
+Sa: [0 1 1 0 0 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [2, 1]
+Top: action_list: [2, 1]
+Return: action_list: [2, 1]
+-----------------------
+S: [0 0 1 0 0 0 0 0 0]  with action:  3  in  [2]
+Sa: [0 0 1 1 0 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [2, 3]
+Top: action_list: [2, 3]
+Return: action_list: [2, 3]
+-----------------------
+S: [0 0 1 0 0 0 0 0 0]  with action:  4  in  [2]
+Sa: [0 0 1 0 1 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [2, 4]
+Top: action_list: [2, 4]
+Return: action_list: [2, 4]
+-----------------------
+S: [0 0 1 0 0 0 0 0 0]  with action:  5  in  [2]
+Sa: [0 0 1 0 0 1 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [2, 5]
+Top: action_list: [2, 5]
+Return: action_list: [2, 5]
+-----------------------
+S: [0 0 1 0 0 0 0 0 0]  with action:  6  in  [2]
+Sa: [0 0 1 0 0 0 1 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [2, 6]
+Top: action_list: [2, 6]
+Return: action_list: [2, 6]
+-----------------------
+S: [0 0 1 0 0 0 0 0 0]  with action:  7  in  [2]
+Sa: [0 0 1 0 0 0 0 1 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [2, 7]
+Top: action_list: [2, 7]
+Return: action_list: [2, 7]
+-----------------------
+S: [0 0 1 0 0 0 0 0 0]  with action:  8  in  [2]
+Sa: [0 0 1 0 0 0 0 0 1]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [2, 8]
+Top: action_list: [2, 8]
+Return: action_list: [2, 8]
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  3  in  []
+Sa: [0 0 0 1 0 0 0 0 0]
+[Saa]
+[2 0 0 1 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[2 0 0 1 0 0 0 0 0], 1] =  0.0
+Qsa[[2 0 0 1 0 0 0 0 0], 2] =  0.0
+Qsa[[2 0 0 1 0 0 0 0 0], 4] =  0.0
+Qsa[[2 0 0 1 0 0 0 0 0], 5] =  0.0
+Qsa[[2 0 0 1 0 0 0 0 0], 6] =  0.0
+Qsa[[2 0 0 1 0 0 0 0 0], 7] =  0.0
+Qsa[[2 0 0 1 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 2 0 1 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 2 0 1 0 0 0 0 0], 0] =  0.0
+Qsa[[0 2 0 1 0 0 0 0 0], 2] =  0.0
+Qsa[[0 2 0 1 0 0 0 0 0], 4] =  0.0
+Qsa[[0 2 0 1 0 0 0 0 0], 5] =  0.0
+Qsa[[0 2 0 1 0 0 0 0 0], 6] =  0.0
+Qsa[[0 2 0 1 0 0 0 0 0], 7] =  0.0
+Qsa[[0 2 0 1 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 2 1 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 2 1 0 0 0 0 0], 0] =  0.0
+Qsa[[0 0 2 1 0 0 0 0 0], 1] =  0.0
+Qsa[[0 0 2 1 0 0 0 0 0], 4] =  0.0
+Qsa[[0 0 2 1 0 0 0 0 0], 5] =  0.0
+Qsa[[0 0 2 1 0 0 0 0 0], 6] =  0.0
+Qsa[[0 0 2 1 0 0 0 0 0], 7] =  0.0
+Qsa[[0 0 2 1 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 1 2 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 1 2 0 0 0 0], 0] =  0.0
+Qsa[[0 0 0 1 2 0 0 0 0], 1] =  0.0
+Qsa[[0 0 0 1 2 0 0 0 0], 2] =  0.0
+Qsa[[0 0 0 1 2 0 0 0 0], 5] =  0.0
+Qsa[[0 0 0 1 2 0 0 0 0], 6] =  0.0
+Qsa[[0 0 0 1 2 0 0 0 0], 7] =  0.0
+Qsa[[0 0 0 1 2 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 1 0 2 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 1 0 2 0 0 0], 0] =  0.0
+Qsa[[0 0 0 1 0 2 0 0 0], 1] =  0.0
+Qsa[[0 0 0 1 0 2 0 0 0], 2] =  0.0
+Qsa[[0 0 0 1 0 2 0 0 0], 4] =  0.0
+Qsa[[0 0 0 1 0 2 0 0 0], 6] =  0.0
+Qsa[[0 0 0 1 0 2 0 0 0], 7] =  0.0
+Qsa[[0 0 0 1 0 2 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 1 0 0 2 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 1 0 0 2 0 0], 0] =  0.0
+Qsa[[0 0 0 1 0 0 2 0 0], 1] =  0.0
+Qsa[[0 0 0 1 0 0 2 0 0], 2] =  0.0
+Qsa[[0 0 0 1 0 0 2 0 0], 4] =  0.0
+Qsa[[0 0 0 1 0 0 2 0 0], 5] =  0.0
+Qsa[[0 0 0 1 0 0 2 0 0], 7] =  0.0
+Qsa[[0 0 0 1 0 0 2 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 1 0 0 0 2 0]
+win_player_pro = 0
+Qsa[[0 0 0 1 0 0 0 2 0], 0] =  0.0
+Qsa[[0 0 0 1 0 0 0 2 0], 1] =  0.0
+Qsa[[0 0 0 1 0 0 0 2 0], 2] =  0.0
+Qsa[[0 0 0 1 0 0 0 2 0], 4] =  0.0
+Qsa[[0 0 0 1 0 0 0 2 0], 5] =  0.0
+Qsa[[0 0 0 1 0 0 0 2 0], 6] =  0.0
+Qsa[[0 0 0 1 0 0 0 2 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 1 0 0 0 0 2]
+win_player_pro = 0
+Qsa[[0 0 0 1 0 0 0 0 2], 0] =  0.0
+Qsa[[0 0 0 1 0 0 0 0 2], 1] =  0.0
+Qsa[[0 0 0 1 0 0 0 0 2], 2] =  0.0
+Qsa[[0 0 0 1 0 0 0 0 2], 4] =  0.0
+Qsa[[0 0 0 1 0 0 0 0 2], 5] =  0.0
+Qsa[[0 0 0 1 0 0 0 0 2], 6] =  0.0
+Qsa[[0 0 0 1 0 0 0 0 2], 7] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [3]
+Top: action_list: [3]
+-----------------------
+S: [0 0 0 1 0 0 0 0 0]  with action:  0  in  [3]
+Sa: [1 0 0 1 0 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [3, 0]
+Top: action_list: [3, 0]
+Return: action_list: [3, 0]
+-----------------------
+S: [0 0 0 1 0 0 0 0 0]  with action:  1  in  [3]
+Sa: [0 1 0 1 0 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [3, 1]
+Top: action_list: [3, 1]
+Return: action_list: [3, 1]
+-----------------------
+S: [0 0 0 1 0 0 0 0 0]  with action:  2  in  [3]
+Sa: [0 0 1 1 0 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [3, 2]
+Top: action_list: [3, 2]
+Return: action_list: [3, 2]
+-----------------------
+S: [0 0 0 1 0 0 0 0 0]  with action:  4  in  [3]
+Sa: [0 0 0 1 1 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [3, 4]
+Top: action_list: [3, 4]
+Return: action_list: [3, 4]
+-----------------------
+S: [0 0 0 1 0 0 0 0 0]  with action:  5  in  [3]
+Sa: [0 0 0 1 0 1 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [3, 5]
+Top: action_list: [3, 5]
+Return: action_list: [3, 5]
+-----------------------
+S: [0 0 0 1 0 0 0 0 0]  with action:  6  in  [3]
+Sa: [0 0 0 1 0 0 1 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [3, 6]
+Top: action_list: [3, 6]
+Return: action_list: [3, 6]
+-----------------------
+S: [0 0 0 1 0 0 0 0 0]  with action:  7  in  [3]
+Sa: [0 0 0 1 0 0 0 1 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [3, 7]
+Top: action_list: [3, 7]
+Return: action_list: [3, 7]
+-----------------------
+S: [0 0 0 1 0 0 0 0 0]  with action:  8  in  [3]
+Sa: [0 0 0 1 0 0 0 0 1]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [3, 8]
+Top: action_list: [3, 8]
+Return: action_list: [3, 8]
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  4  in  []
+Sa: [0 0 0 0 1 0 0 0 0]
+[Saa]
+[2 0 0 0 1 0 0 0 0]
+win_player_pro = 0
+Qsa[[2 0 0 0 1 0 0 0 0], 1] =  0.0
+Qsa[[2 0 0 0 1 0 0 0 0], 2] =  0.0
+Qsa[[2 0 0 0 1 0 0 0 0], 3] =  0.0
+Qsa[[2 0 0 0 1 0 0 0 0], 5] =  0.0
+Qsa[[2 0 0 0 1 0 0 0 0], 6] =  0.0
+Qsa[[2 0 0 0 1 0 0 0 0], 7] =  0.0
+Qsa[[2 0 0 0 1 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 2 0 0 1 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 2 0 0 1 0 0 0 0], 0] =  0.0
+Qsa[[0 2 0 0 1 0 0 0 0], 2] =  0.0
+Qsa[[0 2 0 0 1 0 0 0 0], 3] =  0.0
+Qsa[[0 2 0 0 1 0 0 0 0], 5] =  0.0
+Qsa[[0 2 0 0 1 0 0 0 0], 6] =  0.0
+Qsa[[0 2 0 0 1 0 0 0 0], 7] =  0.0
+Qsa[[0 2 0 0 1 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 2 0 1 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 2 0 1 0 0 0 0], 0] =  0.0
+Qsa[[0 0 2 0 1 0 0 0 0], 1] =  0.0
+Qsa[[0 0 2 0 1 0 0 0 0], 3] =  0.0
+Qsa[[0 0 2 0 1 0 0 0 0], 5] =  0.0
+Qsa[[0 0 2 0 1 0 0 0 0], 6] =  0.0
+Qsa[[0 0 2 0 1 0 0 0 0], 7] =  0.0
+Qsa[[0 0 2 0 1 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 2 1 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 2 1 0 0 0 0], 0] =  0.0
+Qsa[[0 0 0 2 1 0 0 0 0], 1] =  0.0
+Qsa[[0 0 0 2 1 0 0 0 0], 2] =  0.0
+Qsa[[0 0 0 2 1 0 0 0 0], 5] =  0.0
+Qsa[[0 0 0 2 1 0 0 0 0], 6] =  0.0
+Qsa[[0 0 0 2 1 0 0 0 0], 7] =  0.0
+Qsa[[0 0 0 2 1 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 1 2 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 1 2 0 0 0], 0] =  0.0
+Qsa[[0 0 0 0 1 2 0 0 0], 1] =  0.0
+Qsa[[0 0 0 0 1 2 0 0 0], 2] =  0.0
+Qsa[[0 0 0 0 1 2 0 0 0], 3] =  0.0
+Qsa[[0 0 0 0 1 2 0 0 0], 6] =  0.0
+Qsa[[0 0 0 0 1 2 0 0 0], 7] =  0.0
+Qsa[[0 0 0 0 1 2 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 1 0 2 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 1 0 2 0 0], 0] =  0.0
+Qsa[[0 0 0 0 1 0 2 0 0], 1] =  0.0
+Qsa[[0 0 0 0 1 0 2 0 0], 2] =  0.0
+Qsa[[0 0 0 0 1 0 2 0 0], 3] =  0.0
+Qsa[[0 0 0 0 1 0 2 0 0], 5] =  0.0
+Qsa[[0 0 0 0 1 0 2 0 0], 7] =  0.0
+Qsa[[0 0 0 0 1 0 2 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 1 0 0 2 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 1 0 0 2 0], 0] =  0.0
+Qsa[[0 0 0 0 1 0 0 2 0], 1] =  0.0
+Qsa[[0 0 0 0 1 0 0 2 0], 2] =  0.0
+Qsa[[0 0 0 0 1 0 0 2 0], 3] =  0.0
+Qsa[[0 0 0 0 1 0 0 2 0], 5] =  0.0
+Qsa[[0 0 0 0 1 0 0 2 0], 6] =  0.0
+Qsa[[0 0 0 0 1 0 0 2 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 1 0 0 0 2]
+win_player_pro = 0
+Qsa[[0 0 0 0 1 0 0 0 2], 0] =  0.0
+Qsa[[0 0 0 0 1 0 0 0 2], 1] =  0.0
+Qsa[[0 0 0 0 1 0 0 0 2], 2] =  0.0
+Qsa[[0 0 0 0 1 0 0 0 2], 3] =  0.0
+Qsa[[0 0 0 0 1 0 0 0 2], 5] =  0.0
+Qsa[[0 0 0 0 1 0 0 0 2], 6] =  0.0
+Qsa[[0 0 0 0 1 0 0 0 2], 7] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [4]
+Top: action_list: [4]
+-----------------------
+S: [0 0 0 0 1 0 0 0 0]  with action:  0  in  [4]
+Sa: [1 0 0 0 1 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [4, 0]
+Top: action_list: [4, 0]
+Return: action_list: [4, 0]
+-----------------------
+S: [0 0 0 0 1 0 0 0 0]  with action:  1  in  [4]
+Sa: [0 1 0 0 1 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [4, 1]
+Top: action_list: [4, 1]
+Return: action_list: [4, 1]
+-----------------------
+S: [0 0 0 0 1 0 0 0 0]  with action:  2  in  [4]
+Sa: [0 0 1 0 1 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [4, 2]
+Top: action_list: [4, 2]
+Return: action_list: [4, 2]
+-----------------------
+S: [0 0 0 0 1 0 0 0 0]  with action:  3  in  [4]
+Sa: [0 0 0 1 1 0 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [4, 3]
+Top: action_list: [4, 3]
+Return: action_list: [4, 3]
+-----------------------
+S: [0 0 0 0 1 0 0 0 0]  with action:  5  in  [4]
+Sa: [0 0 0 0 1 1 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [4, 5]
+Top: action_list: [4, 5]
+Return: action_list: [4, 5]
+-----------------------
+S: [0 0 0 0 1 0 0 0 0]  with action:  6  in  [4]
+Sa: [0 0 0 0 1 0 1 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [4, 6]
+Top: action_list: [4, 6]
+Return: action_list: [4, 6]
+-----------------------
+S: [0 0 0 0 1 0 0 0 0]  with action:  7  in  [4]
+Sa: [0 0 0 0 1 0 0 1 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [4, 7]
+Top: action_list: [4, 7]
+Return: action_list: [4, 7]
+-----------------------
+S: [0 0 0 0 1 0 0 0 0]  with action:  8  in  [4]
+Sa: [0 0 0 0 1 0 0 0 1]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [4, 8]
+Top: action_list: [4, 8]
+Return: action_list: [4, 8]
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  5  in  []
+Sa: [0 0 0 0 0 1 0 0 0]
+[Saa]
+[2 0 0 0 0 1 0 0 0]
+win_player_pro = 0
+Qsa[[2 0 0 0 0 1 0 0 0], 1] =  0.0
+Qsa[[2 0 0 0 0 1 0 0 0], 2] =  0.0
+Qsa[[2 0 0 0 0 1 0 0 0], 3] =  0.0
+Qsa[[2 0 0 0 0 1 0 0 0], 4] =  0.0
+Qsa[[2 0 0 0 0 1 0 0 0], 6] =  0.0
+Qsa[[2 0 0 0 0 1 0 0 0], 7] =  0.0
+Qsa[[2 0 0 0 0 1 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 2 0 0 0 1 0 0 0]
+win_player_pro = 0
+Qsa[[0 2 0 0 0 1 0 0 0], 0] =  0.0
+Qsa[[0 2 0 0 0 1 0 0 0], 2] =  0.0
+Qsa[[0 2 0 0 0 1 0 0 0], 3] =  0.0
+Qsa[[0 2 0 0 0 1 0 0 0], 4] =  0.0
+Qsa[[0 2 0 0 0 1 0 0 0], 6] =  0.0
+Qsa[[0 2 0 0 0 1 0 0 0], 7] =  0.0
+Qsa[[0 2 0 0 0 1 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 2 0 0 1 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 2 0 0 1 0 0 0], 0] =  0.0
+Qsa[[0 0 2 0 0 1 0 0 0], 1] =  0.0
+Qsa[[0 0 2 0 0 1 0 0 0], 3] =  0.0
+Qsa[[0 0 2 0 0 1 0 0 0], 4] =  0.0
+Qsa[[0 0 2 0 0 1 0 0 0], 6] =  0.0
+Qsa[[0 0 2 0 0 1 0 0 0], 7] =  0.0
+Qsa[[0 0 2 0 0 1 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 2 0 1 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 2 0 1 0 0 0], 0] =  0.0
+Qsa[[0 0 0 2 0 1 0 0 0], 1] =  0.0
+Qsa[[0 0 0 2 0 1 0 0 0], 2] =  0.0
+Qsa[[0 0 0 2 0 1 0 0 0], 4] =  0.0
+Qsa[[0 0 0 2 0 1 0 0 0], 6] =  0.0
+Qsa[[0 0 0 2 0 1 0 0 0], 7] =  0.0
+Qsa[[0 0 0 2 0 1 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 2 1 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 2 1 0 0 0], 0] =  0.0
+Qsa[[0 0 0 0 2 1 0 0 0], 1] =  0.0
+Qsa[[0 0 0 0 2 1 0 0 0], 2] =  0.0
+Qsa[[0 0 0 0 2 1 0 0 0], 3] =  0.0
+Qsa[[0 0 0 0 2 1 0 0 0], 6] =  0.0
+Qsa[[0 0 0 0 2 1 0 0 0], 7] =  0.0
+Qsa[[0 0 0 0 2 1 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 1 2 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 1 2 0 0], 0] =  0.0
+Qsa[[0 0 0 0 0 1 2 0 0], 1] =  0.0
+Qsa[[0 0 0 0 0 1 2 0 0], 2] =  0.0
+Qsa[[0 0 0 0 0 1 2 0 0], 3] =  0.0
+Qsa[[0 0 0 0 0 1 2 0 0], 4] =  0.0
+Qsa[[0 0 0 0 0 1 2 0 0], 7] =  0.0
+Qsa[[0 0 0 0 0 1 2 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 1 0 2 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 1 0 2 0], 0] =  0.0
+Qsa[[0 0 0 0 0 1 0 2 0], 1] =  0.0
+Qsa[[0 0 0 0 0 1 0 2 0], 2] =  0.0
+Qsa[[0 0 0 0 0 1 0 2 0], 3] =  0.0
+Qsa[[0 0 0 0 0 1 0 2 0], 4] =  0.0
+Qsa[[0 0 0 0 0 1 0 2 0], 6] =  0.0
+Qsa[[0 0 0 0 0 1 0 2 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 1 0 0 2]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 1 0 0 2], 0] =  0.0
+Qsa[[0 0 0 0 0 1 0 0 2], 1] =  0.0
+Qsa[[0 0 0 0 0 1 0 0 2], 2] =  0.0
+Qsa[[0 0 0 0 0 1 0 0 2], 3] =  0.0
+Qsa[[0 0 0 0 0 1 0 0 2], 4] =  0.0
+Qsa[[0 0 0 0 0 1 0 0 2], 6] =  0.0
+Qsa[[0 0 0 0 0 1 0 0 2], 7] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [5]
+Top: action_list: [5]
+-----------------------
+S: [0 0 0 0 0 1 0 0 0]  with action:  0  in  [5]
+Sa: [1 0 0 0 0 1 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [5, 0]
+Top: action_list: [5, 0]
+Return: action_list: [5, 0]
+-----------------------
+S: [0 0 0 0 0 1 0 0 0]  with action:  1  in  [5]
+Sa: [0 1 0 0 0 1 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [5, 1]
+Top: action_list: [5, 1]
+Return: action_list: [5, 1]
+-----------------------
+S: [0 0 0 0 0 1 0 0 0]  with action:  2  in  [5]
+Sa: [0 0 1 0 0 1 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [5, 2]
+Top: action_list: [5, 2]
+Return: action_list: [5, 2]
+-----------------------
+S: [0 0 0 0 0 1 0 0 0]  with action:  3  in  [5]
+Sa: [0 0 0 1 0 1 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [5, 3]
+Top: action_list: [5, 3]
+Return: action_list: [5, 3]
+-----------------------
+S: [0 0 0 0 0 1 0 0 0]  with action:  4  in  [5]
+Sa: [0 0 0 0 1 1 0 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [5, 4]
+Top: action_list: [5, 4]
+Return: action_list: [5, 4]
+-----------------------
+S: [0 0 0 0 0 1 0 0 0]  with action:  6  in  [5]
+Sa: [0 0 0 0 0 1 1 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [5, 6]
+Top: action_list: [5, 6]
+Return: action_list: [5, 6]
+-----------------------
+S: [0 0 0 0 0 1 0 0 0]  with action:  7  in  [5]
+Sa: [0 0 0 0 0 1 0 1 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [5, 7]
+Top: action_list: [5, 7]
+Return: action_list: [5, 7]
+-----------------------
+S: [0 0 0 0 0 1 0 0 0]  with action:  8  in  [5]
+Sa: [0 0 0 0 0 1 0 0 1]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [5, 8]
+Top: action_list: [5, 8]
+Return: action_list: [5, 8]
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  6  in  []
+Sa: [0 0 0 0 0 0 1 0 0]
+[Saa]
+[2 0 0 0 0 0 1 0 0]
+win_player_pro = 0
+Qsa[[2 0 0 0 0 0 1 0 0], 1] =  0.0
+Qsa[[2 0 0 0 0 0 1 0 0], 2] =  0.0
+Qsa[[2 0 0 0 0 0 1 0 0], 3] =  0.0
+Qsa[[2 0 0 0 0 0 1 0 0], 4] =  0.0
+Qsa[[2 0 0 0 0 0 1 0 0], 5] =  0.0
+Qsa[[2 0 0 0 0 0 1 0 0], 7] =  0.0
+Qsa[[2 0 0 0 0 0 1 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 2 0 0 0 0 1 0 0]
+win_player_pro = 0
+Qsa[[0 2 0 0 0 0 1 0 0], 0] =  0.0
+Qsa[[0 2 0 0 0 0 1 0 0], 2] =  0.0
+Qsa[[0 2 0 0 0 0 1 0 0], 3] =  0.0
+Qsa[[0 2 0 0 0 0 1 0 0], 4] =  0.0
+Qsa[[0 2 0 0 0 0 1 0 0], 5] =  0.0
+Qsa[[0 2 0 0 0 0 1 0 0], 7] =  0.0
+Qsa[[0 2 0 0 0 0 1 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 2 0 0 0 1 0 0]
+win_player_pro = 0
+Qsa[[0 0 2 0 0 0 1 0 0], 0] =  0.0
+Qsa[[0 0 2 0 0 0 1 0 0], 1] =  0.0
+Qsa[[0 0 2 0 0 0 1 0 0], 3] =  0.0
+Qsa[[0 0 2 0 0 0 1 0 0], 4] =  0.0
+Qsa[[0 0 2 0 0 0 1 0 0], 5] =  0.0
+Qsa[[0 0 2 0 0 0 1 0 0], 7] =  0.0
+Qsa[[0 0 2 0 0 0 1 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 2 0 0 1 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 2 0 0 1 0 0], 0] =  0.0
+Qsa[[0 0 0 2 0 0 1 0 0], 1] =  0.0
+Qsa[[0 0 0 2 0 0 1 0 0], 2] =  0.0
+Qsa[[0 0 0 2 0 0 1 0 0], 4] =  0.0
+Qsa[[0 0 0 2 0 0 1 0 0], 5] =  0.0
+Qsa[[0 0 0 2 0 0 1 0 0], 7] =  0.0
+Qsa[[0 0 0 2 0 0 1 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 2 0 1 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 2 0 1 0 0], 0] =  0.0
+Qsa[[0 0 0 0 2 0 1 0 0], 1] =  0.0
+Qsa[[0 0 0 0 2 0 1 0 0], 2] =  0.0
+Qsa[[0 0 0 0 2 0 1 0 0], 3] =  0.0
+Qsa[[0 0 0 0 2 0 1 0 0], 5] =  0.0
+Qsa[[0 0 0 0 2 0 1 0 0], 7] =  0.0
+Qsa[[0 0 0 0 2 0 1 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 2 1 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 2 1 0 0], 0] =  0.0
+Qsa[[0 0 0 0 0 2 1 0 0], 1] =  0.0
+Qsa[[0 0 0 0 0 2 1 0 0], 2] =  0.0
+Qsa[[0 0 0 0 0 2 1 0 0], 3] =  0.0
+Qsa[[0 0 0 0 0 2 1 0 0], 4] =  0.0
+Qsa[[0 0 0 0 0 2 1 0 0], 7] =  0.0
+Qsa[[0 0 0 0 0 2 1 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 0 1 2 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 0 1 2 0], 0] =  0.0
+Qsa[[0 0 0 0 0 0 1 2 0], 1] =  0.0
+Qsa[[0 0 0 0 0 0 1 2 0], 2] =  0.0
+Qsa[[0 0 0 0 0 0 1 2 0], 3] =  0.0
+Qsa[[0 0 0 0 0 0 1 2 0], 4] =  0.0
+Qsa[[0 0 0 0 0 0 1 2 0], 5] =  0.0
+Qsa[[0 0 0 0 0 0 1 2 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 0 1 0 2]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 0 1 0 2], 0] =  0.0
+Qsa[[0 0 0 0 0 0 1 0 2], 1] =  0.0
+Qsa[[0 0 0 0 0 0 1 0 2], 2] =  0.0
+Qsa[[0 0 0 0 0 0 1 0 2], 3] =  0.0
+Qsa[[0 0 0 0 0 0 1 0 2], 4] =  0.0
+Qsa[[0 0 0 0 0 0 1 0 2], 5] =  0.0
+Qsa[[0 0 0 0 0 0 1 0 2], 7] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [6]
+Top: action_list: [6]
+-----------------------
+S: [0 0 0 0 0 0 1 0 0]  with action:  0  in  [6]
+Sa: [1 0 0 0 0 0 1 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [6, 0]
+Top: action_list: [6, 0]
+Return: action_list: [6, 0]
+-----------------------
+S: [0 0 0 0 0 0 1 0 0]  with action:  1  in  [6]
+Sa: [0 1 0 0 0 0 1 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [6, 1]
+Top: action_list: [6, 1]
+Return: action_list: [6, 1]
+-----------------------
+S: [0 0 0 0 0 0 1 0 0]  with action:  2  in  [6]
+Sa: [0 0 1 0 0 0 1 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [6, 2]
+Top: action_list: [6, 2]
+Return: action_list: [6, 2]
+-----------------------
+S: [0 0 0 0 0 0 1 0 0]  with action:  3  in  [6]
+Sa: [0 0 0 1 0 0 1 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [6, 3]
+Top: action_list: [6, 3]
+Return: action_list: [6, 3]
+-----------------------
+S: [0 0 0 0 0 0 1 0 0]  with action:  4  in  [6]
+Sa: [0 0 0 0 1 0 1 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [6, 4]
+Top: action_list: [6, 4]
+Return: action_list: [6, 4]
+-----------------------
+S: [0 0 0 0 0 0 1 0 0]  with action:  5  in  [6]
+Sa: [0 0 0 0 0 1 1 0 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [6, 5]
+Top: action_list: [6, 5]
+Return: action_list: [6, 5]
+-----------------------
+S: [0 0 0 0 0 0 1 0 0]  with action:  7  in  [6]
+Sa: [0 0 0 0 0 0 1 1 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [6, 7]
+Top: action_list: [6, 7]
+Return: action_list: [6, 7]
+-----------------------
+S: [0 0 0 0 0 0 1 0 0]  with action:  8  in  [6]
+Sa: [0 0 0 0 0 0 1 0 1]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [6, 8]
+Top: action_list: [6, 8]
+Return: action_list: [6, 8]
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  7  in  []
+Sa: [0 0 0 0 0 0 0 1 0]
+[Saa]
+[2 0 0 0 0 0 0 1 0]
+win_player_pro = 0
+Qsa[[2 0 0 0 0 0 0 1 0], 1] =  0.0
+Qsa[[2 0 0 0 0 0 0 1 0], 2] =  0.0
+Qsa[[2 0 0 0 0 0 0 1 0], 3] =  0.0
+Qsa[[2 0 0 0 0 0 0 1 0], 4] =  0.0
+Qsa[[2 0 0 0 0 0 0 1 0], 5] =  0.0
+Qsa[[2 0 0 0 0 0 0 1 0], 6] =  0.0
+Qsa[[2 0 0 0 0 0 0 1 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 2 0 0 0 0 0 1 0]
+win_player_pro = 0
+Qsa[[0 2 0 0 0 0 0 1 0], 0] =  0.0
+Qsa[[0 2 0 0 0 0 0 1 0], 2] =  0.0
+Qsa[[0 2 0 0 0 0 0 1 0], 3] =  0.0
+Qsa[[0 2 0 0 0 0 0 1 0], 4] =  0.0
+Qsa[[0 2 0 0 0 0 0 1 0], 5] =  0.0
+Qsa[[0 2 0 0 0 0 0 1 0], 6] =  0.0
+Qsa[[0 2 0 0 0 0 0 1 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 2 0 0 0 0 1 0]
+win_player_pro = 0
+Qsa[[0 0 2 0 0 0 0 1 0], 0] =  0.0
+Qsa[[0 0 2 0 0 0 0 1 0], 1] =  0.0
+Qsa[[0 0 2 0 0 0 0 1 0], 3] =  0.0
+Qsa[[0 0 2 0 0 0 0 1 0], 4] =  0.0
+Qsa[[0 0 2 0 0 0 0 1 0], 5] =  0.0
+Qsa[[0 0 2 0 0 0 0 1 0], 6] =  0.0
+Qsa[[0 0 2 0 0 0 0 1 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 2 0 0 0 1 0]
+win_player_pro = 0
+Qsa[[0 0 0 2 0 0 0 1 0], 0] =  0.0
+Qsa[[0 0 0 2 0 0 0 1 0], 1] =  0.0
+Qsa[[0 0 0 2 0 0 0 1 0], 2] =  0.0
+Qsa[[0 0 0 2 0 0 0 1 0], 4] =  0.0
+Qsa[[0 0 0 2 0 0 0 1 0], 5] =  0.0
+Qsa[[0 0 0 2 0 0 0 1 0], 6] =  0.0
+Qsa[[0 0 0 2 0 0 0 1 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 2 0 0 1 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 2 0 0 1 0], 0] =  0.0
+Qsa[[0 0 0 0 2 0 0 1 0], 1] =  0.0
+Qsa[[0 0 0 0 2 0 0 1 0], 2] =  0.0
+Qsa[[0 0 0 0 2 0 0 1 0], 3] =  0.0
+Qsa[[0 0 0 0 2 0 0 1 0], 5] =  0.0
+Qsa[[0 0 0 0 2 0 0 1 0], 6] =  0.0
+Qsa[[0 0 0 0 2 0 0 1 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 2 0 1 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 2 0 1 0], 0] =  0.0
+Qsa[[0 0 0 0 0 2 0 1 0], 1] =  0.0
+Qsa[[0 0 0 0 0 2 0 1 0], 2] =  0.0
+Qsa[[0 0 0 0 0 2 0 1 0], 3] =  0.0
+Qsa[[0 0 0 0 0 2 0 1 0], 4] =  0.0
+Qsa[[0 0 0 0 0 2 0 1 0], 6] =  0.0
+Qsa[[0 0 0 0 0 2 0 1 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 0 2 1 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 0 2 1 0], 0] =  0.0
+Qsa[[0 0 0 0 0 0 2 1 0], 1] =  0.0
+Qsa[[0 0 0 0 0 0 2 1 0], 2] =  0.0
+Qsa[[0 0 0 0 0 0 2 1 0], 3] =  0.0
+Qsa[[0 0 0 0 0 0 2 1 0], 4] =  0.0
+Qsa[[0 0 0 0 0 0 2 1 0], 5] =  0.0
+Qsa[[0 0 0 0 0 0 2 1 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 0 0 1 2]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 0 0 1 2], 0] =  0.0
+Qsa[[0 0 0 0 0 0 0 1 2], 1] =  0.0
+Qsa[[0 0 0 0 0 0 0 1 2], 2] =  0.0
+Qsa[[0 0 0 0 0 0 0 1 2], 3] =  0.0
+Qsa[[0 0 0 0 0 0 0 1 2], 4] =  0.0
+Qsa[[0 0 0 0 0 0 0 1 2], 5] =  0.0
+Qsa[[0 0 0 0 0 0 0 1 2], 6] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [7]
+Top: action_list: [7]
+-----------------------
+S: [0 0 0 0 0 0 0 1 0]  with action:  0  in  [7]
+Sa: [1 0 0 0 0 0 0 1 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [7, 0]
+Top: action_list: [7, 0]
+Return: action_list: [7, 0]
+-----------------------
+S: [0 0 0 0 0 0 0 1 0]  with action:  1  in  [7]
+Sa: [0 1 0 0 0 0 0 1 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [7, 1]
+Top: action_list: [7, 1]
+Return: action_list: [7, 1]
+-----------------------
+S: [0 0 0 0 0 0 0 1 0]  with action:  2  in  [7]
+Sa: [0 0 1 0 0 0 0 1 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [7, 2]
+Top: action_list: [7, 2]
+Return: action_list: [7, 2]
+-----------------------
+S: [0 0 0 0 0 0 0 1 0]  with action:  3  in  [7]
+Sa: [0 0 0 1 0 0 0 1 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [7, 3]
+Top: action_list: [7, 3]
+Return: action_list: [7, 3]
+-----------------------
+S: [0 0 0 0 0 0 0 1 0]  with action:  4  in  [7]
+Sa: [0 0 0 0 1 0 0 1 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [7, 4]
+Top: action_list: [7, 4]
+Return: action_list: [7, 4]
+-----------------------
+S: [0 0 0 0 0 0 0 1 0]  with action:  5  in  [7]
+Sa: [0 0 0 0 0 1 0 1 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [7, 5]
+Top: action_list: [7, 5]
+Return: action_list: [7, 5]
+-----------------------
+S: [0 0 0 0 0 0 0 1 0]  with action:  6  in  [7]
+Sa: [0 0 0 0 0 0 1 1 0]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [7, 6]
+Top: action_list: [7, 6]
+Return: action_list: [7, 6]
+-----------------------
+S: [0 0 0 0 0 0 0 1 0]  with action:  8  in  [7]
+Sa: [0 0 0 0 0 0 0 1 1]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [7, 8]
+Top: action_list: [7, 8]
+Return: action_list: [7, 8]
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  8  in  []
+Sa: [0 0 0 0 0 0 0 0 1]
+[Saa]
+[2 0 0 0 0 0 0 0 1]
+win_player_pro = 0
+Qsa[[2 0 0 0 0 0 0 0 1], 1] =  0.0
+Qsa[[2 0 0 0 0 0 0 0 1], 2] =  0.0
+Qsa[[2 0 0 0 0 0 0 0 1], 3] =  0.0
+Qsa[[2 0 0 0 0 0 0 0 1], 4] =  0.0
+Qsa[[2 0 0 0 0 0 0 0 1], 5] =  0.0
+Qsa[[2 0 0 0 0 0 0 0 1], 6] =  0.0
+Qsa[[2 0 0 0 0 0 0 0 1], 7] =  0.0
+D_E_V_Saa = 0.0
+[0 2 0 0 0 0 0 0 1]
+win_player_pro = 0
+Qsa[[0 2 0 0 0 0 0 0 1], 0] =  0.0
+Qsa[[0 2 0 0 0 0 0 0 1], 2] =  0.0
+Qsa[[0 2 0 0 0 0 0 0 1], 3] =  0.0
+Qsa[[0 2 0 0 0 0 0 0 1], 4] =  0.0
+Qsa[[0 2 0 0 0 0 0 0 1], 5] =  0.0
+Qsa[[0 2 0 0 0 0 0 0 1], 6] =  0.0
+Qsa[[0 2 0 0 0 0 0 0 1], 7] =  0.0
+D_E_V_Saa = 0.0
+[0 0 2 0 0 0 0 0 1]
+win_player_pro = 0
+Qsa[[0 0 2 0 0 0 0 0 1], 0] =  0.0
+Qsa[[0 0 2 0 0 0 0 0 1], 1] =  0.0
+Qsa[[0 0 2 0 0 0 0 0 1], 3] =  0.0
+Qsa[[0 0 2 0 0 0 0 0 1], 4] =  0.0
+Qsa[[0 0 2 0 0 0 0 0 1], 5] =  0.0
+Qsa[[0 0 2 0 0 0 0 0 1], 6] =  0.0
+Qsa[[0 0 2 0 0 0 0 0 1], 7] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 2 0 0 0 0 1]
+win_player_pro = 0
+Qsa[[0 0 0 2 0 0 0 0 1], 0] =  0.0
+Qsa[[0 0 0 2 0 0 0 0 1], 1] =  0.0
+Qsa[[0 0 0 2 0 0 0 0 1], 2] =  0.0
+Qsa[[0 0 0 2 0 0 0 0 1], 4] =  0.0
+Qsa[[0 0 0 2 0 0 0 0 1], 5] =  0.0
+Qsa[[0 0 0 2 0 0 0 0 1], 6] =  0.0
+Qsa[[0 0 0 2 0 0 0 0 1], 7] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 2 0 0 0 1]
+win_player_pro = 0
+Qsa[[0 0 0 0 2 0 0 0 1], 0] =  0.0
+Qsa[[0 0 0 0 2 0 0 0 1], 1] =  0.0
+Qsa[[0 0 0 0 2 0 0 0 1], 2] =  0.0
+Qsa[[0 0 0 0 2 0 0 0 1], 3] =  0.0
+Qsa[[0 0 0 0 2 0 0 0 1], 5] =  0.0
+Qsa[[0 0 0 0 2 0 0 0 1], 6] =  0.0
+Qsa[[0 0 0 0 2 0 0 0 1], 7] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 2 0 0 1]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 2 0 0 1], 0] =  0.0
+Qsa[[0 0 0 0 0 2 0 0 1], 1] =  0.0
+Qsa[[0 0 0 0 0 2 0 0 1], 2] =  0.0
+Qsa[[0 0 0 0 0 2 0 0 1], 3] =  0.0
+Qsa[[0 0 0 0 0 2 0 0 1], 4] =  0.0
+Qsa[[0 0 0 0 0 2 0 0 1], 6] =  0.0
+Qsa[[0 0 0 0 0 2 0 0 1], 7] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 0 2 0 1]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 0 2 0 1], 0] =  0.0
+Qsa[[0 0 0 0 0 0 2 0 1], 1] =  0.0
+Qsa[[0 0 0 0 0 0 2 0 1], 2] =  0.0
+Qsa[[0 0 0 0 0 0 2 0 1], 3] =  0.0
+Qsa[[0 0 0 0 0 0 2 0 1], 4] =  0.0
+Qsa[[0 0 0 0 0 0 2 0 1], 5] =  0.0
+Qsa[[0 0 0 0 0 0 2 0 1], 7] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 0 0 2 1]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 0 0 2 1], 0] =  0.0
+Qsa[[0 0 0 0 0 0 0 2 1], 1] =  0.0
+Qsa[[0 0 0 0 0 0 0 2 1], 2] =  0.0
+Qsa[[0 0 0 0 0 0 0 2 1], 3] =  0.0
+Qsa[[0 0 0 0 0 0 0 2 1], 4] =  0.0
+Qsa[[0 0 0 0 0 0 0 2 1], 5] =  0.0
+Qsa[[0 0 0 0 0 0 0 2 1], 6] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [8]
+Top: action_list: [8]
+-----------------------
+S: [0 0 0 0 0 0 0 0 1]  with action:  0  in  [8]
+Sa: [1 0 0 0 0 0 0 0 1]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [8, 0]
+Top: action_list: [8, 0]
+Return: action_list: [8, 0]
+-----------------------
+S: [0 0 0 0 0 0 0 0 1]  with action:  1  in  [8]
+Sa: [0 1 0 0 0 0 0 0 1]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [8, 1]
+Top: action_list: [8, 1]
+Return: action_list: [8, 1]
+-----------------------
+S: [0 0 0 0 0 0 0 0 1]  with action:  2  in  [8]
+Sa: [0 0 1 0 0 0 0 0 1]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [8, 2]
+Top: action_list: [8, 2]
+Return: action_list: [8, 2]
+-----------------------
+S: [0 0 0 0 0 0 0 0 1]  with action:  3  in  [8]
+Sa: [0 0 0 1 0 0 0 0 1]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [8, 3]
+Top: action_list: [8, 3]
+Return: action_list: [8, 3]
+-----------------------
+S: [0 0 0 0 0 0 0 0 1]  with action:  4  in  [8]
+Sa: [0 0 0 0 1 0 0 0 1]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [8, 4]
+Top: action_list: [8, 4]
+Return: action_list: [8, 4]
+-----------------------
+S: [0 0 0 0 0 0 0 0 1]  with action:  5  in  [8]
+Sa: [0 0 0 0 0 1 0 0 1]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [8, 5]
+Top: action_list: [8, 5]
+Return: action_list: [8, 5]
+-----------------------
+S: [0 0 0 0 0 0 0 0 1]  with action:  6  in  [8]
+Sa: [0 0 0 0 0 0 1 0 1]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [8, 6]
+Top: action_list: [8, 6]
+Return: action_list: [8, 6]
+-----------------------
+S: [0 0 0 0 0 0 0 0 1]  with action:  7  in  [8]
+Sa: [0 0 0 0 0 0 0 1 1]
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [8, 7]
+Top: action_list: [8, 7]
+Return: action_list: [8, 7]
+
+# 2020-3-21, 7:53pm
+Top: action_list: []
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  0  in  []
+Sa: [1 0 0 0 0 0 0 0 0]
+[Saa]
+[1 2 0 0 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[1 2 0 0 0 0 0 0 0], 2] =  0.0
+Qsa[[1 2 0 0 0 0 0 0 0], 3] =  0.0
+Qsa[[1 2 0 0 0 0 0 0 0], 4] =  0.0
+Qsa[[1 2 0 0 0 0 0 0 0], 5] =  0.0
+Qsa[[1 2 0 0 0 0 0 0 0], 6] =  0.0
+Qsa[[1 2 0 0 0 0 0 0 0], 7] =  0.0
+Qsa[[1 2 0 0 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[1 0 2 0 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[1 0 2 0 0 0 0 0 0], 1] =  0.0
+Qsa[[1 0 2 0 0 0 0 0 0], 3] =  0.0
+Qsa[[1 0 2 0 0 0 0 0 0], 4] =  0.0
+Qsa[[1 0 2 0 0 0 0 0 0], 5] =  0.0
+Qsa[[1 0 2 0 0 0 0 0 0], 6] =  0.0
+Qsa[[1 0 2 0 0 0 0 0 0], 7] =  0.0
+Qsa[[1 0 2 0 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[1 0 0 2 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[1 0 0 2 0 0 0 0 0], 1] =  0.0
+Qsa[[1 0 0 2 0 0 0 0 0], 2] =  0.0
+Qsa[[1 0 0 2 0 0 0 0 0], 4] =  0.0
+Qsa[[1 0 0 2 0 0 0 0 0], 5] =  0.0
+Qsa[[1 0 0 2 0 0 0 0 0], 6] =  0.0
+Qsa[[1 0 0 2 0 0 0 0 0], 7] =  0.0
+Qsa[[1 0 0 2 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[1 0 0 0 2 0 0 0 0]
+win_player_pro = 0
+Qsa[[1 0 0 0 2 0 0 0 0], 1] =  0.0
+Qsa[[1 0 0 0 2 0 0 0 0], 2] =  0.0
+Qsa[[1 0 0 0 2 0 0 0 0], 3] =  0.0
+Qsa[[1 0 0 0 2 0 0 0 0], 5] =  0.0
+Qsa[[1 0 0 0 2 0 0 0 0], 6] =  0.0
+Qsa[[1 0 0 0 2 0 0 0 0], 7] =  0.0
+Qsa[[1 0 0 0 2 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[1 0 0 0 0 2 0 0 0]
+win_player_pro = 0
+Qsa[[1 0 0 0 0 2 0 0 0], 1] =  0.0
+Qsa[[1 0 0 0 0 2 0 0 0], 2] =  0.0
+Qsa[[1 0 0 0 0 2 0 0 0], 3] =  0.0
+Qsa[[1 0 0 0 0 2 0 0 0], 4] =  0.0
+Qsa[[1 0 0 0 0 2 0 0 0], 6] =  0.0
+Qsa[[1 0 0 0 0 2 0 0 0], 7] =  0.0
+Qsa[[1 0 0 0 0 2 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[1 0 0 0 0 0 2 0 0]
+win_player_pro = 0
+Qsa[[1 0 0 0 0 0 2 0 0], 1] =  0.0
+Qsa[[1 0 0 0 0 0 2 0 0], 2] =  0.0
+Qsa[[1 0 0 0 0 0 2 0 0], 3] =  0.0
+Qsa[[1 0 0 0 0 0 2 0 0], 4] =  0.0
+Qsa[[1 0 0 0 0 0 2 0 0], 5] =  0.0
+Qsa[[1 0 0 0 0 0 2 0 0], 7] =  0.0
+Qsa[[1 0 0 0 0 0 2 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[1 0 0 0 0 0 0 2 0]
+win_player_pro = 0
+Qsa[[1 0 0 0 0 0 0 2 0], 1] =  0.0
+Qsa[[1 0 0 0 0 0 0 2 0], 2] =  0.0
+Qsa[[1 0 0 0 0 0 0 2 0], 3] =  0.0
+Qsa[[1 0 0 0 0 0 0 2 0], 4] =  0.0
+Qsa[[1 0 0 0 0 0 0 2 0], 5] =  0.0
+Qsa[[1 0 0 0 0 0 0 2 0], 6] =  0.0
+Qsa[[1 0 0 0 0 0 0 2 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[1 0 0 0 0 0 0 0 2]
+win_player_pro = 0
+Qsa[[1 0 0 0 0 0 0 0 2], 1] =  0.0
+Qsa[[1 0 0 0 0 0 0 0 2], 2] =  0.0
+Qsa[[1 0 0 0 0 0 0 0 2], 3] =  0.0
+Qsa[[1 0 0 0 0 0 0 0 2], 4] =  0.0
+Qsa[[1 0 0 0 0 0 0 0 2], 5] =  0.0
+Qsa[[1 0 0 0 0 0 0 0 2], 6] =  0.0
+Qsa[[1 0 0 0 0 0 0 0 2], 7] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [0]
+Top: action_list: [0]
+Return: action_list: [0]
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  1  in  []
+Sa: [0 1 0 0 0 0 0 0 0]
+[Saa]
+[2 1 0 0 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[2 1 0 0 0 0 0 0 0], 2] =  0.0
+Qsa[[2 1 0 0 0 0 0 0 0], 3] =  0.0
+Qsa[[2 1 0 0 0 0 0 0 0], 4] =  0.0
+Qsa[[2 1 0 0 0 0 0 0 0], 5] =  0.0
+Qsa[[2 1 0 0 0 0 0 0 0], 6] =  0.0
+Qsa[[2 1 0 0 0 0 0 0 0], 7] =  0.0
+Qsa[[2 1 0 0 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 1 2 0 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 1 2 0 0 0 0 0 0], 0] =  0.0
+Qsa[[0 1 2 0 0 0 0 0 0], 3] =  0.0
+Qsa[[0 1 2 0 0 0 0 0 0], 4] =  0.0
+Qsa[[0 1 2 0 0 0 0 0 0], 5] =  0.0
+Qsa[[0 1 2 0 0 0 0 0 0], 6] =  0.0
+Qsa[[0 1 2 0 0 0 0 0 0], 7] =  0.0
+Qsa[[0 1 2 0 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 1 0 2 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 1 0 2 0 0 0 0 0], 0] =  0.0
+Qsa[[0 1 0 2 0 0 0 0 0], 2] =  0.0
+Qsa[[0 1 0 2 0 0 0 0 0], 4] =  0.0
+Qsa[[0 1 0 2 0 0 0 0 0], 5] =  0.0
+Qsa[[0 1 0 2 0 0 0 0 0], 6] =  0.0
+Qsa[[0 1 0 2 0 0 0 0 0], 7] =  0.0
+Qsa[[0 1 0 2 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 1 0 0 2 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 1 0 0 2 0 0 0 0], 0] =  0.0
+Qsa[[0 1 0 0 2 0 0 0 0], 2] =  0.0
+Qsa[[0 1 0 0 2 0 0 0 0], 3] =  0.0
+Qsa[[0 1 0 0 2 0 0 0 0], 5] =  0.0
+Qsa[[0 1 0 0 2 0 0 0 0], 6] =  0.0
+Qsa[[0 1 0 0 2 0 0 0 0], 7] =  0.0
+Qsa[[0 1 0 0 2 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 1 0 0 0 2 0 0 0]
+win_player_pro = 0
+Qsa[[0 1 0 0 0 2 0 0 0], 0] =  0.0
+Qsa[[0 1 0 0 0 2 0 0 0], 2] =  0.0
+Qsa[[0 1 0 0 0 2 0 0 0], 3] =  0.0
+Qsa[[0 1 0 0 0 2 0 0 0], 4] =  0.0
+Qsa[[0 1 0 0 0 2 0 0 0], 6] =  0.0
+Qsa[[0 1 0 0 0 2 0 0 0], 7] =  0.0
+Qsa[[0 1 0 0 0 2 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 1 0 0 0 0 2 0 0]
+win_player_pro = 0
+Qsa[[0 1 0 0 0 0 2 0 0], 0] =  0.0
+Qsa[[0 1 0 0 0 0 2 0 0], 2] =  0.0
+Qsa[[0 1 0 0 0 0 2 0 0], 3] =  0.0
+Qsa[[0 1 0 0 0 0 2 0 0], 4] =  0.0
+Qsa[[0 1 0 0 0 0 2 0 0], 5] =  0.0
+Qsa[[0 1 0 0 0 0 2 0 0], 7] =  0.0
+Qsa[[0 1 0 0 0 0 2 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 1 0 0 0 0 0 2 0]
+win_player_pro = 0
+Qsa[[0 1 0 0 0 0 0 2 0], 0] =  0.0
+Qsa[[0 1 0 0 0 0 0 2 0], 2] =  0.0
+Qsa[[0 1 0 0 0 0 0 2 0], 3] =  0.0
+Qsa[[0 1 0 0 0 0 0 2 0], 4] =  0.0
+Qsa[[0 1 0 0 0 0 0 2 0], 5] =  0.0
+Qsa[[0 1 0 0 0 0 0 2 0], 6] =  0.0
+Qsa[[0 1 0 0 0 0 0 2 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 1 0 0 0 0 0 0 2]
+win_player_pro = 0
+Qsa[[0 1 0 0 0 0 0 0 2], 0] =  0.0
+Qsa[[0 1 0 0 0 0 0 0 2], 2] =  0.0
+Qsa[[0 1 0 0 0 0 0 0 2], 3] =  0.0
+Qsa[[0 1 0 0 0 0 0 0 2], 4] =  0.0
+Qsa[[0 1 0 0 0 0 0 0 2], 5] =  0.0
+Qsa[[0 1 0 0 0 0 0 0 2], 6] =  0.0
+Qsa[[0 1 0 0 0 0 0 0 2], 7] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [1]
+Top: action_list: [1]
+Return: action_list: [1]
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  2  in  []
+Sa: [0 0 1 0 0 0 0 0 0]
+[Saa]
+[2 0 1 0 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[2 0 1 0 0 0 0 0 0], 1] =  0.0
+Qsa[[2 0 1 0 0 0 0 0 0], 3] =  0.0
+Qsa[[2 0 1 0 0 0 0 0 0], 4] =  0.0
+Qsa[[2 0 1 0 0 0 0 0 0], 5] =  0.0
+Qsa[[2 0 1 0 0 0 0 0 0], 6] =  0.0
+Qsa[[2 0 1 0 0 0 0 0 0], 7] =  0.0
+Qsa[[2 0 1 0 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 2 1 0 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 2 1 0 0 0 0 0 0], 0] =  0.0
+Qsa[[0 2 1 0 0 0 0 0 0], 3] =  0.0
+Qsa[[0 2 1 0 0 0 0 0 0], 4] =  0.0
+Qsa[[0 2 1 0 0 0 0 0 0], 5] =  0.0
+Qsa[[0 2 1 0 0 0 0 0 0], 6] =  0.0
+Qsa[[0 2 1 0 0 0 0 0 0], 7] =  0.0
+Qsa[[0 2 1 0 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 1 2 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 1 2 0 0 0 0 0], 0] =  0.0
+Qsa[[0 0 1 2 0 0 0 0 0], 1] =  0.0
+Qsa[[0 0 1 2 0 0 0 0 0], 4] =  0.0
+Qsa[[0 0 1 2 0 0 0 0 0], 5] =  0.0
+Qsa[[0 0 1 2 0 0 0 0 0], 6] =  0.0
+Qsa[[0 0 1 2 0 0 0 0 0], 7] =  0.0
+Qsa[[0 0 1 2 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 1 0 2 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 1 0 2 0 0 0 0], 0] =  0.0
+Qsa[[0 0 1 0 2 0 0 0 0], 1] =  0.0
+Qsa[[0 0 1 0 2 0 0 0 0], 3] =  0.0
+Qsa[[0 0 1 0 2 0 0 0 0], 5] =  0.0
+Qsa[[0 0 1 0 2 0 0 0 0], 6] =  0.0
+Qsa[[0 0 1 0 2 0 0 0 0], 7] =  0.0
+Qsa[[0 0 1 0 2 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 1 0 0 2 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 1 0 0 2 0 0 0], 0] =  0.0
+Qsa[[0 0 1 0 0 2 0 0 0], 1] =  0.0
+Qsa[[0 0 1 0 0 2 0 0 0], 3] =  0.0
+Qsa[[0 0 1 0 0 2 0 0 0], 4] =  0.0
+Qsa[[0 0 1 0 0 2 0 0 0], 6] =  0.0
+Qsa[[0 0 1 0 0 2 0 0 0], 7] =  0.0
+Qsa[[0 0 1 0 0 2 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 1 0 0 0 2 0 0]
+win_player_pro = 0
+Qsa[[0 0 1 0 0 0 2 0 0], 0] =  0.0
+Qsa[[0 0 1 0 0 0 2 0 0], 1] =  0.0
+Qsa[[0 0 1 0 0 0 2 0 0], 3] =  0.0
+Qsa[[0 0 1 0 0 0 2 0 0], 4] =  0.0
+Qsa[[0 0 1 0 0 0 2 0 0], 5] =  0.0
+Qsa[[0 0 1 0 0 0 2 0 0], 7] =  0.0
+Qsa[[0 0 1 0 0 0 2 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 1 0 0 0 0 2 0]
+win_player_pro = 0
+Qsa[[0 0 1 0 0 0 0 2 0], 0] =  0.0
+Qsa[[0 0 1 0 0 0 0 2 0], 1] =  0.0
+Qsa[[0 0 1 0 0 0 0 2 0], 3] =  0.0
+Qsa[[0 0 1 0 0 0 0 2 0], 4] =  0.0
+Qsa[[0 0 1 0 0 0 0 2 0], 5] =  0.0
+Qsa[[0 0 1 0 0 0 0 2 0], 6] =  0.0
+Qsa[[0 0 1 0 0 0 0 2 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 1 0 0 0 0 0 2]
+win_player_pro = 0
+Qsa[[0 0 1 0 0 0 0 0 2], 0] =  0.0
+Qsa[[0 0 1 0 0 0 0 0 2], 1] =  0.0
+Qsa[[0 0 1 0 0 0 0 0 2], 3] =  0.0
+Qsa[[0 0 1 0 0 0 0 0 2], 4] =  0.0
+Qsa[[0 0 1 0 0 0 0 0 2], 5] =  0.0
+Qsa[[0 0 1 0 0 0 0 0 2], 6] =  0.0
+Qsa[[0 0 1 0 0 0 0 0 2], 7] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [2]
+Top: action_list: [2]
+Return: action_list: [2]
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  3  in  []
+Sa: [0 0 0 1 0 0 0 0 0]
+[Saa]
+[2 0 0 1 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[2 0 0 1 0 0 0 0 0], 1] =  0.0
+Qsa[[2 0 0 1 0 0 0 0 0], 2] =  0.0
+Qsa[[2 0 0 1 0 0 0 0 0], 4] =  0.0
+Qsa[[2 0 0 1 0 0 0 0 0], 5] =  0.0
+Qsa[[2 0 0 1 0 0 0 0 0], 6] =  0.0
+Qsa[[2 0 0 1 0 0 0 0 0], 7] =  0.0
+Qsa[[2 0 0 1 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 2 0 1 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 2 0 1 0 0 0 0 0], 0] =  0.0
+Qsa[[0 2 0 1 0 0 0 0 0], 2] =  0.0
+Qsa[[0 2 0 1 0 0 0 0 0], 4] =  0.0
+Qsa[[0 2 0 1 0 0 0 0 0], 5] =  0.0
+Qsa[[0 2 0 1 0 0 0 0 0], 6] =  0.0
+Qsa[[0 2 0 1 0 0 0 0 0], 7] =  0.0
+Qsa[[0 2 0 1 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 2 1 0 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 2 1 0 0 0 0 0], 0] =  0.0
+Qsa[[0 0 2 1 0 0 0 0 0], 1] =  0.0
+Qsa[[0 0 2 1 0 0 0 0 0], 4] =  0.0
+Qsa[[0 0 2 1 0 0 0 0 0], 5] =  0.0
+Qsa[[0 0 2 1 0 0 0 0 0], 6] =  0.0
+Qsa[[0 0 2 1 0 0 0 0 0], 7] =  0.0
+Qsa[[0 0 2 1 0 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 1 2 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 1 2 0 0 0 0], 0] =  0.0
+Qsa[[0 0 0 1 2 0 0 0 0], 1] =  0.0
+Qsa[[0 0 0 1 2 0 0 0 0], 2] =  0.0
+Qsa[[0 0 0 1 2 0 0 0 0], 5] =  0.0
+Qsa[[0 0 0 1 2 0 0 0 0], 6] =  0.0
+Qsa[[0 0 0 1 2 0 0 0 0], 7] =  0.0
+Qsa[[0 0 0 1 2 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 1 0 2 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 1 0 2 0 0 0], 0] =  0.0
+Qsa[[0 0 0 1 0 2 0 0 0], 1] =  0.0
+Qsa[[0 0 0 1 0 2 0 0 0], 2] =  0.0
+Qsa[[0 0 0 1 0 2 0 0 0], 4] =  0.0
+Qsa[[0 0 0 1 0 2 0 0 0], 6] =  0.0
+Qsa[[0 0 0 1 0 2 0 0 0], 7] =  0.0
+Qsa[[0 0 0 1 0 2 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 1 0 0 2 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 1 0 0 2 0 0], 0] =  0.0
+Qsa[[0 0 0 1 0 0 2 0 0], 1] =  0.0
+Qsa[[0 0 0 1 0 0 2 0 0], 2] =  0.0
+Qsa[[0 0 0 1 0 0 2 0 0], 4] =  0.0
+Qsa[[0 0 0 1 0 0 2 0 0], 5] =  0.0
+Qsa[[0 0 0 1 0 0 2 0 0], 7] =  0.0
+Qsa[[0 0 0 1 0 0 2 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 1 0 0 0 2 0]
+win_player_pro = 0
+Qsa[[0 0 0 1 0 0 0 2 0], 0] =  0.0
+Qsa[[0 0 0 1 0 0 0 2 0], 1] =  0.0
+Qsa[[0 0 0 1 0 0 0 2 0], 2] =  0.0
+Qsa[[0 0 0 1 0 0 0 2 0], 4] =  0.0
+Qsa[[0 0 0 1 0 0 0 2 0], 5] =  0.0
+Qsa[[0 0 0 1 0 0 0 2 0], 6] =  0.0
+Qsa[[0 0 0 1 0 0 0 2 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 1 0 0 0 0 2]
+win_player_pro = 0
+Qsa[[0 0 0 1 0 0 0 0 2], 0] =  0.0
+Qsa[[0 0 0 1 0 0 0 0 2], 1] =  0.0
+Qsa[[0 0 0 1 0 0 0 0 2], 2] =  0.0
+Qsa[[0 0 0 1 0 0 0 0 2], 4] =  0.0
+Qsa[[0 0 0 1 0 0 0 0 2], 5] =  0.0
+Qsa[[0 0 0 1 0 0 0 0 2], 6] =  0.0
+Qsa[[0 0 0 1 0 0 0 0 2], 7] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [3]
+Top: action_list: [3]
+Return: action_list: [3]
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  4  in  []
+Sa: [0 0 0 0 1 0 0 0 0]
+[Saa]
+[2 0 0 0 1 0 0 0 0]
+win_player_pro = 0
+Qsa[[2 0 0 0 1 0 0 0 0], 1] =  0.0
+Qsa[[2 0 0 0 1 0 0 0 0], 2] =  0.0
+Qsa[[2 0 0 0 1 0 0 0 0], 3] =  0.0
+Qsa[[2 0 0 0 1 0 0 0 0], 5] =  0.0
+Qsa[[2 0 0 0 1 0 0 0 0], 6] =  0.0
+Qsa[[2 0 0 0 1 0 0 0 0], 7] =  0.0
+Qsa[[2 0 0 0 1 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 2 0 0 1 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 2 0 0 1 0 0 0 0], 0] =  0.0
+Qsa[[0 2 0 0 1 0 0 0 0], 2] =  0.0
+Qsa[[0 2 0 0 1 0 0 0 0], 3] =  0.0
+Qsa[[0 2 0 0 1 0 0 0 0], 5] =  0.0
+Qsa[[0 2 0 0 1 0 0 0 0], 6] =  0.0
+Qsa[[0 2 0 0 1 0 0 0 0], 7] =  0.0
+Qsa[[0 2 0 0 1 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 2 0 1 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 2 0 1 0 0 0 0], 0] =  0.0
+Qsa[[0 0 2 0 1 0 0 0 0], 1] =  0.0
+Qsa[[0 0 2 0 1 0 0 0 0], 3] =  0.0
+Qsa[[0 0 2 0 1 0 0 0 0], 5] =  0.0
+Qsa[[0 0 2 0 1 0 0 0 0], 6] =  0.0
+Qsa[[0 0 2 0 1 0 0 0 0], 7] =  0.0
+Qsa[[0 0 2 0 1 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 2 1 0 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 2 1 0 0 0 0], 0] =  0.0
+Qsa[[0 0 0 2 1 0 0 0 0], 1] =  0.0
+Qsa[[0 0 0 2 1 0 0 0 0], 2] =  0.0
+Qsa[[0 0 0 2 1 0 0 0 0], 5] =  0.0
+Qsa[[0 0 0 2 1 0 0 0 0], 6] =  0.0
+Qsa[[0 0 0 2 1 0 0 0 0], 7] =  0.0
+Qsa[[0 0 0 2 1 0 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 1 2 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 1 2 0 0 0], 0] =  0.0
+Qsa[[0 0 0 0 1 2 0 0 0], 1] =  0.0
+Qsa[[0 0 0 0 1 2 0 0 0], 2] =  0.0
+Qsa[[0 0 0 0 1 2 0 0 0], 3] =  0.0
+Qsa[[0 0 0 0 1 2 0 0 0], 6] =  0.0
+Qsa[[0 0 0 0 1 2 0 0 0], 7] =  0.0
+Qsa[[0 0 0 0 1 2 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 1 0 2 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 1 0 2 0 0], 0] =  0.0
+Qsa[[0 0 0 0 1 0 2 0 0], 1] =  0.0
+Qsa[[0 0 0 0 1 0 2 0 0], 2] =  0.0
+Qsa[[0 0 0 0 1 0 2 0 0], 3] =  0.0
+Qsa[[0 0 0 0 1 0 2 0 0], 5] =  0.0
+Qsa[[0 0 0 0 1 0 2 0 0], 7] =  0.0
+Qsa[[0 0 0 0 1 0 2 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 1 0 0 2 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 1 0 0 2 0], 0] =  0.0
+Qsa[[0 0 0 0 1 0 0 2 0], 1] =  0.0
+Qsa[[0 0 0 0 1 0 0 2 0], 2] =  0.0
+Qsa[[0 0 0 0 1 0 0 2 0], 3] =  0.0
+Qsa[[0 0 0 0 1 0 0 2 0], 5] =  0.0
+Qsa[[0 0 0 0 1 0 0 2 0], 6] =  0.0
+Qsa[[0 0 0 0 1 0 0 2 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 1 0 0 0 2]
+win_player_pro = 0
+Qsa[[0 0 0 0 1 0 0 0 2], 0] =  0.0
+Qsa[[0 0 0 0 1 0 0 0 2], 1] =  0.0
+Qsa[[0 0 0 0 1 0 0 0 2], 2] =  0.0
+Qsa[[0 0 0 0 1 0 0 0 2], 3] =  0.0
+Qsa[[0 0 0 0 1 0 0 0 2], 5] =  0.0
+Qsa[[0 0 0 0 1 0 0 0 2], 6] =  0.0
+Qsa[[0 0 0 0 1 0 0 0 2], 7] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [4]
+Top: action_list: [4]
+Return: action_list: [4]
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  5  in  []
+Sa: [0 0 0 0 0 1 0 0 0]
+[Saa]
+[2 0 0 0 0 1 0 0 0]
+win_player_pro = 0
+Qsa[[2 0 0 0 0 1 0 0 0], 1] =  0.0
+Qsa[[2 0 0 0 0 1 0 0 0], 2] =  0.0
+Qsa[[2 0 0 0 0 1 0 0 0], 3] =  0.0
+Qsa[[2 0 0 0 0 1 0 0 0], 4] =  0.0
+Qsa[[2 0 0 0 0 1 0 0 0], 6] =  0.0
+Qsa[[2 0 0 0 0 1 0 0 0], 7] =  0.0
+Qsa[[2 0 0 0 0 1 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 2 0 0 0 1 0 0 0]
+win_player_pro = 0
+Qsa[[0 2 0 0 0 1 0 0 0], 0] =  0.0
+Qsa[[0 2 0 0 0 1 0 0 0], 2] =  0.0
+Qsa[[0 2 0 0 0 1 0 0 0], 3] =  0.0
+Qsa[[0 2 0 0 0 1 0 0 0], 4] =  0.0
+Qsa[[0 2 0 0 0 1 0 0 0], 6] =  0.0
+Qsa[[0 2 0 0 0 1 0 0 0], 7] =  0.0
+Qsa[[0 2 0 0 0 1 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 2 0 0 1 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 2 0 0 1 0 0 0], 0] =  0.0
+Qsa[[0 0 2 0 0 1 0 0 0], 1] =  0.0
+Qsa[[0 0 2 0 0 1 0 0 0], 3] =  0.0
+Qsa[[0 0 2 0 0 1 0 0 0], 4] =  0.0
+Qsa[[0 0 2 0 0 1 0 0 0], 6] =  0.0
+Qsa[[0 0 2 0 0 1 0 0 0], 7] =  0.0
+Qsa[[0 0 2 0 0 1 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 2 0 1 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 2 0 1 0 0 0], 0] =  0.0
+Qsa[[0 0 0 2 0 1 0 0 0], 1] =  0.0
+Qsa[[0 0 0 2 0 1 0 0 0], 2] =  0.0
+Qsa[[0 0 0 2 0 1 0 0 0], 4] =  0.0
+Qsa[[0 0 0 2 0 1 0 0 0], 6] =  0.0
+Qsa[[0 0 0 2 0 1 0 0 0], 7] =  0.0
+Qsa[[0 0 0 2 0 1 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 2 1 0 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 2 1 0 0 0], 0] =  0.0
+Qsa[[0 0 0 0 2 1 0 0 0], 1] =  0.0
+Qsa[[0 0 0 0 2 1 0 0 0], 2] =  0.0
+Qsa[[0 0 0 0 2 1 0 0 0], 3] =  0.0
+Qsa[[0 0 0 0 2 1 0 0 0], 6] =  0.0
+Qsa[[0 0 0 0 2 1 0 0 0], 7] =  0.0
+Qsa[[0 0 0 0 2 1 0 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 1 2 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 1 2 0 0], 0] =  0.0
+Qsa[[0 0 0 0 0 1 2 0 0], 1] =  0.0
+Qsa[[0 0 0 0 0 1 2 0 0], 2] =  0.0
+Qsa[[0 0 0 0 0 1 2 0 0], 3] =  0.0
+Qsa[[0 0 0 0 0 1 2 0 0], 4] =  0.0
+Qsa[[0 0 0 0 0 1 2 0 0], 7] =  0.0
+Qsa[[0 0 0 0 0 1 2 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 1 0 2 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 1 0 2 0], 0] =  0.0
+Qsa[[0 0 0 0 0 1 0 2 0], 1] =  0.0
+Qsa[[0 0 0 0 0 1 0 2 0], 2] =  0.0
+Qsa[[0 0 0 0 0 1 0 2 0], 3] =  0.0
+Qsa[[0 0 0 0 0 1 0 2 0], 4] =  0.0
+Qsa[[0 0 0 0 0 1 0 2 0], 6] =  0.0
+Qsa[[0 0 0 0 0 1 0 2 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 1 0 0 2]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 1 0 0 2], 0] =  0.0
+Qsa[[0 0 0 0 0 1 0 0 2], 1] =  0.0
+Qsa[[0 0 0 0 0 1 0 0 2], 2] =  0.0
+Qsa[[0 0 0 0 0 1 0 0 2], 3] =  0.0
+Qsa[[0 0 0 0 0 1 0 0 2], 4] =  0.0
+Qsa[[0 0 0 0 0 1 0 0 2], 6] =  0.0
+Qsa[[0 0 0 0 0 1 0 0 2], 7] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [5]
+Top: action_list: [5]
+Return: action_list: [5]
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  6  in  []
+Sa: [0 0 0 0 0 0 1 0 0]
+[Saa]
+[2 0 0 0 0 0 1 0 0]
+win_player_pro = 0
+Qsa[[2 0 0 0 0 0 1 0 0], 1] =  0.0
+Qsa[[2 0 0 0 0 0 1 0 0], 2] =  0.0
+Qsa[[2 0 0 0 0 0 1 0 0], 3] =  0.0
+Qsa[[2 0 0 0 0 0 1 0 0], 4] =  0.0
+Qsa[[2 0 0 0 0 0 1 0 0], 5] =  0.0
+Qsa[[2 0 0 0 0 0 1 0 0], 7] =  0.0
+Qsa[[2 0 0 0 0 0 1 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 2 0 0 0 0 1 0 0]
+win_player_pro = 0
+Qsa[[0 2 0 0 0 0 1 0 0], 0] =  0.0
+Qsa[[0 2 0 0 0 0 1 0 0], 2] =  0.0
+Qsa[[0 2 0 0 0 0 1 0 0], 3] =  0.0
+Qsa[[0 2 0 0 0 0 1 0 0], 4] =  0.0
+Qsa[[0 2 0 0 0 0 1 0 0], 5] =  0.0
+Qsa[[0 2 0 0 0 0 1 0 0], 7] =  0.0
+Qsa[[0 2 0 0 0 0 1 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 2 0 0 0 1 0 0]
+win_player_pro = 0
+Qsa[[0 0 2 0 0 0 1 0 0], 0] =  0.0
+Qsa[[0 0 2 0 0 0 1 0 0], 1] =  0.0
+Qsa[[0 0 2 0 0 0 1 0 0], 3] =  0.0
+Qsa[[0 0 2 0 0 0 1 0 0], 4] =  0.0
+Qsa[[0 0 2 0 0 0 1 0 0], 5] =  0.0
+Qsa[[0 0 2 0 0 0 1 0 0], 7] =  0.0
+Qsa[[0 0 2 0 0 0 1 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 2 0 0 1 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 2 0 0 1 0 0], 0] =  0.0
+Qsa[[0 0 0 2 0 0 1 0 0], 1] =  0.0
+Qsa[[0 0 0 2 0 0 1 0 0], 2] =  0.0
+Qsa[[0 0 0 2 0 0 1 0 0], 4] =  0.0
+Qsa[[0 0 0 2 0 0 1 0 0], 5] =  0.0
+Qsa[[0 0 0 2 0 0 1 0 0], 7] =  0.0
+Qsa[[0 0 0 2 0 0 1 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 2 0 1 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 2 0 1 0 0], 0] =  0.0
+Qsa[[0 0 0 0 2 0 1 0 0], 1] =  0.0
+Qsa[[0 0 0 0 2 0 1 0 0], 2] =  0.0
+Qsa[[0 0 0 0 2 0 1 0 0], 3] =  0.0
+Qsa[[0 0 0 0 2 0 1 0 0], 5] =  0.0
+Qsa[[0 0 0 0 2 0 1 0 0], 7] =  0.0
+Qsa[[0 0 0 0 2 0 1 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 2 1 0 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 2 1 0 0], 0] =  0.0
+Qsa[[0 0 0 0 0 2 1 0 0], 1] =  0.0
+Qsa[[0 0 0 0 0 2 1 0 0], 2] =  0.0
+Qsa[[0 0 0 0 0 2 1 0 0], 3] =  0.0
+Qsa[[0 0 0 0 0 2 1 0 0], 4] =  0.0
+Qsa[[0 0 0 0 0 2 1 0 0], 7] =  0.0
+Qsa[[0 0 0 0 0 2 1 0 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 0 1 2 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 0 1 2 0], 0] =  0.0
+Qsa[[0 0 0 0 0 0 1 2 0], 1] =  0.0
+Qsa[[0 0 0 0 0 0 1 2 0], 2] =  0.0
+Qsa[[0 0 0 0 0 0 1 2 0], 3] =  0.0
+Qsa[[0 0 0 0 0 0 1 2 0], 4] =  0.0
+Qsa[[0 0 0 0 0 0 1 2 0], 5] =  0.0
+Qsa[[0 0 0 0 0 0 1 2 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 0 1 0 2]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 0 1 0 2], 0] =  0.0
+Qsa[[0 0 0 0 0 0 1 0 2], 1] =  0.0
+Qsa[[0 0 0 0 0 0 1 0 2], 2] =  0.0
+Qsa[[0 0 0 0 0 0 1 0 2], 3] =  0.0
+Qsa[[0 0 0 0 0 0 1 0 2], 4] =  0.0
+Qsa[[0 0 0 0 0 0 1 0 2], 5] =  0.0
+Qsa[[0 0 0 0 0 0 1 0 2], 7] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [6]
+Top: action_list: [6]
+Return: action_list: [6]
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  7  in  []
+Sa: [0 0 0 0 0 0 0 1 0]
+[Saa]
+[2 0 0 0 0 0 0 1 0]
+win_player_pro = 0
+Qsa[[2 0 0 0 0 0 0 1 0], 1] =  0.0
+Qsa[[2 0 0 0 0 0 0 1 0], 2] =  0.0
+Qsa[[2 0 0 0 0 0 0 1 0], 3] =  0.0
+Qsa[[2 0 0 0 0 0 0 1 0], 4] =  0.0
+Qsa[[2 0 0 0 0 0 0 1 0], 5] =  0.0
+Qsa[[2 0 0 0 0 0 0 1 0], 6] =  0.0
+Qsa[[2 0 0 0 0 0 0 1 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 2 0 0 0 0 0 1 0]
+win_player_pro = 0
+Qsa[[0 2 0 0 0 0 0 1 0], 0] =  0.0
+Qsa[[0 2 0 0 0 0 0 1 0], 2] =  0.0
+Qsa[[0 2 0 0 0 0 0 1 0], 3] =  0.0
+Qsa[[0 2 0 0 0 0 0 1 0], 4] =  0.0
+Qsa[[0 2 0 0 0 0 0 1 0], 5] =  0.0
+Qsa[[0 2 0 0 0 0 0 1 0], 6] =  0.0
+Qsa[[0 2 0 0 0 0 0 1 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 2 0 0 0 0 1 0]
+win_player_pro = 0
+Qsa[[0 0 2 0 0 0 0 1 0], 0] =  0.0
+Qsa[[0 0 2 0 0 0 0 1 0], 1] =  0.0
+Qsa[[0 0 2 0 0 0 0 1 0], 3] =  0.0
+Qsa[[0 0 2 0 0 0 0 1 0], 4] =  0.0
+Qsa[[0 0 2 0 0 0 0 1 0], 5] =  0.0
+Qsa[[0 0 2 0 0 0 0 1 0], 6] =  0.0
+Qsa[[0 0 2 0 0 0 0 1 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 2 0 0 0 1 0]
+win_player_pro = 0
+Qsa[[0 0 0 2 0 0 0 1 0], 0] =  0.0
+Qsa[[0 0 0 2 0 0 0 1 0], 1] =  0.0
+Qsa[[0 0 0 2 0 0 0 1 0], 2] =  0.0
+Qsa[[0 0 0 2 0 0 0 1 0], 4] =  0.0
+Qsa[[0 0 0 2 0 0 0 1 0], 5] =  0.0
+Qsa[[0 0 0 2 0 0 0 1 0], 6] =  0.0
+Qsa[[0 0 0 2 0 0 0 1 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 2 0 0 1 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 2 0 0 1 0], 0] =  0.0
+Qsa[[0 0 0 0 2 0 0 1 0], 1] =  0.0
+Qsa[[0 0 0 0 2 0 0 1 0], 2] =  0.0
+Qsa[[0 0 0 0 2 0 0 1 0], 3] =  0.0
+Qsa[[0 0 0 0 2 0 0 1 0], 5] =  0.0
+Qsa[[0 0 0 0 2 0 0 1 0], 6] =  0.0
+Qsa[[0 0 0 0 2 0 0 1 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 2 0 1 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 2 0 1 0], 0] =  0.0
+Qsa[[0 0 0 0 0 2 0 1 0], 1] =  0.0
+Qsa[[0 0 0 0 0 2 0 1 0], 2] =  0.0
+Qsa[[0 0 0 0 0 2 0 1 0], 3] =  0.0
+Qsa[[0 0 0 0 0 2 0 1 0], 4] =  0.0
+Qsa[[0 0 0 0 0 2 0 1 0], 6] =  0.0
+Qsa[[0 0 0 0 0 2 0 1 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 0 2 1 0]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 0 2 1 0], 0] =  0.0
+Qsa[[0 0 0 0 0 0 2 1 0], 1] =  0.0
+Qsa[[0 0 0 0 0 0 2 1 0], 2] =  0.0
+Qsa[[0 0 0 0 0 0 2 1 0], 3] =  0.0
+Qsa[[0 0 0 0 0 0 2 1 0], 4] =  0.0
+Qsa[[0 0 0 0 0 0 2 1 0], 5] =  0.0
+Qsa[[0 0 0 0 0 0 2 1 0], 8] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 0 0 1 2]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 0 0 1 2], 0] =  0.0
+Qsa[[0 0 0 0 0 0 0 1 2], 1] =  0.0
+Qsa[[0 0 0 0 0 0 0 1 2], 2] =  0.0
+Qsa[[0 0 0 0 0 0 0 1 2], 3] =  0.0
+Qsa[[0 0 0 0 0 0 0 1 2], 4] =  0.0
+Qsa[[0 0 0 0 0 0 0 1 2], 5] =  0.0
+Qsa[[0 0 0 0 0 0 0 1 2], 6] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [7]
+Top: action_list: [7]
+Return: action_list: [7]
+-----------------------
+S: [0 0 0 0 0 0 0 0 0]  with action:  8  in  []
+Sa: [0 0 0 0 0 0 0 0 1]
+[Saa]
+[2 0 0 0 0 0 0 0 1]
+win_player_pro = 0
+Qsa[[2 0 0 0 0 0 0 0 1], 1] =  0.0
+Qsa[[2 0 0 0 0 0 0 0 1], 2] =  0.0
+Qsa[[2 0 0 0 0 0 0 0 1], 3] =  0.0
+Qsa[[2 0 0 0 0 0 0 0 1], 4] =  0.0
+Qsa[[2 0 0 0 0 0 0 0 1], 5] =  0.0
+Qsa[[2 0 0 0 0 0 0 0 1], 6] =  0.0
+Qsa[[2 0 0 0 0 0 0 0 1], 7] =  0.0
+D_E_V_Saa = 0.0
+[0 2 0 0 0 0 0 0 1]
+win_player_pro = 0
+Qsa[[0 2 0 0 0 0 0 0 1], 0] =  0.0
+Qsa[[0 2 0 0 0 0 0 0 1], 2] =  0.0
+Qsa[[0 2 0 0 0 0 0 0 1], 3] =  0.0
+Qsa[[0 2 0 0 0 0 0 0 1], 4] =  0.0
+Qsa[[0 2 0 0 0 0 0 0 1], 5] =  0.0
+Qsa[[0 2 0 0 0 0 0 0 1], 6] =  0.0
+Qsa[[0 2 0 0 0 0 0 0 1], 7] =  0.0
+D_E_V_Saa = 0.0
+[0 0 2 0 0 0 0 0 1]
+win_player_pro = 0
+Qsa[[0 0 2 0 0 0 0 0 1], 0] =  0.0
+Qsa[[0 0 2 0 0 0 0 0 1], 1] =  0.0
+Qsa[[0 0 2 0 0 0 0 0 1], 3] =  0.0
+Qsa[[0 0 2 0 0 0 0 0 1], 4] =  0.0
+Qsa[[0 0 2 0 0 0 0 0 1], 5] =  0.0
+Qsa[[0 0 2 0 0 0 0 0 1], 6] =  0.0
+Qsa[[0 0 2 0 0 0 0 0 1], 7] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 2 0 0 0 0 1]
+win_player_pro = 0
+Qsa[[0 0 0 2 0 0 0 0 1], 0] =  0.0
+Qsa[[0 0 0 2 0 0 0 0 1], 1] =  0.0
+Qsa[[0 0 0 2 0 0 0 0 1], 2] =  0.0
+Qsa[[0 0 0 2 0 0 0 0 1], 4] =  0.0
+Qsa[[0 0 0 2 0 0 0 0 1], 5] =  0.0
+Qsa[[0 0 0 2 0 0 0 0 1], 6] =  0.0
+Qsa[[0 0 0 2 0 0 0 0 1], 7] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 2 0 0 0 1]
+win_player_pro = 0
+Qsa[[0 0 0 0 2 0 0 0 1], 0] =  0.0
+Qsa[[0 0 0 0 2 0 0 0 1], 1] =  0.0
+Qsa[[0 0 0 0 2 0 0 0 1], 2] =  0.0
+Qsa[[0 0 0 0 2 0 0 0 1], 3] =  0.0
+Qsa[[0 0 0 0 2 0 0 0 1], 5] =  0.0
+Qsa[[0 0 0 0 2 0 0 0 1], 6] =  0.0
+Qsa[[0 0 0 0 2 0 0 0 1], 7] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 2 0 0 1]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 2 0 0 1], 0] =  0.0
+Qsa[[0 0 0 0 0 2 0 0 1], 1] =  0.0
+Qsa[[0 0 0 0 0 2 0 0 1], 2] =  0.0
+Qsa[[0 0 0 0 0 2 0 0 1], 3] =  0.0
+Qsa[[0 0 0 0 0 2 0 0 1], 4] =  0.0
+Qsa[[0 0 0 0 0 2 0 0 1], 6] =  0.0
+Qsa[[0 0 0 0 0 2 0 0 1], 7] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 0 2 0 1]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 0 2 0 1], 0] =  0.0
+Qsa[[0 0 0 0 0 0 2 0 1], 1] =  0.0
+Qsa[[0 0 0 0 0 0 2 0 1], 2] =  0.0
+Qsa[[0 0 0 0 0 0 2 0 1], 3] =  0.0
+Qsa[[0 0 0 0 0 0 2 0 1], 4] =  0.0
+Qsa[[0 0 0 0 0 0 2 0 1], 5] =  0.0
+Qsa[[0 0 0 0 0 0 2 0 1], 7] =  0.0
+D_E_V_Saa = 0.0
+[0 0 0 0 0 0 0 2 1]
+win_player_pro = 0
+Qsa[[0 0 0 0 0 0 0 2 1], 0] =  0.0
+Qsa[[0 0 0 0 0 0 0 2 1], 1] =  0.0
+Qsa[[0 0 0 0 0 0 0 2 1], 2] =  0.0
+Qsa[[0 0 0 0 0 0 0 2 1], 3] =  0.0
+Qsa[[0 0 0 0 0 0 0 2 1], 4] =  0.0
+Qsa[[0 0 0 0 0 0 0 2 1], 5] =  0.0
+Qsa[[0 0 0 0 0 0 0 2 1], 6] =  0.0
+D_E_V_Saa = 0.0
+[Returns]
+E_R = 0.0, E_V_Saa = 0.0
+Enter: action_list: [8]
+Top: action_list: [8]
+Return: action_list: [8]
+
