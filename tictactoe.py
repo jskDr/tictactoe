@@ -982,46 +982,6 @@ class Bellman:
                         action_list.pop()  
 
 def Bellman_exp_inplace(Qsa, S, action, action_list, ff=0.9, N_A=9, N_Symbols=3):
-    """Evaluate q(s,a) using ``S`` and ``action``.    
-
-    Returns q(s,a).
-
-    Parameters
-    ----------
-    S : numpy.ndarray, shape=(N_A,)
-        State matrix <--> state index, ``S_Idx``
-    action : int
-        action value in [0, 1, ..., N_A]
-
-    Returns
-    -------
-    q(s,a): numpy.ndarray, shape=(N_S, N_A)
-            q-value w.r.t. S and action
-
-    Notes
-    -----
-    This function calls Bellman_exp_fn.
-
-    References
-    ----------
-    .. [1] t.b.d.
-           Retrieved from https://t.b.d
-
-    Examples
-    --------
-    Exmaples will be described.
-
-    >>> import tictactoe # below will be updated. 
-    >>> x = np.array([[1., 2., 3.],
-    ...               [4., 5., 6.],
-    ...               [7., 8., 9.]])
-    >>> y = np.array([[1., 2., 3.],
-    ...               [4., 5., 6.]])
-    >>> pairwise_dists(x, y)
-    array([[ 0.        ,  5.19615242],
-           [ 5.19615242,  0.        ],
-           [10.39230485,  5.19615242]])
-    """
     P_no = 1    
     Sa = set_state(S, action, P_no)
     win_player = calc_reward_numba(MASK_L, Sa)
