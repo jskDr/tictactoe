@@ -907,7 +907,7 @@ class DoAction:
             pass
         self.player = 2 if self.player==1 else 1
 
-def get_Vs(Qsa, Saa, action_list, N_A=9, N_Symbols=3, disp_flag=False):
+def get_Vs_prt(Qsa, Saa, action_list, N_A=9, N_Symbols=3, disp_flag=False):
     Vs = 0.
     for action_pro in range(N_A):
         if action_pro not in action_list:
@@ -916,6 +916,15 @@ def get_Vs(Qsa, Saa, action_list, N_A=9, N_Symbols=3, disp_flag=False):
             if disp_flag:
                 print(f'Qsa[{Saa}, {action_pro}] = ', Qsa[Saa_Idx, action_pro])
     return Vs
+
+def get_Vs(Qsa, Saa, action_list, N_A=9, N_Symbols=3):
+    Vs = 0.
+    for action_pro in range(N_A):
+        if action_pro not in action_list:
+            Saa_Idx = calc_S_idx_numba(Saa, N_Symbols=N_Symbols)
+            Vs += Qsa[Saa_Idx, action_pro]
+    return Vs
+
 
 def Bellman_expectation(): #N_A = 9 is for tictactoe
     """
@@ -936,18 +945,19 @@ class Bellman:
         self.N_Symbols = N_Symbols
         self.ff = ff
     
-    def update(self, action_list=[], max_actions=1, disp_flag=False): 
+    def update(self, action_list=[], max_actions=8): 
         """This will update
         """
         # Bellman_exp_inplace(self.Qsa, S, action, action_list, ff=0.9, N_A=9, N_Symbols=3):
         
         # This is testing code
         # print('Top: action_list:', action_list)
-        if len(action_list) > max_actions:
+        if len(action_list) > min(max_actions, self.N_A - 1):
+            # action_list should be less than N_A - 1 since additional action will be considered to calaculate Qsa(S,a)    
+            # this is already prohibited by Bellman_exp_inplace which provides done=True if len(action_list + action) == N_A
             # print('Max action stop: action_list:', action_list)
             return 
         
-        # P_no = 1
         if len(action_list) % 2 == 1: # a stage for player 2 to play
             for action in range(self.N_A):
                 if action not in action_list:
@@ -957,8 +967,8 @@ class Bellman:
                     if not done:
                         # print('Enter: action_list:', action_list)
                         self.update(action_list, max_actions=max_actions)
-                    else:
-                        print('Player 2 wins with Sa, action_list and done', Sa, action_list, done)
+                    #else:
+                    #   print('Player 2 wins with Sa, action_list and done', Sa, action_list, done)
                     action_list.pop()  
         else: # player 1
             S = action_list_2_state(action_list)
@@ -1036,7 +1046,7 @@ def Bellman_exp_inplace(Qsa, S, action, action_list, ff=0.9, N_A=9, N_Symbols=3)
                 win_player_pro = calc_reward_numba(MASK_L, Saa)
                 action_list.append(action_pro)                
                 if win_player_pro != P_no_pro and len(action_list) != N_A:
-                    D_E_V_Saa = get_Vs(Qsa, Saa, action_list, N_A=N_A, N_Symbols=N_Symbols, disp_flag=disp_flag)
+                    D_E_V_Saa = get_Vs(Qsa, Saa, action_list, N_A=N_A, N_Symbols=N_Symbols)
                     E_V_Saa += D_E_V_Saa
                 action_list.pop()
     action_list.pop()
