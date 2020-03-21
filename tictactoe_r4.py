@@ -19,15 +19,6 @@ class color:
    UNDERLINE = '\033[4m'
    END = '\033[0m'
 
-@jit
-def calc_S_idx_numba(S:np.ndarray, N_Symbols:int=3) -> int:
-    S_idx = 0
-    unit = 1
-    for i in range(len(S)):
-        S_idx += unit*S[i]
-        unit *= N_Symbols
-    return S_idx
-
 
 def set_state_inplace(S, action, P_no): 
     """ 
@@ -38,22 +29,6 @@ def set_state_inplace(S, action, P_no):
     """
     # assert S[action] == 0, 'position should be empty to put a new stone' 
     S[action] = P_no # User numpy to insert action in the specific position
-
-
-def set_state(S, action, P_no): 
-    """ 
-    set_state(S, action, P_no)
-
-    [Inputs] 
-    S is numpy array.
-
-    [Returns]
-    Sa is S with new action.
-    """
-    # assert S[action] == 0, 'position should be empty to put a new stone' 
-    Sa = S.copy()
-    Sa[action] = P_no # User numpy to insert action in the specific position
-    return Sa
 
 
 @jit # No speed advantage compared to pure Python code
@@ -92,7 +67,7 @@ def calc_reward_tf(S):
                          [1,0,0,1,0,0,1,0,0], [0,1,0,0,1,0,0,1,0], [0,0,1,0,0,1,0,0,1],
                          [1,0,0,0,1,0,0,0,1], [0,0,1,0,1,0,1,0,0]], dtype=tf.int32)
 
-    S = tf.constant(S, dtype=tf.int32)a
+    S = tf.constant(S, dtype=tf.int32)
     S = tf.reshape(S, shape=(1,-1))
     S_cp = tf.matmul(tf.ones((mask_l.shape[0],1),dtype=tf.int32), S)
     mask_S = mask_l * S_cp 
@@ -941,22 +916,6 @@ def play_by_scenario_fn(action_list, N_A=9):
     return 0
 
 
-def action_list_2_state(action_list, N_A=9):
-    """
-    win_player = play_by_scenario_fn(stack)
-    - Equivalent to self.play_by_scenario()
-
-    Return win_player, which could be 1 or 2 depending on win player index
-    """
-    P_no = 1
-    S = np.zeros((N_A,),dtype='int16')
-    for action in action_list:
-        # action, done = get_action_by_scenario()
-        set_state_inplace(S, action, P_no)
-        P_no = 1 if P_no == 2 else 2
-    return S    
-
-
 def play_by_scenario_fn_numba(action_list, N_A:int=9) -> int:
     """
     win_player = play_by_scenario_fn_numba(stack)
@@ -1025,18 +984,9 @@ class DoAction:
             # no reward, yet
             pass
         else:
-            # reward = ((-1 if win_player==2 else win_player) + 1)/2 # else -> lose
-            pass
+            reward = ((-1 if win_player==2 else win_player) + 1)/2 # else -> lose
         self.player = 2 if self.player==1 else 1
 
-def get_Vs(Qsa, Saa, action_list, N_A=9, N_Symbols=3):
-    Vs = 0.
-    for action_pro in range(N_A):
-        if action_pro not in action_list:
-            Saa_Idx = calc_S_idx_numba(Saa, N_Symbols=N_Symbols)
-            Vs += Qsa[Saa_Idx, action_pro]
-            print(f'Qsa[{Saa}, {action_pro}] = ', Qsa[Saa_Idx, action_pro])
-    return Vs
 
 def Bellman_expectation(): #N_A = 9 is for tictactoe
     """
@@ -1048,108 +998,6 @@ def Bellman_expectation(): #N_A = 9 is for tictactoe
     do_action = DoAction(N_A=N_A)
     Bellman_expectation_fn(do_action, N_A=N_A)
 
-
-def Bellman_exp_inplace(Qsa, S, action, action_list, ff=0.9, N_A=9, N_Symbols=3):
-    """Evaluate q(s,a) using ``S`` and ``action``.    
-
-    Returns q(s,a).
-
-    Parameters
-    ----------
-    S : numpy.ndarray, shape=(N_A,)
-        State matrix <--> state index, ``S_Idx``
-    action : int
-        action value in [0, 1, ..., N_A]
-
-    Returns
-    -------
-    q(s,a): numpy.ndarray, shape=(N_S, N_A)
-            q-value w.r.t. S and action
-
-    Notes
-    -----
-    This function calls Bellman_exp_fn.
-
-    References
-    ----------
-    .. [1] t.b.d.
-           Retrieved from https://t.b.d
-
-    Examples
-    --------
-    Exmaples will be described.
-
-    >>> import tictactoe # below will be updated. 
-    >>> x = np.array([[1., 2., 3.],
-    ...               [4., 5., 6.],
-    ...               [7., 8., 9.]])
-    >>> y = np.array([[1., 2., 3.],
-    ...               [4., 5., 6.]])
-    >>> pairwise_dists(x, y)
-    array([[ 0.        ,  5.19615242],
-           [ 5.19615242,  0.        ],
-           [10.39230485,  5.19615242]])
-    """
-    P_no = 1
-    Sa = set_state(S, action, P_no)
-    print('S:', S)
-    print('Sa:', Sa)
-    print('[Saa]')
-    win_player = calc_reward_numba(MASK_L, Sa)
-    action_list.append(action)
-    # Notice that R could not be changed by player 2. It is only determined by player 1.
-    E_V_Saa = 0. # Saa -> S(t+1) for Player1 
-    if win_player == P_no: # P_no <- 1
-        E_R = 1.0
-    elif len(action_list) == N_A: # no more following action.
-        E_R = 0.5
-    else:
-        E_R = 0.
-        # get v(S_t+1)
-        # Here, pro means proponent
-        P_no_pro = 2 if P_no == 1 else 1
-        for action_pro in range(N_A): 
-            if action_pro not in action_list:
-                Saa = set_state(Sa, action_pro, P_no_pro)
-                print(Saa)
-                win_player = calc_reward_numba(MASK_L, Saa)
-                print(f'win_player = {win_player}')
-                action_list.append(action_pro)                
-                if win_player != P_no_pro and len(action_list) != N_A:
-                    D_E_V_Saa = get_Vs(Qsa, Saa, action_list, N_A=N_A, N_Symbols=N_Symbols)
-                    E_V_Saa += D_E_V_Saa
-                    print(f'D_E_V_Saa = {D_E_V_Saa}')
-                action_list.pop()
-    action_list.pop()
-    S_Idx = calc_S_idx_numba(S, N_Symbols=N_Symbols)
-    Qsa[S_Idx, action] = E_R + ff*E_V_Saa
-    print('[Returns]')
-    print(f'E_R = {E_R}, E_V_Saa = {E_V_Saa}')
-
-def calc_Bellman_exp(action=4, action_list=[]):
-    ff = 0.9
-    N_A = 9
-    N_Symbols = 3 # 0, 1, 2 (represent empty, player1 stone, player2 stone, respectively)
-    N_S = N_Symbols ** N_A
-    # S = np.zeros((N_A,), dtype=int)
-    Qsa = np.zeros((N_S, N_A))
-
-    # action_list = []
-    # action = 4    
-    S = action_list_2_state(action_list)
-    Bellman_exp_inplace(Qsa, S, action, action_list, ff=ff, N_A=N_A, N_Symbols=N_Symbols)
-    
-    S_idx = calc_S_idx_numba(S, N_Symbols=N_Symbols)
-    print('[Result]')
-    print(f'Qsa({S}, {action}) -> ', Qsa[S_idx, action])
-
-
-def calc_total_states(N_A=9):
-    N = 1
-    for i in range(N_A):
-        # print(range(N_A-i,N_A+1), np.prod(range(N_A-i,N_A+1)))
-        N += np.prod(range(N_A-i,N_A+1))
-    return N
 
 def input_default(str, defalut_value, dtype=int):
     answer = input(str)
