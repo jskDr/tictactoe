@@ -979,7 +979,12 @@ class Bellman:
                         action_list.append(action)
                         # print('Enter: action_list:', action_list)
                         self.update(action_list, max_actions=max_actions)
-                        action_list.pop()  
+                        action_list.pop()
+
+    def check(self, action_list=[0,3,1,4], action=2):
+        S = action_list_2_state(action_list)
+        S_Idx = calc_S_idx_numba(S, N_Symbols=self.N_Symbols)
+        print(f'Qsa({S},{action})={self.Qsa[S_Idx][action]}')
 
 def Bellman_exp_inplace(Qsa, S, action, action_list, ff=0.9, N_A=9, N_Symbols=3):
     P_no = 1    
