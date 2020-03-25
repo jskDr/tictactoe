@@ -142,7 +142,7 @@ def one_of_amax(arr, disp_flag=False):
     return action
 
 
-def _buff_depart(Buff, disp_flag=False):
+def buff_depart(Buff, disp_flag=False):
     Buff_dual = [{'S':[], 'a':[], 'r':[], 'S_next':[]}, {'S':[], 'a':[], 'r':[], 'S_next':[]}]
     for i, (p, S, a, r, S_next) in enumerate(zip(Buff['P_no'], Buff['S'], Buff['a'], Buff['r'], Buff['S_next'])):
         if i > 0:
@@ -162,38 +162,6 @@ def _buff_depart(Buff, disp_flag=False):
             print('i, p, Buff_dual[p-1]')
             print(i, p, Buff_dual[p-1])                
     return Buff_dual                
-
-
-def buff_depart(Buff, disp_flag=False):
-    """
-    r: win -> 1, tie -> 0.5, lose -> 0
-    Tie score (0,5) is spreaded to both players. 
-    """
-    Buff_dual = [{'S':[], 'a':[], 'r':[], 'S_next':[]}, {'S':[], 'a':[], 'r':[], 'S_next':[]}]
-    for i, (p, S, a, r, S_next) in enumerate(zip(Buff['P_no'], Buff['S'], Buff['a'], Buff['r'], Buff['S_next'])):
-        if i > 0:
-            # final reward for a player is reward of a next player
-            prev_p = 2 if p==1 else 1
-            #Buff_dual[prev_p-1]['r'][-1] = -r # 1 for player#2 --> -1 for player#1, vice versa
-            # Ratio_lose_per_win = 10.0 --> 1 since win=1, tie=0.5 (or 0), lose=0 (or -1)
-            
-            # means lost (win by opponet), actually no need to change r since it is already 0
-            # if r == 1: # means lost (win by opponent)
-            #    Buff_dual[prev_p-1]['r'][-1] = 0 
-            if r == 0.5: #But if it is tie, both should have 0.5                
-                Buff_dual[prev_p-1]['r'][-1] = 0.5 
-            if disp_flag:
-                print('i, prev_p, Buff_dual[prev_p-1]')
-                print(i, prev_p, Buff_dual[prev_p-1])
-        Buff_dual[p-1]['S'].append(S)
-        Buff_dual[p-1]['a'].append(a)
-        Buff_dual[p-1]['r'].append(r)  
-        Buff_dual[p-1]['S_next'].append(S_next)
-        if disp_flag:
-            print('i, p, Buff_dual[p-1]')
-            print(i, p, Buff_dual[p-1])                
-    return Buff_dual                
-
 
 
 def discounted_inplace(Buff_r, ff):
@@ -320,7 +288,7 @@ class Q_System:
         for _ in action_list:
             action_prob.append(1/len(action_list))        
         action_idx = tf.squeeze(tf.random.categorical(tf.math.log([action_prob]),1)).numpy()
-        if action_idx == len(action_prob): # if all zeros in action_prob
+        if action_idx == len(action_prob): # if all zeros in actoin_prob
             action = action_list[tf.squeeze(np.random.randint(0, len(action_list), 1))]
         else:
             action = action_list[action_idx]
@@ -329,8 +297,6 @@ class Q_System:
         return action
     
     def policy(self, P_no, S, action_list):
-        """Return action regardless P_no but just specify Q[P_no]
-        """
         action_prob = []
         S_idx = self.calc_S_idx(S)
         for a in action_list:
@@ -374,8 +340,7 @@ class Q_System:
     
     # Take action_prob at the given state
     def get_action(self, P_no, S):
-        """
-        Return action, done
+        """Return action, done
         """
         action_list, no_occupied = self.find_action_list(S)
         # Since number of possible actions are reduced, 
@@ -521,7 +486,6 @@ class Q_System:
         done = False
         while done == False:
             action, done = self.get_action(P_no, S)
-
             Buff['P_no'].append(P_no)
             Buff['S'].append(S.copy())
             Buff['a'].append(action)
@@ -532,10 +496,7 @@ class Q_System:
                 print('S:', S)
             
             win_player = calc_reward_tf(S)
-            if win_player == 0:
-                reward = 0.5 if done else 0 # if tie, reward -> 0.5, otherwise 0 yet 
-            else: 
-                reward = 1
+            reward = 0 if win_player == 0 else 1
             Buff['r'].append(reward)
             P_no = 1 if P_no == 2 else 2
 
@@ -625,7 +586,7 @@ class Q_System:
             1. Buff = self.play(1)
             2. Buff = self.play(2)
         """
-        N_A = self.N_A   
+        N_A = self.N_A
         Buff = {'P_no': [], 'S':[], 'a':[], 'r':[], 'S_next': []}
 
         S = np.zeros((N_A,),dtype='int16') # #state == #action
@@ -670,32 +631,6 @@ class Q_System:
 
         return Buff    
 
-
-    def play_with_human_inference(self, player_human=1):
-        """ 
-        Buff = play_with_human(self, P_no)
-        - Playing with human
-        
-        [Inputs]  
-
-        P_no: player number, which is 1 or 2
-
-        [Returns]
-        
-        Buff = {'P_no': [], 'S':[], 'a':[], 'r':[], 'S_next': []}: gathered information during learning
-        where S, a, r, S_next are state, action, rewrd, and next state
-
-        [Examples]
-            1. Buff = self.play(1)
-            2. Buff = self.play(2)
-        """
-        epsilon_now = self.epsilon
-        self.epsilon = 0
-        Buff = self.play_with_human(player_human=player_human)    
-        self.epsilon = epsilon_now
-        return Buff    
-
-
     def updateQsa_inplace(self, Qsa_player, Buff_player, lr):    
         if self.disp_flag:            
             print('---------------------------------------')
@@ -735,7 +670,6 @@ class Q_System:
             # Can save this data for play 2 as well
             
             # Decrease epsilon with respect to epside
-            # self.epsilon = 1 - (1 + episode)/N_episodes
             self.epsilon = 1 / (1 + episode/100)
             # self.epsilon =  1 / (1 + episode)
             
@@ -778,48 +712,8 @@ class Q_System:
             # Can save this data for play 2 as well
             
             # Decrease epsilon with respect to epside
-            self.epsilon = 1 / (1 + episode/N_episodes*9) 
-            #self.epsilon = 1 / (1 + episode/N_episodes)
-            # self.epsilon = 1 / (1 + episode/100)
-            #self.epsilon =  1 / (1 + episode)
-            
-            Buff = self.play(player) # reward: any win --> 1, any tie --> 0.5, continue --> 0
-
-            self.update_Qsa_inplace(Buff, ff=ff, lr=lr)    
-            if Buff['r'][-1] == 0.5:
-                cnt[0] += 1
-            elif Buff['P_no'][-1] == player:
-                cnt[1] += 1 # first playing player
-            else:
-                cnt[2] += 1 # second playing player
-
-            cnt_trace.append(cnt.copy())
-
-            player = 2 if player == 1 else 1
-            if episode % print_cnt == 0:
-                print(episode, cnt)                
-                print('S = [0,0,0, 0,0,0, 0,0,0]')
-                print('Qsa[0][0,:]', [f'{self.Qsa[0][0,a]:.1e}' for a in range(9)])
-                print('Qsa[1][0,:]', [f'{self.Qsa[1][0,a]:.1e}' for a in range(9)])
-                print('Exproration: Epsilon=', self.epsilon)
-        return cnt_trace
-
-
-    def _r1_learning(self, N_episodes=2, ff=0.9, lr=0.01, print_cnt=10):
-        """Return: 
-            cnt_trace = [cnt, ...]: cnt vector are stacked in cnt_trace
-        """
-        cnt = [0, 0, 0] # tie, p1, p2
-        cnt_trace = [cnt.copy()]        
-        player = 1
-        for episode in range(N_episodes):
-            # print('===================================')
-            # Can save this data for play 2 as well
-            
-            # Decrease epsilon with respect to epside
-            self.epsilon = 1 / (1 + episode/N_episodes)
-            # self.epsilon = 1 / (1 + episode/100)
-            #self.epsilon =  1 / (1 + episode)
+            self.epsilon = 1 / (1 + episode/100)
+            # self.epsilon =  1 / (1 + episode)
             
             Buff = self.play(player)    
             self.update_Qsa_inplace(Buff, ff=ff, lr=lr)    
@@ -829,15 +723,12 @@ class Q_System:
 
             player = 2 if player == 1 else 1
             if episode % print_cnt == 0:
-                print(episode, cnt)                
-                print('S = [0,0,0, 0,0,0, 0,0,0]')
+                print(episode, cnt)
 
-                norm_Q0_list = [self.Qsa[0][0,a] / np.max([self.Qsa[0][0,b] for b in range(9)]) for a in range(9)]
-                norm_Q1_list = [self.Qsa[1][0,a] / np.max([self.Qsa[1][0,b] for b in range(9)]) for a in range(9)]
-                print('Qsa[0][0,:]', [f'{q:.1e}' for q in norm_Q0_list])
-                print('Qsa[1][0,:]', [f'{q:.1e}' for q in norm_Q1_list])
-                print('Exproration: Epsilon=', self.epsilon)
-        return cnt_trace        
+                print('S = [0,0,0, 0,0,0, 0,0,0]')
+                print('Qsa[0][0,:]', [f'{self.Qsa[0][0,a]:.1e}' for a in range(9)])
+                print('Qsa[1][0,:]', [f'{self.Qsa[1][0,a]:.1e}' for a in range(9)])
+        return cnt_trace
 
 
 def plot_cnt_trace(cnt_trace):
@@ -853,7 +744,7 @@ def plot_cnt_trace(cnt_trace):
     plt.xlabel('Episode')
     plt.ylabel('Count')
     plt.legend(loc=0)
-    plt.title('First and second playing agent performance in learning')
+    plt.title('Learned (P#1) vs. Random (P#2) policies during learning')
     plt.show(True)
 
 
@@ -1397,8 +1288,32 @@ def _main():
     print(cnt)
 
 
+def main():
+    Q1 = input_default('1. Loading a trained agent (0) or Learning a new agent (1)? (default=0) ', 0, int)
+    if Q1 == 0:
+        print('Loading the trained agent...')
+        Q2 = input_default('2. Do you want to start first?(0=yes,1=no,default=0) ', 0, int)
+        player_human = Q2 + 1
+        if player_human == 1:
+            print('You=1, Agent=2') 
+        else:
+            print('Agent=1, You=2') 
+        trained_Q_System = Q_System(None)
+        trained_Q_System.load()
+        trained_Q_System.play_with_human(player_human)
+        # print(len(trained_Q_System.Qsa))
+    else:
+        print('Start to learn a new agent...')
+        Q2 = input_default('2. How many episode do you want to learn?(default=10000) ', 10000, int)
+        # my_Q_System = learning_stage(N_episodes=Q2, fig_flag=True)
+        _ = learning_stage(N_episodes=Q2, fig_flag=True)
+        # print(len(my_Q_System.Qsa))
+
 # preparing a new environment for tictactoc based on gym
 # Since gym is standard, the tictactoe game environment is developed based on gym.
+import gym
+from gym import error, spaces, utils
+from gym.utils import seeding
 from random import sample
 
 class Tictactoe_Env:
@@ -1456,9 +1371,7 @@ class Tictactoe_Env:
         self.action_list.append(action)
         set_state_inplace(self.S, action, self.P_no_opponent)        
 
-    def reset(self, play_order=None): # consider play_order (now we assume play_order=1)
-        if play_order is not None:
-            self.play_order = play_order
+    def reset(self): # consider play_order (now we assume play_order=1)
         self.S = np.zeros((self.N_A,),dtype=int)
         self.action_list = []
         if self.play_order == 2:
@@ -1503,167 +1416,6 @@ def multiple_test_tictactoe_env(N:int=10, play_order:int=1, disp_flag:bool=False
         print(f'reward_a={reward_a}')
         print(f'average reward={np.average(reward_a)}')
     return np.average(reward_a)
-
-
-def _main():
-    Q1 = input_default('1. Loading a trained agent (0) or Learning a new agent (1)? (default=0) ', 0, int)
-    if Q1 == 0:
-        print('Loading the trained agent...')
-        Q2 = input_default('2. Do you want to start first?(0=yes,1=no,default=0) ', 0, int)
-        player_human = Q2 + 1
-        if player_human == 1:
-            print('You=1(X), Agent=2(O)') 
-        else:
-            print('Agent=1(X), You=2(O)') 
-        trained_Q_System = Q_System(None)
-        trained_Q_System.load()
-        trained_Q_System.play_with_human_inference(player_human)
-        # print(len(trained_Q_System.Qsa))
-    else:
-        print('Start to learn a new agent...')
-        Q2 = input_default('2. How many episode do you want to learn?(default=10000) ', 10000, int)
-        # my_Q_System = learning_stage(N_episodes=Q2, fig_flag=True)
-        _ = learning_stage(N_episodes=Q2, fig_flag=True)
-        # print(len(my_Q_System.Qsa))
-
-class Q_System_DQN(Q_System):
-    def __init__(self, N_A, N_Symbols):
-        super(Q_System_DQN, self).__init__(N_A=N_A, N_Symbols=N_Symbols)
-
-    def _learning(self, N_episodes=2, ff=0.9, lr=0.01, print_cnt=10):
-        """Return: 
-            cnt_trace = [cnt, ...]: cnt vector are stacked in cnt_trace
-        """
-        play_order = 1
-        ttt_env = Tictactoe_Env(self.N_A, play_order=play_order) #both X but start 1st and 2nd
-
-        cnt = [0, 0, 0] # tie, p1, p2
-        cnt_trace = [cnt.copy()]        
-        player = play_order
-        P_no = player
-
-        for episode in range(N_episodes):
-            S, _ = ttt_env.reset()
-            done = False            
-            Replay_buff = []
-            while not done:
-                self.epsilon = 0.1 # epsilon is a hyperparamter for exploration
-                action, _ = self.get_action(P_no, S)
-                S_new, _, reward, done = ttt_env.step(action)
-                Replay_buff.append([S, action, S_new, reward])
-                # print(episode, [S, action, S_new, reward])
-                S = S_new
-
-            if Replay_buff[-1][3] == 1.0:
-                cnt[1] += 1   
-            elif Replay_buff[-1][3] == 0.5:
-                cnt[0] += 1   
-            else:
-                cnt[2] += 1
-
-            cnt_trace.append(cnt.copy())
-
-            if episode % print_cnt == 0:
-                print(episode, cnt)                
-                print('S = [0,0,0, 0,0,0, 0,0,0]')
-                print('Qsa[0][0,:]', [f'{self.Qsa[0][0,a]:.1e}' for a in range(9)])
-                print('Qsa[1][0,:]', [f'{self.Qsa[1][0,a]:.1e}' for a in range(9)])
-                print('Exproration: Epsilon=', self.epsilon)
-        return cnt_trace
-
-    def learning(self, N_episodes=2, ff=0.9, lr=0.01, print_cnt=10):
-        """Return: 
-            cnt_trace = [cnt, ...]: cnt vector are stacked in cnt_trace
-        """
-        cnt = [0, 0, 0, 0, 0] # tie, p1, p2
-        cnt_trace = [cnt.copy()]        
-
-        P_no = 1 # player Q function, regardless of play order (first or next)
-        play_order = 1
-        ttt_env = Tictactoe_Env(self.N_A, play_order=play_order) #both X but start 1st and 2nd
-        for episode in range(N_episodes):
-            S, _ = ttt_env.reset(play_order=play_order)
-            done = False            
-            Replay_buff = []
-            while not done:
-                self.epsilon = 0.1 # epsilon is a hyperparamter for exploration
-                action, _ = self.get_action(P_no, S)
-                S_new, _, reward, done = ttt_env.step(action)
-                Replay_buff.append([S, action, S_new, reward])
-                # print(episode, [S, action, S_new, reward])
-                S = S_new
-
-            #######################################
-            # DQN start, here for learning   
-            #######################################
-
-            if Replay_buff[-1][3] == 1.0: 
-                cnt[1] += 1               # play_order = 1 
-                # cnt[2 + play_order] += 1  # P_no = 1 (first player)
-            elif Replay_buff[-1][3] == 0.5:
-                cnt[0] += 1   
-                # cnt[2 + 3 - play_order] += 1  # P_no = 2 (second player)
-            else: # play_order = 2
-                cnt[2] += 1
-
-            cnt_trace.append(cnt.copy())
-
-            if episode % print_cnt == 0:
-                print(episode, cnt)                
-                print('S = [0,0,0, 0,0,0, 0,0,0]')
-                print('Qsa[0][0,:]', [f'{self.Qsa[0][0,a]:.1e}' for a in range(9)])
-                print('Qsa[1][0,:]', [f'{self.Qsa[1][0,a]:.1e}' for a in range(9)])
-                print('Exproration: Epsilon=', self.epsilon)
-
-            play_order = 3 - play_order # 1 --> 2, 2 --> 1
-        return cnt_trace
-
-
-def learning_stage_dqn(N_episodes=100, save_flag=True, fig_flag=False):
-    ff = 0.9
-    lr = 0.01
-    N_Symbols = 3 # 0=empty, 1=plyaer1, 2=player2
-    N_A = 9 # (0,0), (0,1), ..., (2,2)
-    print_cnt = N_episodes / 10
-
-    my_Q_System = Q_System_DQN(N_A, N_Symbols)
-    cnt_trace = my_Q_System.learning(N_episodes=N_episodes, ff=ff, lr=lr, print_cnt=print_cnt)
-    print('-------------------')
-    cnt = cnt_trace[-1]
-    print(N_episodes, cnt)
-
-    if save_flag:
-        my_Q_System.save()
-
-    if fig_flag:
-        plot_cnt_trace(cnt_trace)
-
-    return my_Q_System
-
-
-def main():
-    """
-    We will use Deep Q-Networks for learning. 
-    """
-    Q1 = input_default('1. Loading a trained agent (0) or Learning a new agent (1)? (default=0) ', 0, int)
-    if Q1 == 0:
-        print('Loading the trained agent...')
-        Q2 = input_default('2. Do you want to start first?(0=yes,1=no,default=0) ', 0, int)
-        player_human = Q2 + 1
-        if player_human == 1:
-            print('You=1(X), Agent=2(O)') 
-        else:
-            print('Agent=1(X), You=2(O)') 
-        trained_Q_System = Q_System(None)
-        trained_Q_System.load()
-        trained_Q_System.play_with_human_inference(player_human)
-        # print(len(trained_Q_System.Qsa))
-    else:
-        print('Start to learn a new agent...')
-        Q2 = input_default('2. How many episode do you want to learn?(default=10000) ', 10000, int)
-        # my_Q_System = learning_stage(N_episodes=Q2, fig_flag=True)
-        _ = learning_stage_dqn(N_episodes=Q2, fig_flag=True)
-        # print(len(my_Q_System.Qsa))
 
 if __name__ == "__main__":
     main()
