@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import pickle
 import numba
 from numba import jit
-import random
 
 # TicTacToe game has nine stateus with nine actions. An user can put his ston on any postion in the borad except 
 
@@ -1423,9 +1422,6 @@ class Tictactoe_Env:
         return self.sample_action()
 
     def step(self, action):
-        """S.copy() and action_list.copy() are returned so that internal states 
-        shuould not be changed.
-        """
         done = False
         if action not in self.action_list:
             self.action_list.append(action)
@@ -1449,11 +1445,11 @@ class Tictactoe_Env:
                 else:
                     reward = 0.0
 
-        S_copy = self.S.copy()
-        action_list_copy = self.action_list.copy() 
+        S = self.S.copy()
+        action_list = self.action_list.copy() 
         if done:
             self.reset()
-        return S_copy, action_list_copy, reward, done
+        return S, action_list, reward, done
 
     def perform_player2(self):
         action = self.get_player2_action()
@@ -1467,8 +1463,7 @@ class Tictactoe_Env:
         self.action_list = []
         if self.play_order == 2:
             self.perform_player2()
-        # return current results. we use value sharing but not buff
-        return self.S.copy(), self.action_list.copy()
+        return self.S, self.action_list
 
     def render(self, mode='human'):
         print('Current state')
@@ -1576,14 +1571,13 @@ class Q_System_DQN(Q_System):
                 print('Exproration: Epsilon=', self.epsilon)
         return cnt_trace
 
-    def learning(self, N_episodes=2, ff=0.9, lr=0.01, epsilon = 0.4, print_cnt=10):
+    def learning(self, N_episodes=2, ff=0.9, lr=0.01, print_cnt=10):
         """Return: 
             cnt_trace = [cnt, ...]: cnt vector are stacked in cnt_trace
         """
         cnt = [0, 0, 0, 0, 0] # tie, p1, p2
         cnt_trace = [cnt.copy()]        
 
-        # Opponent player index
         P_no = 1 # player Q function, regardless of play order (first or next)
         play_order = 1
         ttt_env = Tictactoe_Env(self.N_A, play_order=play_order) #both X but start 1st and 2nd
@@ -1592,17 +1586,16 @@ class Q_System_DQN(Q_System):
             done = False            
             Replay_buff = []
             while not done:
-                self.epsilon = epsilon # epsilon is a hyperparamter for exploration
+                self.epsilon = 0.1 # epsilon is a hyperparamter for exploration
                 action, _ = self.get_action(P_no, S)
                 S_new, _, reward, done = ttt_env.step(action)
-                Replay_buff.append([S.copy(), action, S_new.copy(), reward])
+                Replay_buff.append([S, action, S_new, reward])
                 # print(episode, [S, action, S_new, reward])
                 S = S_new
 
             #######################################
             # DQN start, here for learning   
             #######################################
-            # print('play_order, P_no = ', play_order, P_no)
 
             if Replay_buff[-1][3] == 1.0: 
                 cnt[1] += 1               # play_order = 1 
@@ -1622,15 +1615,6 @@ class Q_System_DQN(Q_System):
                 print('Qsa[1][0,:]', [f'{self.Qsa[1][0,a]:.1e}' for a in range(9)])
                 print('Exproration: Epsilon=', self.epsilon)
 
-            random.shuffle(Replay_buff) # inplace shuffling
-            # y = np.zeros((len(Replay_buff),))
-            for j in range(len(Replay_buff)):
-                buff_each  =  Replay_buff[j]
-                S, action, S_new, reward = buff_each
-                S_new_idx = calc_S_idx_numba(S_new, self.N_Symbols)
-                y = reward + ff * np.max(self.Qsa[P_no-1][S_new_idx,:])
-                S_idx = calc_S_idx_numba(S, self.N_Symbols)
-                self.Qsa[P_no-1][S_idx, action] += lr * y
             play_order = 3 - play_order # 1 --> 2, 2 --> 1
         return cnt_trace
 
