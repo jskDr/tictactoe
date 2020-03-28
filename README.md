@@ -1,7 +1,7 @@
 # Tic-Tac-Toe Game
 A Tictactoe game developed based on RL algorithms
 
-## Main source: tictactoc.py
+## Main source: tictactoe.py
 ### Playing mode
 ### Learning mode  
 This mode has now two varitions as follows:
