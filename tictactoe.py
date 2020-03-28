@@ -858,7 +858,7 @@ def plot_cnt_trace(cnt_trace):
     plt.show(True)
 
 
-def learning_stage(N_episodes=100, save_flag=True, fig_flag=False):
+def learning_stage_mc(N_episodes=100, save_flag=True, fig_flag=False):
     ff = 0.9
     lr = 0.01
     N_Symbols = 3 # 0=empty, 1=plyaer1, 2=player2
@@ -1528,7 +1528,7 @@ def _main():
         print('Start to learn a new agent...')
         Q2 = input_default('2. How many episode do you want to learn?(default=10000) ', 10000, int)
         # my_Q_System = learning_stage(N_episodes=Q2, fig_flag=True)
-        _ = learning_stage(N_episodes=Q2, fig_flag=True)
+        _ = learning_stage_mc(N_episodes=Q2, fig_flag=True)
         # print(len(my_Q_System.Qsa))
 
 class Q_System_DQN(Q_System):
@@ -1657,7 +1657,7 @@ def learning_stage_dqn(N_episodes=100, save_flag=True, fig_flag=False):
     return my_Q_System
 
 
-def main():
+def _r1_main():
     """
     We will use Deep Q-Networks for learning. 
     """
@@ -1680,6 +1680,66 @@ def main():
         # my_Q_System = learning_stage(N_episodes=Q2, fig_flag=True)
         _ = learning_stage_dqn(N_episodes=Q2, fig_flag=True)
         # print(len(my_Q_System.Qsa))
+
+def q1_playing():
+    print('Loading the trained agent...')
+    Q2 = input_default('2. Do you want to start first?(0=yes,1=no,default=0) ', 0, int)
+    player_human = Q2 + 1
+    if player_human == 1:
+        print('You=1(X), Agent=2(O)') 
+    else:
+        print('Agent=1(X), You=2(O)') 
+    trained_Q_System = Q_System(None)
+    trained_Q_System.load()
+    trained_Q_System.play_with_human_inference(player_human)
+    # print(len(trained_Q_System.Qsa))
+
+def q1_learning():
+    """
+    1. After learning testing playing with a random playing agent and a best playing agent. 
+       In the test, our agent should not include rule playing while the best player will has it.
+       The best player is equal to out agent with the guide rule function.
+    """
+    print()
+    print('------------------------------')
+    print('Start to learn a new agent...')
+    print()
+    Q1 = input_default('How many episode do you want to learn?(default=10000) ', 10000, int)
+
+    print()
+    print('0) MC Backup with e-Greedy')
+    print('1) Q-learning')
+    Q2 = input_default('What learning method do you want to use? (0=default)', 0 , int)
+    if Q2 == 0:
+        _ = learning_stage_mc(N_episodes=Q1, fig_flag=True)
+    elif Q2 == 1:
+        _ = learning_stage_dqn(N_episodes=Q1, fig_flag=True)
+    else:
+        print('Type a different option in (0,1)')
+
+def q1_testing():
+    print('Start to test code...')
+
+def main():
+    """
+    Three types of starting questions will be given to a user.
+    """
+    print()
+    print('== Start TicTacToe Aget Framework ==')
+    print('- Developed by Sungjin Kim, 2020')
+    print()
+    print('0) Playing a game')
+    print('1) Learning a new agent')
+    print('2) Testing code')
+    Q1 = input_default('What do you want? (0=deafult)', 0, int)
+    if Q1 == 0:
+        q1_playing()
+    elif Q1 == 1:
+        q1_learning()
+    elif Q1 == 2:
+        q1_testing()
+    else:
+        print('Type a different option in (0,1,2)')
 
 if __name__ == "__main__":
     main()
