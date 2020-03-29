@@ -860,7 +860,11 @@ def plot_cnt_trace(cnt_trace):
     plt.show(True)
 
 
-def plot_cnt_trace_normal(cnt_trace, title=''):
+def plot_cnt_trace_normal(cnt_trace_from0, title=''):
+    """We ignore cnt_trace[0] since all values there are zero.
+    It makes unable to calculate divide by sum, whch is sum of all zeros.
+    """
+    cnt_trace = cnt_trace_from0[1:]
     N_cnt = len(cnt_trace)
     cnt_d = {'Equal':np.zeros(N_cnt,dtype=float), 
             'P1':np.zeros(N_cnt,dtype=float), 
@@ -881,6 +885,72 @@ def plot_cnt_trace_normal(cnt_trace, title=''):
     plt.title('Normalized learning performance: ' + title)
     plt.show(True)
 
+
+def plot_cnt_trace_normal_order(cnt_trace_from0, title=''):
+    """We ignore cnt_trace[0] since all values there are zero.
+    It makes unable to calculate divide by sum, whch is sum of all zeros.
+    """
+    cnt_trace = cnt_trace_from0[1:]
+    N_cnt = len(cnt_trace)
+    cnt_d = {'Equal':np.zeros(N_cnt,dtype=float), 
+            'P1':np.zeros(N_cnt,dtype=float), 
+            'P2':np.zeros(N_cnt,dtype=float),
+            'PO1':np.zeros(N_cnt,dtype=float), 
+            'PO2':np.zeros(N_cnt,dtype=float)}
+
+    for i, cnt in enumerate(cnt_trace):
+        sum_cnt = np.sum(cnt[0:3])
+        # sum-cnt is equal to np.sum(cnt[0] + cnt[3:5])
+        cnt_d['Equal'][i] = cnt[0] / sum_cnt
+        cnt_d['P1'][i] = cnt[1] / sum_cnt
+        cnt_d['P2'][i] = cnt[2] / sum_cnt
+        cnt_d['PO1'][i] = cnt[3] / sum_cnt
+        cnt_d['PO2'][i] = cnt[4] / sum_cnt
+
+    plt.plot(range(N_cnt), cnt_d['Equal'], label='Equal')
+    plt.plot(range(N_cnt), cnt_d['P1'], label='Player 1')
+    plt.plot(range(N_cnt), cnt_d['P2'], label='Player 2')
+    plt.plot(range(N_cnt), cnt_d['PO1'], label='Play order 1')
+    plt.plot(range(N_cnt), cnt_d['PO2'], label='Play order 2')
+    plt.grid()
+    plt.xlabel('Episode')
+    plt.ylabel('Normalized Counts')
+    plt.legend(loc=0)
+    plt.title('Normalized win counts: ' + title)
+    plt.show(True)
+
+def plot_cnt_trace_normal_order_detail(cnt_trace_from0, title=''):
+    """Detail analysis is applied so that player 1 (our agent) performance history is divided it play first and second. 
+    """
+    cnt_trace = cnt_trace_from0[1:]
+    N_cnt = len(cnt_trace)
+    # N_types = len(cnt_trace[0])
+    cnt_trace_a = np.array(cnt_trace, dtype=float)
+    cnt_trace_sum = np.sum(cnt_trace_a[:,0:3], axis=1, keepdims=True)
+    print(cnt_trace_a.shape, cnt_trace_sum.shape)
+    cnt_trace_a = cnt_trace_a / cnt_trace_sum
+
+    label_list = ['Tie', 'Player1', 'Player2', 'Order1', 'Order2', 'P1O1', 'P1O2', 'P2O1', 'P2O2']
+    plt.figure(figsize=(16,7))
+    plt.subplot(1,2,1)
+    for i in range(5):
+        plt.plot(range(N_cnt), cnt_trace_a[:,i], label=label_list[i])
+    plt.grid()
+    plt.xlabel('Episode')
+    plt.ylabel('Normalized Counts')
+    plt.legend(loc=0)
+    plt.title('Normalized win counts: ' + title)
+
+    plt.subplot(1,2,2)
+    for i in [0,5,6,7,8]:
+        plt.plot(range(N_cnt), cnt_trace_a[:,i], label=label_list[i])    
+    plt.grid()
+    plt.xlabel('Episode')
+    plt.ylabel('Normalized Counts')
+    plt.legend(loc=0)
+    plt.title('Normalized win counts: ' + title)
+
+    plt.show(True)
 
 
 def learning_stage_mc(N_episodes=100, save_flag=True, fig_flag=False):
@@ -1615,7 +1685,7 @@ class Q_System_DQN(Q_System):
                 print('Exproration: Epsilon=', self.epsilon)
         return cnt_trace
 
-    def learning(self, N_episodes=2, ff=0.9, lr=0.01, epsilon = 0.4, print_cnt=10):
+    def _learning(self, N_episodes=2, ff=0.9, lr=0.01, epsilon = 0.4, print_cnt=10):
         """Return: 
             cnt_trace = [cnt, ...]: cnt vector are stacked in cnt_trace
         """
@@ -1645,10 +1715,10 @@ class Q_System_DQN(Q_System):
 
             if Replay_buff[-1][3] == 1.0: 
                 cnt[1] += 1               # play_order = 1 
-                # cnt[2 + play_order] += 1  # P_no = 1 (first player)
+                cnt[2 + play_order] += 1  # P_no = 1 (first player)
             elif Replay_buff[-1][3] == 0.5:
                 cnt[0] += 1   
-                # cnt[2 + 3 - play_order] += 1  # P_no = 2 (second player)
+                cnt[2 + 3 - play_order] += 1  # P_no = 2 (second player)
             else: # play_order = 2
                 cnt[2] += 1
 
@@ -1674,6 +1744,68 @@ class Q_System_DQN(Q_System):
             play_order = 3 - play_order # 1 --> 2, 2 --> 1
 
         return cnt_trace
+
+    def learning(self, N_episodes=2, ff=0.9, lr=0.01, epsilon = 0.4, print_cnt=10):
+        """Return: 
+            cnt_trace = [cnt, ...]: cnt vector are stacked in cnt_trace
+        """
+        cnt = [0, 0, 0, 0, 0, 0, 0, 0, 0] # tie, p1, p2
+        cnt_trace = [cnt.copy()]        
+
+        # Opponent player index
+        P_no = 1 # player Q function, regardless of play order (first or next)
+        play_order = 1
+        ttt_env = Tictactoe_Env(self.N_A, play_order=play_order) #both X but start 1st and 2nd
+        for episode in range(N_episodes):
+            S, _ = ttt_env.reset(play_order=play_order)
+            done = False            
+            Replay_buff = []
+            while not done:
+                self.epsilon = epsilon # epsilon is a hyperparamter for exploration
+                action, _ = self.get_action(P_no, S)
+                S_new, _, reward, done = ttt_env.step(action)
+                Replay_buff.append([S.copy(), action, S_new.copy(), reward])
+                # print(episode, [S, action, S_new, reward])
+                S = S_new
+
+            #######################################
+            # DQN start, here for learning   
+            #######################################
+            # print('play_order, P_no = ', play_order, P_no)
+
+            if Replay_buff[-1][3] == 1.0: 
+                cnt[1] += 1               # P_no = 1 
+                cnt[2 + play_order] += 1  # player_order = 1
+                cnt[4 + play_order] += 1  # player_order | P_no = 1, so it occupied 2 lists
+            elif Replay_buff[-1][3] == 0.5:
+                cnt[0] += 1 
+            else: # play_order = 2
+                cnt[2] += 1                   # P_no = 2  
+                cnt[2 + 3 - play_order] += 1  # player_order = 2
+                cnt[6 + 3 - play_order] += 1  # player_order | P_no = 2, so it start from 6
+
+            cnt_trace.append(cnt.copy())
+
+            if episode % print_cnt == 0:
+                print(episode, cnt)                
+                print('S = [0,0,0, 0,0,0, 0,0,0]')
+                print('Qsa[0][0,:]', [f'{self.Qsa[0][0,a]:.1e}' for a in range(9)])
+                print('Qsa[1][0,:]', [f'{self.Qsa[1][0,a]:.1e}' for a in range(9)])
+                print('Exproration: Epsilon=', self.epsilon)
+
+            random.shuffle(Replay_buff) # inplace shuffling
+            # y = np.zeros((len(Replay_buff),))
+            for j in range(len(Replay_buff)):
+                buff_each  =  Replay_buff[j]
+                S, action, S_new, reward = buff_each
+                S_new_idx = calc_S_idx_numba(S_new, self.N_Symbols)
+                y = reward + ff * np.max(self.Qsa[P_no-1][S_new_idx,:])
+                S_idx = calc_S_idx_numba(S, self.N_Symbols)
+                self.Qsa[P_no-1][S_idx, action] += lr * y
+
+            play_order = 3 - play_order # 1 --> 2, 2 --> 1
+
+        return cnt_trace        
 
 
     def playing_random(self, N_episodes=2, print_cnt=10):
@@ -1709,12 +1841,13 @@ class Q_System_DQN(Q_System):
 
             if Replay_buff[-1][3] == 1.0: 
                 cnt[1] += 1               # play_order = 1 
-                # cnt[2 + play_order] += 1  # P_no = 1 (first player)
+                cnt[2 + play_order] += 1  # P_no = 1 (first player)
             elif Replay_buff[-1][3] == 0.5:
                 cnt[0] += 1   
                 # cnt[2 + 3 - play_order] += 1  # P_no = 2 (second player)
             else: # play_order = 2
                 cnt[2] += 1
+                cnt[2 + 3 - play_order] += 1
 
             cnt_trace.append(cnt.copy())
 
@@ -1730,7 +1863,7 @@ class Q_System_DQN(Q_System):
         return cnt_trace
 
 
-def learning_stage_dqn(N_episodes=100, save_flag=True, fig_flag=False):
+def learning_stage_dqn(N_episodes=100, epsilon=0.4, save_flag=True, fig_flag=False):
     ff = 0.9
     lr = 0.01
     N_Symbols = 3 # 0=empty, 1=plyaer1, 2=player2
@@ -1738,16 +1871,20 @@ def learning_stage_dqn(N_episodes=100, save_flag=True, fig_flag=False):
     print_cnt = N_episodes / 10
 
     my_Q_System = Q_System_DQN(N_A, N_Symbols)
-    cnt_trace = my_Q_System.learning(N_episodes=N_episodes, ff=ff, lr=lr, print_cnt=print_cnt)
+    cnt_trace = my_Q_System.learning(N_episodes=N_episodes, ff=ff, lr=lr, epsilon=epsilon, print_cnt=print_cnt)
+
     print('-------------------')
-    cnt = cnt_trace[-1]
-    print(N_episodes, cnt)
+    cnt_last = cnt_trace[-1]
+    cnt_last_normal = np.array(cnt_last) / np.sum(cnt_last[0:3])
+    # Showing normalized counts as well so as to make feel the progress.
+    # In random agent playing here, no progress should be displayed.
+    print(N_episodes, f"Last cnt:{cnt_last}, Normalized last cnt:{cnt_last_normal}")
 
     if save_flag:
         my_Q_System.save()
 
     if fig_flag:
-        plot_cnt_trace_normal(cnt_trace, title='Q-learning')
+        plot_cnt_trace_normal_order_detail(cnt_trace, title='Q-learning')
 
     return my_Q_System
 
@@ -1760,12 +1897,16 @@ def playing_stage_random(N_episodes=100, fig_flag=False):
     my_Q_System = Q_System_DQN(N_A, N_Symbols)
     #cnt_trace = my_Q_System.learning(N_episodes=N_episodes, ff=ff, lr=lr, print_cnt=print_cnt)
     cnt_trace = my_Q_System.playing_random(N_episodes=N_episodes, print_cnt=print_cnt)
+
     print('-------------------')
-    cnt = cnt_trace[-1]
-    print(N_episodes, cnt)
+    cnt_last = cnt_trace[-1]
+    cnt_last_normal = np.array(cnt_last) / np.sum(cnt_last[0:3])
+    # Showing normalized counts as well so as to make feel the progress.
+    # In random agent playing here, no progress should be displayed.
+    print(N_episodes, f"Last cnt:{cnt_last}, Normalized last cnt:{cnt_last_normal}")
 
     if fig_flag:
-        plot_cnt_trace_normal(cnt_trace, title='Q-learning')
+        plot_cnt_trace_normal_order(cnt_trace, title='Playing by random agents')
 
     return my_Q_System
 
