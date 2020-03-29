@@ -31,8 +31,8 @@
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
+.code-workspace
 
 # End of https://www.gitignore.io/api/visualstudiocode,linux
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
-
