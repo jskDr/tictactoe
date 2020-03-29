@@ -1,4 +1,5 @@
 import tensorflow as tf
+# from tensorflow.keras.layers import Layer, Dense
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
@@ -19,6 +20,16 @@ class color:
    BOLD = '\033[1m'
    UNDERLINE = '\033[4m'
    END = '\033[0m'
+
+def random_shuffle_dict_inplace(Replay_buff):
+    """Shuffle dict with same odering
+    """
+    key0 = list(Replay_buff.keys())[0]
+    Replay_buff_idx_list = list(range(len(Replay_buff[key0])))
+    random.shuffle(Replay_buff_idx_list) # inplace shuffling
+    # print(Replay_buff_idx_list)
+    for key in Replay_buff:
+        Replay_buff[key] = [Replay_buff[key][i] for i in Replay_buff_idx_list]
 
 @jit
 def calc_S_idx_numba(S:np.ndarray, N_Symbols:int=3) -> int:
@@ -1640,9 +1651,9 @@ def _main():
         _ = learning_stage_mc(N_episodes=Q2, fig_flag=True)
         # print(len(my_Q_System.Qsa))
 
-class Q_System_DQN(Q_System):
+class Q_System_QL(Q_System):
     def __init__(self, N_A, N_Symbols):
-        super(Q_System_DQN, self).__init__(N_A=N_A, N_Symbols=N_Symbols)
+        super(Q_System_QL, self).__init__(N_A=N_A, N_Symbols=N_Symbols)
 
     def _learning(self, N_episodes=2, ff=0.9, lr=0.01, print_cnt=10):
         """Return: 
@@ -1807,6 +1818,75 @@ class Q_System_DQN(Q_System):
 
         return cnt_trace        
 
+    def learning_qlearn(self, N_episodes=2, ff=0.9, lr=0.01, epsilon = 0.4, print_cnt=10):
+        """Return: 
+            cnt_trace = [cnt, ...]: cnt vector are stacked in cnt_trace
+        """
+        cnt = [0, 0, 0, 0, 0, 0, 0, 0, 0] # tie, p1, p2
+        cnt_trace = [cnt.copy()]        
+
+        # Opponent player index
+        P_no = 1 # player Q function, regardless of play order (first or next)
+        play_order = 1
+        ttt_env = Tictactoe_Env(self.N_A, play_order=play_order) #both X but start 1st and 2nd
+        for episode in range(N_episodes):
+            S, _ = ttt_env.reset(play_order=play_order)
+            done = False            
+            Replay_buff_d = {'S':[], 'action': [], 'S_new': [], 'reward': []}
+            while not done:
+                self.epsilon = epsilon # epsilon is a hyperparamter for exploration
+                action, _ = self.get_action(P_no, S)
+                S_new, _, reward, done = ttt_env.step(action)
+
+                # Save to replay buffers
+                Replay_buff_d['S'].append(S.copy())
+                Replay_buff_d['action'].append(action)
+                Replay_buff_d['S_new'].append(S_new.copy())
+                Replay_buff_d['reward'].append(reward)
+                
+                # print(episode, [S, action, S_new, reward])
+                S = S_new
+
+            #######################################
+            # DQN start, here for learning   
+            #######################################
+            # print('play_order, P_no = ', play_order, P_no)
+
+            if Replay_buff_d['reward'][-1] == 1.0: 
+                cnt[1] += 1               # P_no = 1 
+                cnt[2 + play_order] += 1  # player_order = 1
+                cnt[4 + play_order] += 1  # player_order | P_no = 1, so it occupied 2 lists
+            elif Replay_buff_d['reward'][-1] == 0.5:
+                cnt[0] += 1 
+            else: # play_order = 2
+                cnt[2] += 1                   # P_no = 2  
+                cnt[2 + 3 - play_order] += 1  # player_order = 2
+                cnt[6 + 3 - play_order] += 1  # player_order | P_no = 2, so it start from 6
+
+            cnt_trace.append(cnt.copy())
+
+            if episode % print_cnt == 0:
+                print(episode, cnt)                
+                print('S = [0,0,0, 0,0,0, 0,0,0]')
+                print('Qsa[0][0,:]', [f'{self.Qsa[0][0,a]:.1e}' for a in range(9)])
+                print('Qsa[1][0,:]', [f'{self.Qsa[1][0,a]:.1e}' for a in range(9)])
+                print('Exproration: Epsilon=', self.epsilon)
+
+            # Q-learning
+            random_shuffle_dict_inplace(Replay_buff_d)
+            for j in range(len(Replay_buff_d['reward'])):
+                S = Replay_buff_d['S'][j]
+                action = Replay_buff_d['action'][j]
+                S_new = Replay_buff_d['S_new'][j]
+                reward = Replay_buff_d['reward'][j]
+                S_new_idx = calc_S_idx_numba(S_new, self.N_Symbols)
+                y = reward + ff * np.max(self.Qsa[P_no-1][S_new_idx,:])
+                S_idx = calc_S_idx_numba(S, self.N_Symbols)
+                self.Qsa[P_no-1][S_idx, action] += lr * y
+
+            play_order = 3 - play_order # 1 --> 2, 2 --> 1
+
+        return cnt_trace        
 
     def playing_random(self, N_episodes=2, print_cnt=10):
         """Plyaing two random players. To make baseline performance so that it will compared with learnt agents.
@@ -1863,15 +1943,15 @@ class Q_System_DQN(Q_System):
         return cnt_trace
 
 
-def learning_stage_dqn(N_episodes=100, epsilon=0.4, save_flag=True, fig_flag=False):
+def learning_stage_qlearn(N_episodes=100, epsilon=0.4, save_flag=True, fig_flag=False):
     ff = 0.9
     lr = 0.01
     N_Symbols = 3 # 0=empty, 1=plyaer1, 2=player2
     N_A = 9 # (0,0), (0,1), ..., (2,2)
     print_cnt = N_episodes / 10
 
-    my_Q_System = Q_System_DQN(N_A, N_Symbols)
-    cnt_trace = my_Q_System.learning(N_episodes=N_episodes, ff=ff, lr=lr, epsilon=epsilon, print_cnt=print_cnt)
+    my_Q_System = Q_System_QL(N_A, N_Symbols)
+    cnt_trace = my_Q_System.learning_qlearn(N_episodes=N_episodes, ff=ff, lr=lr, epsilon=epsilon, print_cnt=print_cnt)
 
     print('-------------------')
     cnt_last = cnt_trace[-1]
@@ -1894,7 +1974,7 @@ def playing_stage_random(N_episodes=100, fig_flag=False):
     N_A = 9 # (0,0), (0,1), ..., (2,2)
     print_cnt = N_episodes / 10
 
-    my_Q_System = Q_System_DQN(N_A, N_Symbols)
+    my_Q_System = Q_System_QL(N_A, N_Symbols)
     #cnt_trace = my_Q_System.learning(N_episodes=N_episodes, ff=ff, lr=lr, print_cnt=print_cnt)
     cnt_trace = my_Q_System.playing_random(N_episodes=N_episodes, print_cnt=print_cnt)
 
@@ -1909,6 +1989,27 @@ def playing_stage_random(N_episodes=100, fig_flag=False):
         plot_cnt_trace_normal_order(cnt_trace, title='Playing by random agents')
 
     return my_Q_System
+
+
+def playing_stage_dqn(N_episodes=100, fig_flag=False):
+    N_Symbols = 3 # 0=empty, 1=plyaer1, 2=player2
+    N_A = 9 # (0,0), (0,1), ..., (2,2)
+    print_cnt = N_episodes / 10
+
+    my_Q_System = Q_System_DQN(N_A, N_Symbols)
+    #cnt_trace = my_Q_System.learning(N_episodes=N_episodes, ff=ff, lr=lr, print_cnt=print_cnt)
+    cnt_trace = my_Q_System.playing_dqn(N_episodes=N_episodes, print_cnt=print_cnt)
+
+    print('-------------------')
+    cnt_last = cnt_trace[-1]
+    cnt_last_normal = np.array(cnt_last) / np.sum(cnt_last[0:3])
+    # Showing normalized counts as well so as to make feel the progress.
+    # In random agent playing here, no progress should be displayed.
+    print(N_episodes, f"Last cnt:{cnt_last}, Normalized last cnt:{cnt_last_normal}")
+
+    if fig_flag:
+        plot_cnt_trace_normal_order(cnt_trace, title='Playing by random agents')
+
 
 def _r1_main():
     """
@@ -1931,7 +2032,7 @@ def _r1_main():
         print('Start to learn a new agent...')
         Q2 = input_default('2. How many episode do you want to learn?(default=10000) ', 10000, int)
         # my_Q_System = learning_stage(N_episodes=Q2, fig_flag=True)
-        _ = learning_stage_dqn(N_episodes=Q2, fig_flag=True)
+        _ = learning_stage_qlearn(N_episodes=Q2, fig_flag=True)
         # print(len(my_Q_System.Qsa))
 
 def q1_playing():
@@ -1966,7 +2067,7 @@ def q1_learning():
     if Q2 == 0:
         _ = learning_stage_mc(N_episodes=Q1, fig_flag=True)
     elif Q2 == 1:
-        _ = learning_stage_dqn(N_episodes=Q1, fig_flag=True)
+        _ = learning_stage_qlearn(N_episodes=Q1, fig_flag=True)
     else:
         print('Type a different option in (0,1)')
 
@@ -1974,8 +2075,18 @@ def q1_testing():
     print('Start to test code...')
     print()
     Q1 = input_default('How many episode do you want to play?(default=10000) ', 10000, int)
-    print('Play by two random players')
-    _ = playing_stage_random(N_episodes=Q1, fig_flag=True)
+    
+    print()
+    print('0) Play by two random players')
+    print('1) Play for dqn player and random player')
+    Q2 = input_default('Which playing do you want?(default=0) ', 0, int)
+
+    if Q2 == 0:
+        print('Playing between two random players')
+        _ = playing_stage_random(N_episodes=Q1, fig_flag=True)
+    else:
+        print('Playing between our dqn player and a random player')
+        playing_stage_dqn(N_episodes=Q1, fig_flag=True)
 
 
 def main():
@@ -1998,6 +2109,125 @@ def main():
         q1_testing()
     else:
         print('Type a different option in (0,1,2)')
+
+class MLP_AGENT(tf.keras.layers.Layer):
+    """MLP Model for our agent"""
+    def __init__(self, S_ln=9, action_ln=9, hidden_ln=9):
+        super(MLP_AGENT, self).__init__()
+        self.linear_1 = tf.keras.layers.Dense(S_ln, activation=tf.nn.relu)
+        self.linear_2 = tf.keras.layers.Dense(hidden_ln, activation=tf.nn.relu)
+        self.linear_3 = tf.keras.layers.Dense(action_ln) # no activation
+
+    def call(self, inputs):
+        x = self.linear_1(inputs)
+        x = self.linear_2(x)
+        return self.linear_3(x)
+
+class Q_System_DQN(Q_System_QL):
+    def __init__(self, N_A, N_Symbols):
+        super(Q_System_DQN, self).__init__(N_A=N_A, N_Symbols=N_Symbols)
+        self.QSA_net = [MLP_AGENT(self.N_A, self.N_A, self.N_A), MLP_AGENT(self.N_A, self.N_A, self.N_A)]
+
+    def get_q_net(self, S, action_list, P_no):
+        action_prob = []
+        # S_idx = self.calc_S_idx(S)
+        #for a in action_list:
+        #    action_prob.append(self.Qsa[P_no-1][S_idx,a])  
+
+        S_in = np.array(S,dtype=float).reshape(1,-1)
+        QSA_all_actions = self.QSA_net[P_no-1](S_in).numpy()[0]
+        for a in action_list:
+            action_prob.append(QSA_all_actions[a])  
+
+        return action_prob
+
+    def policy(self, P_no, S, action_list):
+        """Return action regardless P_no but just specify Q[P_no]
+        """       
+        #for a in action_list:
+        #    action_prob.append(self.Qsa[P_no-1][S_idx,a])                
+        action_prob = self.get_q_net(S, action_list, P_no)
+
+        # We consider max Q with epsilon greedy
+        if tf.squeeze(tf.random.uniform([1,1])) > self.epsilon:
+            action = action_list[one_of_amax(action_prob)]            
+        else:
+            action = action_list[np.random.randint(0,len(action_list),1)[0]]
+            
+        if self.disp_flag:
+            print('action', action, 
+                  'action_list', action_list, 'action_prob', action_prob)
+        return action
+
+    def get_action(self, P_no, S):
+        """
+        Return action, done
+        """
+        action_list, no_occupied = self.find_action_list(S)
+        # Since number of possible actions are reduced, 
+        # denominator is also updated. 
+        action = self.policy(P_no, S, action_list)
+        done = no_occupied == (self.N_A - 1)
+        return action, done
+
+    def playing_dqn(self, N_episodes=2, print_cnt=10):
+        """Plyaing two random players. To make baseline performance so that it will compared with learnt agents.
+        - Check whethere it requires ff, lr, which may not be useful in this case since no learning is applied. 
+        ------
+        Return 
+            cnt_trace = [cnt, ...]: cnt vector are stacked in cnt_trace
+        """
+        cnt = [0, 0, 0, 0, 0] # tie, p1, p2
+        cnt_trace = [cnt.copy()]        
+
+        # Opponent player index
+        P_no = 1 # player Q function, regardless of play order (first or next)
+        play_order = 1
+        ttt_env = Tictactoe_Env(self.N_A, play_order=play_order) #both X but start 1st and 2nd
+        for episode in range(N_episodes):
+            S, _ = ttt_env.reset(play_order=play_order)
+            done = False            
+            Replay_buff = []
+            while not done:
+                # self.epsilon = epsilon # epsilon is a hyperparamter for exploration
+                action, _ = self.get_action(P_no, S)
+                S_new, _, reward, done = ttt_env.step(action)
+                Replay_buff.append([S.copy(), action, S_new.copy(), reward])
+                # print(episode, [S, action, S_new, reward])
+                S = S_new
+
+            #######################################
+            # DQN start, here for learning   
+            #######################################
+            # print('play_order, P_no = ', play_order, P_no)
+
+            if Replay_buff[-1][3] == 1.0: 
+                cnt[1] += 1               # play_order = 1 
+                cnt[2 + play_order] += 1  # P_no = 1 (first player)
+            elif Replay_buff[-1][3] == 0.5:
+                cnt[0] += 1   
+                # cnt[2 + 3 - play_order] += 1  # P_no = 2 (second player)
+            else: # play_order = 2
+                cnt[2] += 1
+                cnt[2 + 3 - play_order] += 1
+
+            cnt_trace.append(cnt.copy())
+
+            if episode % print_cnt == 0:
+                print(episode, cnt)                
+                print('S = [0,0,0, 0,0,0, 0,0,0]')
+                S_in = np.zeros((1,9))
+                Qsa_0_0 = self.QSA_net[0](S_in).numpy()[0]
+                Qsa_1_0 = self.QSA_net[1](S_in).numpy()[0]
+                print('Qsa[0][0,:]', [f'{Qsa_0_0[a]:.1e}' for a in range(9)])
+                print('Qsa[1][0,:]', [f'{Qsa_1_0[a]:.1e}' for a in range(9)])
+                print('Exproration: Epsilon=', self.epsilon)
+
+            play_order = 3 - play_order # 1 --> 2, 2 --> 1
+
+        return cnt_trace
+    
+
 
 if __name__ == "__main__":
     main()
