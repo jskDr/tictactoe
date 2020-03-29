@@ -843,7 +843,9 @@ class Q_System:
 
 def plot_cnt_trace(cnt_trace):
     N_cnt = len(cnt_trace)
-    cnt_d = {'Equal':np.zeros(N_cnt,dtype=int), 'P1':np.zeros(N_cnt,dtype=int), 'P2':np.zeros(N_cnt,dtype=int)}
+    cnt_d = {'Equal':np.zeros(N_cnt,dtype=int), 
+            'P1':np.zeros(N_cnt,dtype=int), 
+            'P2':np.zeros(N_cnt,dtype=int)}
     for i, cnt in enumerate(cnt_trace):
         cnt_d['Equal'][i] = cnt[0]
         cnt_d['P1'][i] = cnt[1]
@@ -856,6 +858,29 @@ def plot_cnt_trace(cnt_trace):
     plt.legend(loc=0)
     plt.title('First and second playing agent performance in learning')
     plt.show(True)
+
+
+def plot_cnt_trace_normal(cnt_trace, title=''):
+    N_cnt = len(cnt_trace)
+    cnt_d = {'Equal':np.zeros(N_cnt,dtype=float), 
+            'P1':np.zeros(N_cnt,dtype=float), 
+            'P2':np.zeros(N_cnt,dtype=float)}
+
+    for i, cnt in enumerate(cnt_trace):
+        sum_cnt = np.sum(cnt[0:3])
+        cnt_d['Equal'][i] = cnt[0] / sum_cnt
+        cnt_d['P1'][i] = cnt[1] / sum_cnt
+        cnt_d['P2'][i] = cnt[2] / sum_cnt
+
+    plt.plot(range(N_cnt), cnt_d['Equal'], label='Equal')
+    plt.plot(range(N_cnt), cnt_d['P1'], label='Player1 wins')
+    plt.plot(range(N_cnt), cnt_d['P2'], label='Player2 wins')
+    plt.xlabel('Episode')
+    plt.ylabel('Count')
+    plt.legend(loc=0)
+    plt.title('Normalized learning performance: ' + title)
+    plt.show(True)
+
 
 
 def learning_stage_mc(N_episodes=100, save_flag=True, fig_flag=False):
@@ -875,7 +900,7 @@ def learning_stage_mc(N_episodes=100, save_flag=True, fig_flag=False):
         my_Q_System.save()
 
     if fig_flag:
-        plot_cnt_trace(cnt_trace)
+        plot_cnt_trace_normal(cnt_trace, 'MC')
 
     return my_Q_System
 
@@ -1419,7 +1444,7 @@ class Tictactoe_Env:
         self.P_no = 1
         self.P_no_opponent = 2
 
-    def get_player2_action(self):
+    def get_player_action(self):
         return self.sample_action()
 
     def step(self, action):
@@ -1455,10 +1480,21 @@ class Tictactoe_Env:
             self.reset()
         return S_copy, action_list_copy, reward, done
 
-    def perform_player2(self):
-        action = self.get_player2_action()
+    def _perform_player2(self):
+        action = self.get_player_action()
         self.action_list.append(action)
-        set_state_inplace(self.S, action, self.P_no_opponent)        
+        set_state_inplace(self.S, action, self.P_no_opponent)
+
+    def perform_player(self, P_no):
+        """
+        perform by player P_no
+        """
+        action = self.get_player_action()
+        self.action_list.append(action)
+        set_state_inplace(self.S, action, P_no)    
+
+    def perform_player2(self):
+        self.perform_player(self.P_no_opponent)
 
     def reset(self, play_order=None): # consider play_order (now we assume play_order=1)
         if play_order is not None:
@@ -1475,6 +1511,9 @@ class Tictactoe_Env:
         print(self.S.reshape(-1,3))
 
     def sample_action(self):
+        """Sample action not in action list for both player 1 and 2,
+        i.e., regardless of player index
+        """
         actions = []
         for action in range(self.N_A):
             if action not in self.action_list:
@@ -1631,7 +1670,63 @@ class Q_System_DQN(Q_System):
                 y = reward + ff * np.max(self.Qsa[P_no-1][S_new_idx,:])
                 S_idx = calc_S_idx_numba(S, self.N_Symbols)
                 self.Qsa[P_no-1][S_idx, action] += lr * y
+
             play_order = 3 - play_order # 1 --> 2, 2 --> 1
+
+        return cnt_trace
+
+
+    def playing_random(self, N_episodes=2, print_cnt=10):
+        """Plyaing two random players. To make baseline performance so that it will compared with learnt agents.
+        - Check whethere it requires ff, lr, which may not be useful in this case since no learning is applied. 
+        ------
+        Return 
+            cnt_trace = [cnt, ...]: cnt vector are stacked in cnt_trace
+        """
+        cnt = [0, 0, 0, 0, 0] # tie, p1, p2
+        cnt_trace = [cnt.copy()]        
+
+        # Opponent player index
+        # P_no = 1 # player Q function, regardless of play order (first or next)
+        play_order = 1
+        ttt_env = Tictactoe_Env(self.N_A, play_order=play_order) #both X but start 1st and 2nd
+        for episode in range(N_episodes):
+            S, _ = ttt_env.reset(play_order=play_order)
+            done = False            
+            Replay_buff = []
+            while not done:
+                # self.epsilon = epsilon # epsilon is a hyperparamter for exploration
+                action = ttt_env.sample_action()
+                S_new, _, reward, done = ttt_env.step(action)
+                Replay_buff.append([S.copy(), action, S_new.copy(), reward])
+                # print(episode, [S, action, S_new, reward])
+                S = S_new
+
+            #######################################
+            # DQN start, here for learning   
+            #######################################
+            # print('play_order, P_no = ', play_order, P_no)
+
+            if Replay_buff[-1][3] == 1.0: 
+                cnt[1] += 1               # play_order = 1 
+                # cnt[2 + play_order] += 1  # P_no = 1 (first player)
+            elif Replay_buff[-1][3] == 0.5:
+                cnt[0] += 1   
+                # cnt[2 + 3 - play_order] += 1  # P_no = 2 (second player)
+            else: # play_order = 2
+                cnt[2] += 1
+
+            cnt_trace.append(cnt.copy())
+
+            if episode % print_cnt == 0:
+                print(episode, cnt)                
+                print('S = [0,0,0, 0,0,0, 0,0,0]')
+                print('Qsa[0][0,:]', [f'{self.Qsa[0][0,a]:.1e}' for a in range(9)])
+                print('Qsa[1][0,:]', [f'{self.Qsa[1][0,a]:.1e}' for a in range(9)])
+                print('Exproration: Epsilon=', self.epsilon)
+
+            play_order = 3 - play_order # 1 --> 2, 2 --> 1
+
         return cnt_trace
 
 
@@ -1652,10 +1747,27 @@ def learning_stage_dqn(N_episodes=100, save_flag=True, fig_flag=False):
         my_Q_System.save()
 
     if fig_flag:
-        plot_cnt_trace(cnt_trace)
+        plot_cnt_trace_normal(cnt_trace, title='Q-learning')
 
     return my_Q_System
 
+
+def playing_stage_random(N_episodes=100, fig_flag=False):
+    N_Symbols = 3 # 0=empty, 1=plyaer1, 2=player2
+    N_A = 9 # (0,0), (0,1), ..., (2,2)
+    print_cnt = N_episodes / 10
+
+    my_Q_System = Q_System_DQN(N_A, N_Symbols)
+    #cnt_trace = my_Q_System.learning(N_episodes=N_episodes, ff=ff, lr=lr, print_cnt=print_cnt)
+    cnt_trace = my_Q_System.playing_random(N_episodes=N_episodes, print_cnt=print_cnt)
+    print('-------------------')
+    cnt = cnt_trace[-1]
+    print(N_episodes, cnt)
+
+    if fig_flag:
+        plot_cnt_trace_normal(cnt_trace, title='Q-learning')
+
+    return my_Q_System
 
 def _r1_main():
     """
@@ -1709,7 +1821,7 @@ def q1_learning():
     print()
     print('0) MC Backup with e-Greedy')
     print('1) Q-learning')
-    Q2 = input_default('What learning method do you want to use? (0=default)', 0 , int)
+    Q2 = input_default('What learning method do you want to use? (0=default) ', 0 , int)
     if Q2 == 0:
         _ = learning_stage_mc(N_episodes=Q1, fig_flag=True)
     elif Q2 == 1:
@@ -1719,6 +1831,11 @@ def q1_learning():
 
 def q1_testing():
     print('Start to test code...')
+    print()
+    Q1 = input_default('How many episode do you want to play?(default=10000) ', 10000, int)
+    print('Play by two random players')
+    _ = playing_stage_random(N_episodes=Q1, fig_flag=True)
+
 
 def main():
     """
@@ -1731,7 +1848,7 @@ def main():
     print('0) Playing a game')
     print('1) Learning a new agent')
     print('2) Testing code')
-    Q1 = input_default('What do you want? (0=deafult)', 0, int)
+    Q1 = input_default('What do you want? (0=deafult) ', 0, int)
     if Q1 == 0:
         q1_playing()
     elif Q1 == 1:
