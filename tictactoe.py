@@ -6,6 +6,7 @@ import pickle
 import numba
 from numba import jit
 import random
+from typing import List, Tuple, Union
 
 # TicTacToe game has nine stateus with nine actions. An user can put his ston on any postion in the borad except 
 
@@ -374,7 +375,7 @@ class Q_System:
 
         return action
 
-    def find_action_list(self, S):
+    def find_action_list(self, S) -> Tuple[List[int], int]:
         action_list = []
         no_occupied = 0
         for a in range(self.N_A):
@@ -2303,6 +2304,8 @@ class Q_System_DQN(Q_System_QL):
         P_no = 1 # player Q function, regardless of play order (first or next)
         play_order = 1
         ttt_env = Tictactoe_Env(self.N_A, play_order=play_order) #both X but start 1st and 2nd
+        optimizer = tf.keras.optimizers.Adam()
+        loss_f = tf.keras.losses.MeanSquaredError()   
         for episode in range(N_episodes):
             S, _ = ttt_env.reset(play_order=play_order)
             done = False            
@@ -2325,20 +2328,23 @@ class Q_System_DQN(Q_System_QL):
             X_list = []
             for buff in Replay_buff:
                 S, action, S_new, reward, done = buff
-                action_list_new, _ = self.find_action_list(S_new)
-                action_prob_array_new = self.get_q_net(S_new, action_list_new, P_no)
                 if done:
                     y = reward
                 else:
+                    action_list_new, _ = self.find_action_list(S_new)
+                    action_prob_array_new = self.get_q_net(S_new, action_list_new, P_no)
                     y = reward + ff*np.max(action_prob_array_new)
                 y_list.append(y)
                 action_buff = [0] * self.N_A
-                X_list.append(S + action_buff)
-            y = np.array(y_list)
-            X = np.array(X_list)
-            # print("X, y")
-            # print(X, y)
-            # print("---------------")
+                action_buff[action] = 1
+                X_list.append(list(S) + action_buff)
+            y_N = np.array(y_list)
+            X_Nx18 = np.array(X_list)
+            with tf.GradientTape() as tape:
+                Qsa_N = self.QSA_net[P_no-1](X_Nx18)
+                loss_value = loss_f(y_N, Qsa_N)
+            gradients = tape.gradient(loss_value, self.QSA_net[P_no-1].trainable_weights)
+            optimizer.apply_gradients(zip(gradients, self.QSA_net[P_no-1].trainable_weights))
 
             if Replay_buff[-1][3] == 1.0: 
                 cnt[1] += 1               # P_no = 1 
