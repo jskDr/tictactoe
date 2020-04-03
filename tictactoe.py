@@ -868,7 +868,7 @@ def plot_cnt_trace(cnt_trace):
     plt.ylabel('Count')
     plt.legend(loc=0)
     plt.title('First and second playing agent performance in learning')
-    plt.show(True)
+    plt.show()
 
 
 def plot_cnt_trace_normal(cnt_trace_from0, title=''):
@@ -894,7 +894,7 @@ def plot_cnt_trace_normal(cnt_trace_from0, title=''):
     plt.ylabel('Count')
     plt.legend(loc=0)
     plt.title('Normalized learning performance: ' + title)
-    plt.show(True)
+    plt.show()
 
 
 def plot_cnt_trace_normal_order(cnt_trace_from0, title=''):
@@ -961,7 +961,7 @@ def plot_cnt_trace_normal_order_detail(cnt_trace_from0, title=''):
     plt.legend(loc=0)
     plt.title('Normalized win counts: ' + title)
 
-    plt.show(True)
+    plt.show()
 
 
 def learning_stage_mc(N_episodes=100, save_flag=True, fig_flag=False):
@@ -1577,7 +1577,21 @@ class Tictactoe_Env:
     def perform_player2(self):
         self.perform_player(self.P_no_opponent)
 
+    def _reset(self, play_order=None): # consider play_order (now we assume play_order=1)
+        if play_order is not None:
+            self.play_order = play_order
+        self.S = np.zeros((self.N_A,),dtype=int)
+        self.action_list = []
+        if self.play_order == 2:
+            self.perform_player2()
+        # return current results. we use value sharing but not buff
+        return self.S.copy(), self.action_list.copy()
+
     def reset(self, play_order=None): # consider play_order (now we assume play_order=1)
+        """
+        Make S as list, not array
+        Check S type for the first in this class
+        """
         if play_order is not None:
             self.play_order = play_order
         self.S = np.zeros((self.N_A,),dtype=int)
@@ -2170,14 +2184,14 @@ class Q_System_DQN(Q_System_QL):
 
         return action_prob
 
-    def get_q_net(self, S, action_list, P_no):
+    def get_q_net(self, S:np.ndarray, action_list, P_no):
         action_prob = []
         X_in_stack = np.zeros((len(action_list), self.N_A + self.N_A))
         for i in range(len(action_list)):
             a = action_list[i]
             a_buff = [0] * self.N_A
             a_buff[a] = 1
-            X_in = np.array(S + a_buff, dtype=np.float32).reshape(1,-1)
+            X_in = np.array(list(S) + a_buff, dtype=np.float32).reshape(1,-1)
             X_in_stack[i, :] = X_in[0, :]
 
         Qsa = self.QSA_net[P_no-1](X_in_stack).numpy()[:,0]
@@ -2282,7 +2296,7 @@ class Q_System_DQN(Q_System_QL):
         Return 
             cnt_trace = [cnt, ...]: cnt vector are stacked in cnt_trace
         """
-        cnt = [0, 0, 0, 0, 0] # tie, p1, p2
+        cnt = [0, 0, 0, 0, 0, 0, 0, 0, 0] # tie, p1, p2
         cnt_trace = [cnt.copy()]        
 
         # Opponent player index
@@ -2311,7 +2325,7 @@ class Q_System_DQN(Q_System_QL):
             X_list = []
             for buff in Replay_buff:
                 S, action, S_new, reward, done = buff
-                action_list_new = self.find_action_list(S_new)
+                action_list_new, _ = self.find_action_list(S_new)
                 action_prob_array_new = self.get_q_net(S_new, action_list_new, P_no)
                 if done:
                     y = reward
@@ -2320,28 +2334,36 @@ class Q_System_DQN(Q_System_QL):
                 y_list.append(y)
                 action_buff = [0] * self.N_A
                 X_list.append(S + action_buff)
-            y = np.array(y)
+            y = np.array(y_list)
             X = np.array(X_list)
-            print(X, y)
+            # print("X, y")
+            # print(X, y)
+            # print("---------------")
 
             if Replay_buff[-1][3] == 1.0: 
-                cnt[1] += 1               # play_order = 1 
-                cnt[2 + play_order] += 1  # P_no = 1 (first player)
+                cnt[1] += 1               # P_no = 1 
+                cnt[2 + play_order] += 1  # player_order = 1
+                cnt[4 + play_order] += 1  # player_order | P_no = 1, so it occupied 2 lists
             elif Replay_buff[-1][3] == 0.5:
-                cnt[0] += 1   
-                # cnt[2 + 3 - play_order] += 1  # P_no = 2 (second player)
+                cnt[0] += 1 
             else: # play_order = 2
-                cnt[2] += 1
-                cnt[2 + 3 - play_order] += 1
+                cnt[2] += 1                   # P_no = 2  
+                cnt[2 + 3 - play_order] += 1  # player_order = 2
+                cnt[6 + 3 - play_order] += 1  # player_order | P_no = 2, so it start from 6
 
             cnt_trace.append(cnt.copy())
 
             if episode % print_cnt == 0:
                 print(episode, cnt)                
                 print('S = [0,0,0, 0,0,0, 0,0,0]')
-                S_in = np.zeros((1,9))
-                Qsa_0_0 = self.QSA_net[0](S_in).numpy()[0]
-                Qsa_1_0 = self.QSA_net[1](S_in).numpy()[0]
+                S = [0] * self.N_A
+                action_buff = [0] * self.N_A
+                Qsa_0_0, Qsa_1_0 = [], []
+                for action in range(self.N_A):
+                    action_buff[action] = 1
+                    X_in = np.array(S + action_buff).reshape(1,-1)
+                    Qsa_0_0.append(self.QSA_net[0](X_in).numpy()[0,0])
+                    Qsa_1_0.append(self.QSA_net[1](X_in).numpy()[0,0])
                 print('Qsa[0][0,:]', [f'{Qsa_0_0[a]:.1e}' for a in range(9)])
                 print('Qsa[1][0,:]', [f'{Qsa_1_0[a]:.1e}' for a in range(9)])
                 print('Exproration: Epsilon=', self.epsilon)
