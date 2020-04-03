@@ -1984,7 +1984,7 @@ def learning_stage_qlearn(N_episodes=100, epsilon=0.4, save_flag=True, fig_flag=
     return my_Q_System
 
 
-def learning_stage_dqn(N_episodes=100, epsilon=0.4, save_flag=True, fig_flag=False):
+def learning_stage_dqn(N_episodes=100, epsilon=0.2, save_flag=True, fig_flag=False):
     ff = 0.9
     lr = 0.01
     N_Symbols = 3 # 0=empty, 1=plyaer1, 2=player2
@@ -2111,7 +2111,7 @@ def q1_learning():
     elif Q2 == 1:
         _ = learning_stage_qlearn(N_episodes=Q1, fig_flag=True)
     elif Q2 == 2:
-        _ = learning_stage_dqn(N_episodes=Q1, fig_flag=True)
+        _ = learning_stage_dqn(N_episodes=Q1, epsilon=0.2, fig_flag=True)
     else:
         print('Type a different option in (0,1)')
 
@@ -2360,7 +2360,8 @@ class Q_System_DQN(Q_System_QL):
             cnt_trace.append(cnt.copy())
 
             if episode % print_cnt == 0:
-                print(episode, cnt)                
+                print('Finished episode: #', episode)
+                print('cnt: ', cnt)
                 print('S = [0,0,0, 0,0,0, 0,0,0]')
                 S = [0] * self.N_A
                 action_buff = [0] * self.N_A
