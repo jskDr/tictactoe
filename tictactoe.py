@@ -2099,21 +2099,24 @@ def q1_learning():
     print('------------------------------')
     print('Start to learn a new agent...')
     print()
-    Q1 = input_default('How many episode do you want to learn?(default=10000) ', 10000, int)
+    N_episodes = input_default('How many episode do you want to learn?(default=10000) ', 10000, int)
+
+    print()
+    epsilon = input_default('What is Epsilon for exploration?(default=0.1) ', 0.1, float)
 
     print()
     print('0) MC Backup with e-Greedy')
     print('1) Q-learning')
     print('2) DQN')
-    Q2 = input_default('What learning method do you want to use? (0=default) ', 0 , int)
-    if Q2 == 0:
-        _ = learning_stage_mc(N_episodes=Q1, fig_flag=True)
-    elif Q2 == 1:
-        _ = learning_stage_qlearn(N_episodes=Q1, fig_flag=True)
-    elif Q2 == 2:
-        _ = learning_stage_dqn(N_episodes=Q1, epsilon=0.2, fig_flag=True)
+    Method = input_default('What learning method do you want to use?(0=default) ', 0 , int)
+    if Method == 0:
+        _ = learning_stage_mc(N_episodes=N_episodes, fig_flag=True)
+    elif Method == 1:
+        _ = learning_stage_qlearn(N_episodes=N_episodes, fig_flag=True)
+    elif Method == 2:
+        _ = learning_stage_dqn(N_episodes=N_episodes, epsilon=epsilon, fig_flag=True)
     else:
-        print('Type a different option in (0,1)')
+        print('No such method is supported.')
 
 def q1_testing():
     print('Start to test code...')
@@ -2275,9 +2278,9 @@ class Q_System_DQN(Q_System_QL):
                 print(episode, cnt)                
                 print('S = [0,0,0, 0,0,0, 0,0,0]')
                 S = [0] * self.N_A
-                action_buff = [0] * self.N_A
                 Qsa_0_0, Qsa_1_0 = [], []
                 for action in range(self.N_A):
+                    action_buff = [0] * self.N_A
                     action_buff[action] = 1
                     X_in = np.array(S + action_buff).reshape(1,-1)
                     Qsa_0_0.append(self.QSA_net[0](X_in).numpy()[0,0])
@@ -2360,13 +2363,15 @@ class Q_System_DQN(Q_System_QL):
             cnt_trace.append(cnt.copy())
 
             if episode % print_cnt == 0:
+                print()
                 print('Finished episode: #', episode)
                 print('cnt: ', cnt)
+                print(f'Play order:{play_order}, P_no:{P_no}')
                 print('S = [0,0,0, 0,0,0, 0,0,0]')
                 S = [0] * self.N_A
-                action_buff = [0] * self.N_A
                 Qsa_0_0, Qsa_1_0 = [], []
                 for action in range(self.N_A):
+                    action_buff = [0] * self.N_A
                     action_buff[action] = 1
                     X_in = np.array(S + action_buff).reshape(1,-1)
                     Qsa_0_0.append(self.QSA_net[0](X_in).numpy()[0,0])
