@@ -247,14 +247,14 @@ class Q_System:
 
     def save(self):
         f = open('tictactoe_data.pckl', 'wb')
-        obj = [self.N_A, self.N_Symbols, self.epsilon, self.Qsa]
+        obj = [self.N_A, self.N_Symbols, self.epsilon, self.Qsa, 'Q_System']
         pickle.dump(obj, f)
         f.close()
 
     def load(self):
         f = open('tictactoe_data.pckl', 'rb')
         obj = pickle.load(f)
-        [self.N_A, self.N_Symbols, self.epsilon, self.Qsa] = obj
+        [self.N_A, self.N_Symbols, self.epsilon, self.Qsa, self.class_name] = obj
         f.close()
 
     def print_s_a(self, S, action_list):
@@ -421,11 +421,16 @@ class Q_System:
             yes, action = self.check_lose_protection_action(P_no, S, action_list)
             if yes == False:
                 action = self.policy(P_no, S, action_list)
-        S_idx = self.calc_S_idx(S)                    
-        print('[Agent-Qsa]', [f'{self.Qsa[P_no-1][S_idx,a]:.1e}' for a in action_list])
+        self.show_Qsa(action_list, P_no, S)                    
+        # print('[Agent-Qsa]', [f'{self.Qsa[P_no-1][S_idx,a]:.1e}' for a in action_list])
         print('Agent action:', action)
         done = no_occupied == (self.N_A - 1)
         return action, done
+
+    def show_Qsa(self, action_list, P_no, S):
+        if self.Qsa: 
+            S_idx = self.calc_S_idx(S)
+            print('[Qsa]', [f'{a}:{self.Qsa[P_no-1][S_idx,a]:.1e}' for a in action_list])
 
     def get_action_with_human(self, P_no, S):
         """
@@ -441,8 +446,7 @@ class Q_System:
         # denominator is also updated. 
         print('The current game state is:')
         self.print_s_a(S, action_list)
-        S_idx = self.calc_S_idx(S)
-        print('[Qsa]', [f'{a}:{self.Qsa[P_no-1][S_idx,a]:.1e}' for a in action_list])
+        self.show_Qsa(action_list, P_no, S)
 
         rand_idx = np.random.randint(0, len(action_list))
         random_action = action_list[int(rand_idx)]
@@ -2196,9 +2200,10 @@ class MLP_AGENT(tf.keras.layers.Layer):
         return self.linear_3(x)
 
 class Q_System_DQN(Q_System_QL):
-    def __init__(self, N_A, N_Symbols):
+    def __init__(self, N_A=9, N_Symbols=3):
         super(Q_System_DQN, self).__init__(N_A=N_A, N_Symbols=N_Symbols)
-        self.QSA_net = [MLP_AGENT(self.N_A, self.N_A, self.N_A), MLP_AGENT(self.N_A, self.N_A, self.N_A)]
+        if N_A is not None:
+            self.QSA_net = [MLP_AGENT(self.N_A, self.N_A, self.N_A), MLP_AGENT(self.N_A, self.N_A, self.N_A)]
 
     def _get_q_net(self, S, action_list, P_no):
         action_prob = []
@@ -2558,9 +2563,22 @@ class CNN_AGENT(tf.keras.layers.Layer):
 
 
 class Q_System_CNNDQN(Q_System_DQN):
-    def __init__(self, N_A, N_Symbols):
+    def __init__(self, N_A=9, N_Symbols=3):
         super(Q_System_CNNDQN, self).__init__(N_A=N_A, N_Symbols=N_Symbols)
-        self.QSA_net = [CNN_AGENT(self.N_A, self.N_A, self.N_A), CNN_AGENT(self.N_A, self.N_A, self.N_A)]
+        if N_A is not None:
+            self.QSA_net = [CNN_AGENT(self.N_A, self.N_A, self.N_A), CNN_AGENT(self.N_A, self.N_A, self.N_A)]
+
+    def save(self):
+        f = open('tictactoe_data.pckl', 'wb')
+        obj = [self.N_A, self.N_Symbols, self.epsilon, self.QSA_net, 'Q_System_CNNDQN']
+        pickle.dump(obj, f)
+        f.close()
+
+    def load(self):
+        f = open('tictactoe_data.pckl', 'rb')
+        obj = pickle.load(f)
+        [self.N_A, self.N_Symbols, self.epsilon, self.QSA_net, self.class_name] = obj
+        f.close()
 
     def make_X_in(self, S, action_buff):
         sqrt_n_a = int(np.sqrt(self.N_A))
@@ -2688,7 +2706,7 @@ def learning_stage_cnndqn_variable_epsilon(N_episodes=100, epsilon_d=0.2, save_f
     # In random agent playing here, no progress should be displayed.
     print(N_episodes, f"Last cnt:{cnt_last}, Normalized last cnt:{cnt_last_normal}")
 
-    if save_flag:
+    if save_flag:        
         my_Q_System.save()
 
     if fig_flag:
@@ -2707,8 +2725,15 @@ def q1_playing():
         print('Agent=1(X), You=2(O)') 
     trained_Q_System = Q_System(None)
     trained_Q_System.load()
+    
+    print()
+    print( '********************************************************************')
+    print(f'You are going to playing with our AI agent - {trained_Q_System.class_name}.')
+    if trained_Q_System.class_name == 'Q_System_CNNDQN':
+        trained_Q_System = Q_System_CNNDQN(None)
+        trained_Q_System.load()
+
     trained_Q_System.play_with_human_inference(player_human)
-    # print(len(trained_Q_System.Qsa))
 
 def q1_learning():
     """
@@ -2794,3 +2819,4 @@ if __name__ == "__main__":
     main()
     # Testing('all')
     pass
+
