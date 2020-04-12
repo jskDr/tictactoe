@@ -2568,17 +2568,46 @@ class Q_System_CNNDQN(Q_System_DQN):
         if N_A is not None:
             self.QSA_net = [CNN_AGENT(self.N_A, self.N_A, self.N_A), CNN_AGENT(self.N_A, self.N_A, self.N_A)]
 
-    def save(self):
+    def _save(self):
+        QSA_net_file_list = ['QSA_net_p1', 'QSA_net_p2']
+
         f = open('tictactoe_data.pckl', 'wb')
-        obj = [self.N_A, self.N_Symbols, self.epsilon, self.QSA_net, 'Q_System_CNNDQN']
+        obj = [self.N_A, self.N_Symbols, self.epsilon, QSA_net_file_list, 'Q_System_CNNDQN']
         pickle.dump(obj, f)
         f.close()
+
+        for i, fname in enumerate(QSA_net_file_list):
+            self.QSA_net[i].save_weights(fname)
+
+    def save(self):
+        # weights should be saving to array form, in order to use in load
+        f = open('tictactoe_data.pckl', 'wb')
+        W_p1 = [W.numpy() for W in self.QSA_net[0].weights]
+        W_p2 = [W.numpy() for W in self.QSA_net[1].weights]
+        obj = [self.N_A, self.N_Symbols, self.epsilon, [W_p1, W_p2], 'Q_System_CNNDQN']
+        pickle.dump(obj, f)
+        f.close()
+
+    def _load(self):
+        f = open('tictactoe_data.pckl', 'rb')
+        obj = pickle.load(f)
+        [self.N_A, self.N_Symbols, self.epsilon, QSA_net_file_list, self.class_name] = obj
+        f.close()
+
+        for i, fname in enumerate(QSA_net_file_list):
+            self.QSA_net[i].load_weights(fname)
 
     def load(self):
         f = open('tictactoe_data.pckl', 'rb')
         obj = pickle.load(f)
-        [self.N_A, self.N_Symbols, self.epsilon, self.QSA_net, self.class_name] = obj
+        [self.N_A, self.N_Symbols, self.epsilon, W_list, self.class_name] = obj
         f.close()
+
+        sqrt_n_a = int(np.sqrt(self.N_A))
+        _ = self.QSA_net[0](np.zeros((1,2,sqrt_n_a,sqrt_n_a)))
+        self.QSA_net[0].set_weights(W_list[0])
+        _ = self.QSA_net[1](np.zeros((1,2,sqrt_n_a,sqrt_n_a)))
+        self.QSA_net[1].set_weights(W_list[1])
 
     def make_X_in(self, S, action_buff):
         sqrt_n_a = int(np.sqrt(self.N_A))
@@ -2600,7 +2629,9 @@ class Q_System_CNNDQN(Q_System_DQN):
         action_prob = list(Qsa)
         return action_prob
 
-    def learning_cnndqn_variable_epsilon(self, N_episodes=2, ff=0.9, lr=0.01, epsilon_d=0.1, print_cnt=10):
+    def learning_cnndqn_variable_epsilon(self, N_episodes=2, ff=0.9, lr=0.01, 
+            epsilon_d={'first value':0.4, 'epsilon change episode': 000, 'second value':0.1}, 
+            print_cnt=10):
         cnt = [0, 0, 0, 0, 0, 0, 0, 0, 0] # tie, p1, p2
         cnt_trace = [cnt.copy()]        
 
@@ -2689,7 +2720,9 @@ class Q_System_CNNDQN(Q_System_DQN):
 
         return cnt_trace        
 
-def learning_stage_cnndqn_variable_epsilon(N_episodes=100, epsilon_d=0.2, save_flag=True, fig_flag=False):
+def learning_stage_cnndqn_variable_epsilon(N_episodes=100, 
+        epsilon_d={'first value':0.4, 'epsilon change episode': 000, 'second value':0.1}, 
+        save_flag=True, fig_flag=False):
     ff = 0.9
     lr = 0.01
     N_Symbols = 3 # 0=empty, 1=plyaer1, 2=player2
@@ -2730,7 +2763,10 @@ def q1_playing():
     print( '********************************************************************')
     print(f'You are going to playing with our AI agent - {trained_Q_System.class_name}.')
     if trained_Q_System.class_name == 'Q_System_CNNDQN':
-        trained_Q_System = Q_System_CNNDQN(None)
+        # In order to download model weights, a NN model should be defined. 
+        N_A = 9
+        N_Symbols = 3
+        trained_Q_System = Q_System_CNNDQN(N_A=N_A, N_Symbols=N_Symbols)
         trained_Q_System.load()
 
     trained_Q_System.play_with_human_inference(player_human)
