@@ -1557,7 +1557,7 @@ class Tictactoe_Env:
                 elif len(self.action_list) == self.N_A: # Tie 
                     reward = 0.5
                     done = True
-                else:
+                else: # Continue playing
                     reward = 0.0
 
         S_copy = self.S.copy()
@@ -1619,6 +1619,30 @@ class Tictactoe_Env:
             if action not in self.action_list:
                 actions.append(action)
         return sample(actions,1)[0]
+
+
+class Tictactoe_Env_Active(Tictactoe_Env):
+    def __init__(self, N_A:int=9, play_order:int=1, agent_type=0):
+        """
+        agent_type = 0(random), 1(advanced)
+        """
+        super(Tictactoe_Env_Active,self).__init__(N_A=N_A, play_order=play_order)
+        
+        self.agent_type = agent_type
+        if self.agent_type == 1: # advanved agent
+            self.q_sys = Q_System_CNNDQN(N_A=N_A, N_Symbols=3)
+            self.q_sys.load()
+
+    def advanced_action(self):
+        P_no = 1
+        action, _ = self.q_sys.get_action(P_no, self.S)
+        return action
+
+    def get_player_action(self):
+        if self.agent_type == 0: # random
+            return self.sample_action()
+        else: #1, advanced
+            return self.advanced_action()
 
 
 def test_tictactoe_env(play_order:int=1, disp_flag:bool=False) -> float:
@@ -2581,7 +2605,7 @@ class Q_System_CNNDQN(Q_System_DQN):
 
     def save(self):
         # weights should be saving to array form, in order to use in load
-        f = open('tictactoe_data.pckl', 'wb')
+        f = open('tictactoe_data_cnndqn.pckl', 'wb')
         W_p1 = [W.numpy() for W in self.QSA_net[0].weights]
         W_p2 = [W.numpy() for W in self.QSA_net[1].weights]
         obj = [self.N_A, self.N_Symbols, self.epsilon, [W_p1, W_p2], 'Q_System_CNNDQN']
@@ -2598,7 +2622,7 @@ class Q_System_CNNDQN(Q_System_DQN):
             self.QSA_net[i].load_weights(fname)
 
     def load(self):
-        f = open('tictactoe_data.pckl', 'rb')
+        f = open('tictactoe_data_cnndqn.pckl', 'rb')
         obj = pickle.load(f)
         [self.N_A, self.N_Symbols, self.epsilon, W_list, self.class_name] = obj
         f.close()
@@ -2720,9 +2744,105 @@ class Q_System_CNNDQN(Q_System_DQN):
 
         return cnt_trace        
 
+
+    def learning_cnndqn_variable_epsilon_active(self, N_episodes=2, ff=0.9, lr=0.01, 
+            epsilon_d={'first value':0.4, 'epsilon change episode': 000, 'second value':0.1}, 
+            print_cnt=10, agent_type:int=0):
+        """
+        The computer player is an agent playing better than a random policy player and 
+        reach to the human best player. 
+        """
+        cnt = [0, 0, 0, 0, 0, 0, 0, 0, 0] # tie, p1, p2
+        cnt_trace = [cnt.copy()]        
+
+        # Opponent player index
+        P_no = 1 # player Q function, regardless of play order (first or next)
+        play_order = 1
+        ttt_env = Tictactoe_Env_Active(self.N_A, play_order=play_order, agent_type=agent_type) #both X but start 1st and 2nd
+        optimizer = tf.keras.optimizers.Adam()
+        loss_f = tf.keras.losses.MeanSquaredError()   
+
+        self.epsilon = epsilon_d['first value']
+        for episode in range(N_episodes):
+            if episode == epsilon_d['epsilon change episode']:                           
+                self.epsilon = epsilon_d['second value']
+
+            S, _ = ttt_env.reset(play_order=play_order)
+            done = False            
+            Replay_buff = []
+            while not done:
+                # self.epsilon = epsilon # epsilon is a hyperparamter for exploration
+                action, _ = self.get_action(P_no, S)
+                S_new, _, reward, done = ttt_env.step(action)
+                Replay_buff.append([S.copy(), action, S_new.copy(), reward, done])
+                # print(episode, [S, action, S_new, reward])
+                S = S_new
+
+            #######################################
+            # DQN start, here for learning   
+            #######################################
+            # print('play_order, P_no = ', play_order, P_no)
+            # No buffer shuffling
+            sqrt_n_a = int(np.sqrt(self.N_A))
+            X_N = np.zeros((len(Replay_buff), 2, sqrt_n_a, sqrt_n_a))
+            y_N = np.zeros(len(Replay_buff))
+            for i, buff in enumerate(Replay_buff):
+                S, action, S_new, reward, done = buff
+                if done:
+                    y = reward
+                else:
+                    action_list_new, _ = self.find_action_list(S_new)
+                    action_prob_array_new = self.get_q_net(S_new, action_list_new, P_no)
+                    y = reward + ff*np.max(action_prob_array_new)
+                y_N[i] = y
+                action_buff = [0] * self.N_A
+                action_buff[action] = 1
+                X_N[i] = self.make_X_in(S, action_buff)
+            with tf.GradientTape() as tape:
+                Qsa_N = self.QSA_net[P_no-1](X_N)
+                loss_value = loss_f(y_N, Qsa_N)
+            gradients = tape.gradient(loss_value, self.QSA_net[P_no-1].trainable_weights)
+            optimizer.apply_gradients(zip(gradients, self.QSA_net[P_no-1].trainable_weights))
+
+            if Replay_buff[-1][3] == 1.0: 
+                cnt[1] += 1               # P_no = 1 
+                cnt[2 + play_order] += 1  # player_order = 1
+                cnt[4 + play_order] += 1  # player_order | P_no = 1, so it occupied 2 lists
+            elif Replay_buff[-1][3] == 0.5:
+                cnt[0] += 1 
+            else: # play_order = 2
+                cnt[2] += 1                   # P_no = 2  
+                cnt[2 + 3 - play_order] += 1  # player_order = 2
+                cnt[6 + 3 - play_order] += 1  # player_order | P_no = 2, so it start from 6
+
+            cnt_trace.append(cnt.copy())
+
+            if episode % print_cnt == 0:
+                print()
+                print('Finished episode: #', episode)
+                print('cnt: ', cnt)
+                print(f'Play order:{play_order}, P_no:{P_no}')
+                print('S = [0,0,0, 0,0,0, 0,0,0]')
+                S = [0] * self.N_A
+                Qsa_0_0, Qsa_1_0 = [], []
+                for action in range(self.N_A):
+                    action_buff = [0] * self.N_A
+                    action_buff[action] = 1
+                    X_in = np.zeros((1, 2, sqrt_n_a, sqrt_n_a))
+                    X_in[0] = self.make_X_in(S, action_buff)
+                    Qsa_0_0.append(self.QSA_net[0](X_in).numpy()[0,0])
+                    Qsa_1_0.append(self.QSA_net[1](X_in).numpy()[0,0])
+                print('Qsa[0][0,:]', [f'{Qsa_0_0[a]:.1e}' for a in range(9)])
+                print('Qsa[1][0,:]', [f'{Qsa_1_0[a]:.1e}' for a in range(9)])
+                print('Exproration: Epsilon=', self.epsilon)
+
+            play_order = 3 - play_order # 1 --> 2, 2 --> 1
+
+        return cnt_trace  
+
 def learning_stage_cnndqn_variable_epsilon(N_episodes=100, 
         epsilon_d={'first value':0.4, 'epsilon change episode': 000, 'second value':0.1}, 
-        save_flag=True, fig_flag=False):
+        agent_type:int=0, save_flag=True, fig_flag=False):
     ff = 0.9
     lr = 0.01
     N_Symbols = 3 # 0=empty, 1=plyaer1, 2=player2
@@ -2730,7 +2850,9 @@ def learning_stage_cnndqn_variable_epsilon(N_episodes=100,
     print_cnt = N_episodes / 10
 
     my_Q_System = Q_System_CNNDQN(N_A, N_Symbols)
-    cnt_trace = my_Q_System.learning_cnndqn_variable_epsilon(N_episodes=N_episodes, ff=ff, lr=lr, epsilon_d=epsilon_d, print_cnt=print_cnt)
+    cnt_trace = my_Q_System.learning_cnndqn_variable_epsilon_active(N_episodes=N_episodes, 
+                    ff=ff, lr=lr, epsilon_d=epsilon_d, print_cnt=print_cnt,
+                    agent_type=agent_type)
 
     print('-------------------')
     cnt_last = cnt_trace[-1]
@@ -2776,6 +2898,7 @@ def q1_learning():
     1. After learning testing playing with a random playing agent and a best playing agent. 
        In the test, our agent should not include rule playing while the best player will has it.
        The best player is equal to out agent with the guide rule function.
+    2. INcluding the learning method to learn with expert not random player. 
     """
     print()
     print('------------------------------')
@@ -2787,6 +2910,7 @@ def q1_learning():
     epsilon = input_default('What is initial Epsilon for exploration?(default=0.4) ', 0.4, float)
     second_epsilon = input_default('What is second Epsilon for exploration?(default=0.1) ', 0.1, float)
     epsilon_change_episode = input_default('What episode do you want to change Epsilon?(default=2000) ', 2000, int)
+    agent_type = input_default('Which type of a computer agent do you want to play with?(default=0:random, 1:advanced) ', 0, int)
     
     print()
     print('0) MC Backup with e-Greedy')
@@ -2807,7 +2931,8 @@ def q1_learning():
         _ = learning_stage_dqn_variable_epsilon(N_episodes=N_episodes, epsilon_d=epsilon_d, fig_flag=True)
     elif Method == 4:
         epsilon_d = {'first value':epsilon, 'second value':second_epsilon, 'epsilon change episode':epsilon_change_episode}
-        _ = learning_stage_cnndqn_variable_epsilon(N_episodes=N_episodes, epsilon_d=epsilon_d, fig_flag=True)
+        _ = learning_stage_cnndqn_variable_epsilon(N_episodes=N_episodes, epsilon_d=epsilon_d, 
+                agent_type=agent_type, fig_flag=True)
     else:
         print('No such method is supported.')
 
