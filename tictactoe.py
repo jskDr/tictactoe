@@ -296,7 +296,7 @@ class Q_System:
             reward = calc_reward_tf(Sa)
             # print('Checking available win:P_no, S, Sa, action', P_no, S, Sa, action)
             if reward:
-                print('Founded available win: Sa, action-->', Sa, action)
+                # print('Founded available win: Sa, action-->', Sa, action)
                 return True, action
         return False, None
 
@@ -312,7 +312,7 @@ class Q_System:
             Sa[action] = player_op
             reward = calc_reward_tf(Sa)
             if reward:
-                print('Founded lose protection: Sa, action -->', Sa, action)
+                # print('Founded lose protection: Sa, action -->', Sa, action)
                 return True, action
         return False, None
 
@@ -421,9 +421,10 @@ class Q_System:
             yes, action = self.check_lose_protection_action(P_no, S, action_list)
             if yes == False:
                 action = self.policy(P_no, S, action_list)
-        self.show_Qsa(action_list, P_no, S)                    
+        if self.disp_flag: 
+            self.show_Qsa(action_list, P_no, S)                    
         # print('[Agent-Qsa]', [f'{self.Qsa[P_no-1][S_idx,a]:.1e}' for a in action_list])
-        print('Agent action:', action)
+        # print('Agent action:', action)
         done = no_occupied == (self.N_A - 1)
         return action, done
 
@@ -1629,7 +1630,7 @@ class Tictactoe_Env_Active(Tictactoe_Env):
         super(Tictactoe_Env_Active,self).__init__(N_A=N_A, play_order=play_order)
         
         self.agent_type = agent_type
-        if self.agent_type == 1: # advanved agent
+        if self.agent_type > 0: # advanved agent
             self.q_sys = Q_System_CNNDQN(N_A=N_A, N_Symbols=3)
             self.q_sys.load()
 
@@ -1638,11 +1639,18 @@ class Tictactoe_Env_Active(Tictactoe_Env):
         action, _ = self.q_sys.get_action(P_no, self.S)
         return action
 
+    def premium_action(self):
+        P_no = 1
+        action, _ = self.q_sys.get_action_against_human(P_no, self.S)
+        return action       
+
     def get_player_action(self):
         if self.agent_type == 0: # random
             return self.sample_action()
-        else: #1, advanced
+        elif self.agent_type == 1: # #1, advanced
             return self.advanced_action()
+        else: # agent_type==2
+            return self.premium_action()
 
 
 def test_tictactoe_env(play_order:int=1, disp_flag:bool=False) -> float:
@@ -2910,7 +2918,7 @@ def q1_learning():
     epsilon = input_default('What is initial Epsilon for exploration?(default=0.4) ', 0.4, float)
     second_epsilon = input_default('What is second Epsilon for exploration?(default=0.1) ', 0.1, float)
     epsilon_change_episode = input_default('What episode do you want to change Epsilon?(default=2000) ', 2000, int)
-    agent_type = input_default('Which type of a computer agent do you want to play with?(default=0:random, 1:advanced) ', 0, int)
+    agent_type = input_default('Which type of a computer agent do you want to play with?(default=0:random, 1:advanced, 2:premium) ', 0, int)
     
     print()
     print('0) MC Backup with e-Greedy')
