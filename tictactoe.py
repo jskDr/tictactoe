@@ -293,7 +293,7 @@ class Q_System:
         for action in action_list:
             Sa = S.copy()
             Sa[action] = P_no 
-            reward = calc_reward_tf(Sa)
+            reward = calc_reward_numba(MASK_L, Sa)
             # print('Checking available win:P_no, S, Sa, action', P_no, S, Sa, action)
             if reward:
                 # print('Founded available win: Sa, action-->', Sa, action)
@@ -305,12 +305,14 @@ class Q_System:
         yes, action = check_lose_protection_action(P_no, S, action_list)
         - check whether there is need for the imidiate action to protect lose
         by the proponent's next move.
+
+        - calc_reward_tf --> calc_reward_numba: to upgrade the computation speed.
         """ 
         for action in action_list:
             Sa = S.copy()
             player_op = 1 if P_no==2 else 2
             Sa[action] = player_op
-            reward = calc_reward_tf(Sa)
+            reward = calc_reward_numba(MASK_L, Sa)
             if reward:
                 # print('Founded lose protection: Sa, action -->', Sa, action)
                 return True, action
@@ -497,7 +499,7 @@ class Q_System:
             if self.disp_flag:
                 print('S:', S)
             
-            win_player = calc_reward_tf(S)
+            win_player = calc_reward_numba(MASK_L, S)
             reward = 0 if win_player == 0 else 1
             Buff['r'].append(reward)
             P_no = 1 if P_no == 2 else 2
@@ -549,7 +551,7 @@ class Q_System:
             if self.disp_flag:
                 print('S:', S)
             
-            win_player = calc_reward_tf(S)
+            win_player = calc_reward_numba(MASK_L, S)
             if win_player == 0:
                 reward = 0.5 if done else 0 # if tie, reward -> 0.5, otherwise 0 yet 
             else: 
@@ -608,7 +610,7 @@ class Q_System:
             if self.disp_flag:
                 print('S:', S)
             
-            win_player = calc_reward_tf(S)
+            win_player = calc_reward_numba(MASK_L, S)
             reward = 0 if win_player == 0 else 1
             Buff['r'].append(reward)
             P_no = 1 if P_no == 2 else 2
@@ -670,7 +672,7 @@ class Q_System:
             if self.disp_flag:
                 print('S:', S)
             
-            win_player = calc_reward_tf(S)
+            win_player = calc_reward_numba(MASK_L, S)
             reward = 0 if win_player == 0 else 1
             Buff['r'].append(reward)
             P_no = 1 if P_no == 2 else 2
@@ -1034,7 +1036,7 @@ def play_by_scenario_fn(action_list, N_A=9):
     for action in action_list:
         # action, done = get_action_by_scenario()
         set_state_inplace(S, action, P_no)
-        win_player = calc_reward_tf(S)
+        win_player = calc_reward_numba(MASK_L, S)
         if win_player:
             return win_player
         P_no = 1 if P_no == 2 else 2
@@ -1417,7 +1419,7 @@ class Testing:
 
         print('-------------------------------------')
         print('[Test]')
-        test = [calc_reward_tf(S) for S in S_examples] 
+        test = [calc_reward_numba(MASK_L, S) for S in S_examples] 
         print(test)  
         if test == answer:
             print('Test Ok')
@@ -2594,11 +2596,37 @@ class CNN_AGENT(tf.keras.layers.Layer):
         return self.linear_1(x)
 
 
+def get_X_in_stack(N_A:int, sqrt_n_a:int, action_list_array:np.ndarray, S_array:np.ndarray):
+    # sqrt_n_a = int(np.sqrt(self.N_A))
+    X_in_stack = np.zeros((len(action_list_array), 2, sqrt_n_a, sqrt_n_a))
+    action_buff_array = np.zeros((sqrt_n_a, sqrt_n_a))
+    for i in range(action_list_array.shape[0]):
+        a = action_list_array[i]
+        action_buff_array[a//sqrt_n_a, a%sqrt_n_a] = 1
+        X_in_stack[i, 0] = S_array.reshape(sqrt_n_a, sqrt_n_a)
+        X_in_stack[i, 1] = action_buff_array.reshape(sqrt_n_a, sqrt_n_a)
+        action_buff_array[a//sqrt_n_a, a%sqrt_n_a] = 0
+    return X_in_stack
+
+@jit
+def get_X_in_stack_numba(N_A:int, sqrt_n_a:int, action_list_array:np.ndarray, S_array:np.ndarray):
+    # sqrt_n_a = int(np.sqrt(self.N_A))
+    X_in_stack = np.zeros((len(action_list_array), 2, sqrt_n_a, sqrt_n_a))
+    action_buff_array = np.zeros((sqrt_n_a, sqrt_n_a))
+    for i in range(action_list_array.shape[0]):
+        a = action_list_array[i]
+        action_buff_array[a//sqrt_n_a, a%sqrt_n_a] = 1
+        X_in_stack[i, 0] = S_array.reshape(sqrt_n_a, sqrt_n_a)
+        X_in_stack[i, 1] = action_buff_array.reshape(sqrt_n_a, sqrt_n_a)
+        action_buff_array[a//sqrt_n_a, a%sqrt_n_a] = 0
+    return X_in_stack
+
 class Q_System_CNNDQN(Q_System_DQN):
     def __init__(self, N_A=9, N_Symbols=3):
         super(Q_System_CNNDQN, self).__init__(N_A=N_A, N_Symbols=N_Symbols)
         if N_A is not None:
             self.QSA_net = [CNN_AGENT(self.N_A, self.N_A, self.N_A), CNN_AGENT(self.N_A, self.N_A, self.N_A)]
+            self.sqrt_n_a = int(np.sqrt(self.N_A))
 
     def _save(self):
         QSA_net_file_list = ['QSA_net_p1', 'QSA_net_p2']
@@ -2648,7 +2676,7 @@ class Q_System_CNNDQN(Q_System_DQN):
         X_in_each[1] = np.array(action_buff).reshape(sqrt_n_a, sqrt_n_a)
         return X_in_each
 
-    def get_q_net(self, S:np.ndarray, action_list, P_no):
+    def _get_q_net(self, S:np.ndarray, action_list, P_no):
         action_prob = []
         sqrt_n_a = int(np.sqrt(self.N_A))
         X_in_stack = np.zeros((len(action_list), 2, sqrt_n_a, sqrt_n_a))
@@ -2657,6 +2685,14 @@ class Q_System_CNNDQN(Q_System_DQN):
             action_buff = [0] * self.N_A
             action_buff[a] = 1
             X_in_stack[i] = self.make_X_in(S, action_buff)
+        Qsa = self.QSA_net[P_no-1](X_in_stack).numpy()[:,0]
+        action_prob = list(Qsa)
+        return action_prob
+
+    def get_q_net(self, S:np.ndarray, action_list, P_no):
+        # S_array_2d is 2-D array such as [3,3] for convolutional use
+        S_array_2d = np.array(S).reshape(self.sqrt_n_a, self.sqrt_n_a)
+        X_in_stack = get_X_in_stack_numba(self.N_A, self.sqrt_n_a, np.array(action_list), S_array_2d)
         Qsa = self.QSA_net[P_no-1](X_in_stack).numpy()[:,0]
         action_prob = list(Qsa)
         return action_prob
@@ -2873,7 +2909,7 @@ def learning_stage_cnndqn_variable_epsilon(N_episodes=100,
         my_Q_System.save()
 
     if fig_flag:
-        plot_cnt_trace_normal_order_detail(cnt_trace, title='Q-learning')
+        plot_cnt_trace_normal_order_detail(cnt_trace, title='CNN-DQN')
 
     return my_Q_System
 
