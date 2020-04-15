@@ -2597,7 +2597,7 @@ class CNN_AGENT(tf.keras.layers.Layer):
 
 
 def get_X_in_stack(N_A:int, sqrt_n_a:int, action_list_array:np.ndarray, S_array_2d:np.ndarray):
-    X_in_stack = np.zeros((len(action_list_array), 2, sqrt_n_a, sqrt_n_a))
+    X_in_stack = np.zeros((len(action_list_array), 2, sqrt_n_a, sqrt_n_a), dtype='float32')
     for i in range(action_list_array.shape[0]):
         a = action_list_array[i]
         X_in_stack[i, 0] = S_array_2d
@@ -2663,9 +2663,9 @@ class Q_System_CNNDQN(Q_System_DQN):
         f.close()
 
         sqrt_n_a = int(np.sqrt(self.N_A))
-        _ = self.QSA_net[0](np.zeros((1,2,sqrt_n_a,sqrt_n_a)))
+        _ = self.QSA_net[0](np.zeros((1,2,sqrt_n_a,sqrt_n_a), dtype='float32'))
         self.QSA_net[0].set_weights(W_list[0])
-        _ = self.QSA_net[1](np.zeros((1,2,sqrt_n_a,sqrt_n_a)))
+        _ = self.QSA_net[1](np.zeros((1,2,sqrt_n_a,sqrt_n_a), dtype='float32'))
         self.QSA_net[1].set_weights(W_list[1])
 
     def make_X_in(self, S, action_buff):
@@ -2691,8 +2691,8 @@ class Q_System_CNNDQN(Q_System_DQN):
     def get_q_net(self, S:np.ndarray, action_list, P_no):
         # S_array_2d is 2-D array such as [3,3] for convolutional use
         S_array_2d = np.array(S, dtype='float32').reshape(self.sqrt_n_a, self.sqrt_n_a)
-        action_list_array = np.array(action_list, dtype='float32')
-        X_in_stack = get_X_in_stack_numba(self.N_A, self.sqrt_n_a, action_list_array, S_array_2d)
+        action_list_array = np.array(action_list, dtype='int')
+        X_in_stack = get_X_in_stack(self.N_A, self.sqrt_n_a, action_list_array, S_array_2d)
         Qsa = self.QSA_net[P_no-1](X_in_stack).numpy()[:,0]
         action_prob = list(Qsa)
         return action_prob
