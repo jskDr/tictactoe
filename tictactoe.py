@@ -2606,12 +2606,19 @@ def get_X_in_stack(N_A:int, sqrt_n_a:int, action_list_array:np.ndarray, S_array_
 
 @jit
 def get_X_in_stack_numba(N_A:int, sqrt_n_a:int, action_list_array:np.ndarray, S_array_2d:np.ndarray):
-    X_in_stack = np.zeros((len(action_list_array), 2, sqrt_n_a, sqrt_n_a))
+    X_in_stack = np.zeros((len(action_list_array), 2, sqrt_n_a, sqrt_n_a), dtype='float32')
     for i in range(action_list_array.shape[0]):
         a = action_list_array[i]
         X_in_stack[i, 0] = S_array_2d
         X_in_stack[i, 1, a//sqrt_n_a, a%sqrt_n_a] = 1
     return X_in_stack
+
+def cnn_learning_inline(QSA_net_each, X_N, y_N, loss_f, optimizer):
+    with tf.GradientTape() as tape:
+        Qsa_N = QSA_net_each(X_N)
+        loss_value = loss_f(y_N, Qsa_N)
+    gradients = tape.gradient(loss_value, QSA_net_each.trainable_weights)
+    optimizer.apply_gradients(zip(gradients, QSA_net_each.trainable_weights))       
 
 class Q_System_CNNDQN(Q_System_DQN):
     def __init__(self, N_A=9, N_Symbols=3):
@@ -2662,10 +2669,10 @@ class Q_System_CNNDQN(Q_System_DQN):
         self.QSA_net[1].set_weights(W_list[1])
 
     def make_X_in(self, S, action_buff):
-        sqrt_n_a = int(np.sqrt(self.N_A))
-        X_in_each = np.zeros((2, sqrt_n_a, sqrt_n_a))
-        X_in_each[0] = np.array(S).reshape(sqrt_n_a, sqrt_n_a)
-        X_in_each[1] = np.array(action_buff).reshape(sqrt_n_a, sqrt_n_a)
+        # sqrt_n_a = int(np.sqrt(self.N_A))
+        X_in_each = np.zeros((2, self.sqrt_n_a, self.sqrt_n_a), dtype='float32')
+        X_in_each[0] = np.array(S, dtype='float32').reshape(self.sqrt_n_a, self.sqrt_n_a)
+        X_in_each[1] = np.array(action_buff, 'float32').reshape(self.sqrt_n_a, self.sqrt_n_a)
         return X_in_each
 
     def _get_q_net(self, S:np.ndarray, action_list, P_no):
@@ -2683,9 +2690,9 @@ class Q_System_CNNDQN(Q_System_DQN):
 
     def get_q_net(self, S:np.ndarray, action_list, P_no):
         # S_array_2d is 2-D array such as [3,3] for convolutional use
-        S_array_2d = np.array(S).reshape(self.sqrt_n_a, self.sqrt_n_a)
-        #X_in_stack = get_X_in_stack_numba(self.N_A, self.sqrt_n_a, np.array(action_list), S_array_2d)
-        X_in_stack = get_X_in_stack_numba(self.N_A, self.sqrt_n_a, np.array(action_list), S_array_2d)
+        S_array_2d = np.array(S, dtype='float32').reshape(self.sqrt_n_a, self.sqrt_n_a)
+        action_list_array = np.array(action_list, dtype='float32')
+        X_in_stack = get_X_in_stack_numba(self.N_A, self.sqrt_n_a, action_list_array, S_array_2d)
         Qsa = self.QSA_net[P_no-1](X_in_stack).numpy()[:,0]
         action_prob = list(Qsa)
         return action_prob
@@ -2700,6 +2707,102 @@ class Q_System_CNNDQN(Q_System_DQN):
         P_no = 1 # player Q function, regardless of play order (first or next)
         play_order = 1
         ttt_env = Tictactoe_Env(self.N_A, play_order=play_order) #both X but start 1st and 2nd
+        optimizer = tf.keras.optimizers.Adam()
+        loss_f = tf.keras.losses.MeanSquaredError()   
+
+        self.epsilon = epsilon_d['first value']
+        for episode in range(N_episodes):
+            if episode == epsilon_d['epsilon change episode']:                           
+                self.epsilon = epsilon_d['second value']
+
+            S, _ = ttt_env.reset(play_order=play_order)
+            done = False            
+            Replay_buff = []
+            while not done:
+                # self.epsilon = epsilon # epsilon is a hyperparamter for exploration
+                action, _ = self.get_action(P_no, S)
+                S_new, _, reward, done = ttt_env.step(action)
+                Replay_buff.append([S.copy(), action, S_new.copy(), reward, done])
+                # print(episode, [S, action, S_new, reward])
+                S = S_new
+
+            #######################################
+            # DQN start, here for learning   
+            #######################################
+            # print('play_order, P_no = ', play_order, P_no)
+            # No buffer shuffling
+            sqrt_n_a = int(np.sqrt(self.N_A))
+            X_N = np.zeros((len(Replay_buff), 2, sqrt_n_a, sqrt_n_a))
+            y_N = np.zeros(len(Replay_buff))
+            for i, buff in enumerate(Replay_buff):
+                S, action, S_new, reward, done = buff
+                if done:
+                    y = reward
+                else:
+                    action_list_new, _ = self.find_action_list(S_new)
+                    action_prob_array_new = self.get_q_net(S_new, action_list_new, P_no)
+                    y = reward + ff*np.max(action_prob_array_new)
+                y_N[i] = y
+                action_buff = [0] * self.N_A
+                action_buff[action] = 1
+                X_N[i] = self.make_X_in(S, action_buff)
+
+            with tf.GradientTape() as tape:
+                Qsa_N = self.QSA_net[P_no-1](X_N)
+                loss_value = loss_f(y_N, Qsa_N)
+            gradients = tape.gradient(loss_value, self.QSA_net[P_no-1].trainable_weights)
+            optimizer.apply_gradients(zip(gradients, self.QSA_net[P_no-1].trainable_weights))
+
+            if Replay_buff[-1][3] == 1.0: 
+                cnt[1] += 1               # P_no = 1 
+                cnt[2 + play_order] += 1  # player_order = 1
+                cnt[4 + play_order] += 1  # player_order | P_no = 1, so it occupied 2 lists
+            elif Replay_buff[-1][3] == 0.5:
+                cnt[0] += 1 
+            else: # play_order = 2
+                cnt[2] += 1                   # P_no = 2  
+                cnt[2 + 3 - play_order] += 1  # player_order = 2
+                cnt[6 + 3 - play_order] += 1  # player_order | P_no = 2, so it start from 6
+
+            cnt_trace.append(cnt.copy())
+
+            if episode % print_cnt == 0:
+                print()
+                print('Finished episode: #', episode)
+                print('cnt: ', cnt)
+                print(f'Play order:{play_order}, P_no:{P_no}')
+                print('S = [0,0,0, 0,0,0, 0,0,0]')
+                S = [0] * self.N_A
+                Qsa_0_0, Qsa_1_0 = [], []
+                for action in range(self.N_A):
+                    action_buff = [0] * self.N_A
+                    action_buff[action] = 1
+                    X_in = np.zeros((1, 2, sqrt_n_a, sqrt_n_a))
+                    X_in[0] = self.make_X_in(S, action_buff)
+                    Qsa_0_0.append(self.QSA_net[0](X_in).numpy()[0,0])
+                    Qsa_1_0.append(self.QSA_net[1](X_in).numpy()[0,0])
+                print('Qsa[0][0,:]', [f'{Qsa_0_0[a]:.1e}' for a in range(9)])
+                print('Qsa[1][0,:]', [f'{Qsa_1_0[a]:.1e}' for a in range(9)])
+                print('Exproration: Epsilon=', self.epsilon)
+
+            play_order = 3 - play_order # 1 --> 2, 2 --> 1
+
+        return cnt_trace        
+   
+    def _learning_cnndqn_variable_epsilon_active(self, N_episodes=2, ff=0.9, lr=0.01, 
+            epsilon_d={'first value':0.4, 'epsilon change episode': 000, 'second value':0.1}, 
+            print_cnt=10, agent_type:int=0):
+        """
+        The computer player is an agent playing better than a random policy player and 
+        reach to the human best player. 
+        """
+        cnt = [0, 0, 0, 0, 0, 0, 0, 0, 0] # tie, p1, p2
+        cnt_trace = [cnt.copy()]        
+
+        # Opponent player index
+        P_no = 1 # player Q function, regardless of play order (first or next)
+        play_order = 1
+        ttt_env = Tictactoe_Env_Active(self.N_A, play_order=play_order, agent_type=agent_type) #both X but start 1st and 2nd
         optimizer = tf.keras.optimizers.Adam()
         loss_f = tf.keras.losses.MeanSquaredError()   
 
@@ -2779,7 +2882,7 @@ class Q_System_CNNDQN(Q_System_DQN):
 
             play_order = 3 - play_order # 1 --> 2, 2 --> 1
 
-        return cnt_trace        
+        return cnt_trace  
 
 
     def learning_cnndqn_variable_epsilon_active(self, N_episodes=2, ff=0.9, lr=0.01, 
@@ -2835,11 +2938,8 @@ class Q_System_CNNDQN(Q_System_DQN):
                 action_buff = [0] * self.N_A
                 action_buff[action] = 1
                 X_N[i] = self.make_X_in(S, action_buff)
-            with tf.GradientTape() as tape:
-                Qsa_N = self.QSA_net[P_no-1](X_N)
-                loss_value = loss_f(y_N, Qsa_N)
-            gradients = tape.gradient(loss_value, self.QSA_net[P_no-1].trainable_weights)
-            optimizer.apply_gradients(zip(gradients, self.QSA_net[P_no-1].trainable_weights))
+
+            cnn_learning_inline(self.QSA_net[P_no-1], X_N, y_N, loss_f, optimizer)    
 
             if Replay_buff[-1][3] == 1.0: 
                 cnt[1] += 1               # P_no = 1 
