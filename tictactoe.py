@@ -2669,7 +2669,6 @@ class Q_System_CNNDQN(Q_System_DQN):
         self.QSA_net[1].set_weights(W_list[1])
 
     def make_X_in(self, S, action_buff):
-        # sqrt_n_a = int(np.sqrt(self.N_A))
         X_in_each = np.zeros((2, self.sqrt_n_a, self.sqrt_n_a), dtype='float32')
         X_in_each[0] = np.array(S, dtype='float32').reshape(self.sqrt_n_a, self.sqrt_n_a)
         X_in_each[1] = np.array(action_buff, 'float32').reshape(self.sqrt_n_a, self.sqrt_n_a)
@@ -2924,8 +2923,8 @@ class Q_System_CNNDQN(Q_System_DQN):
             # print('play_order, P_no = ', play_order, P_no)
             # No buffer shuffling
             sqrt_n_a = int(np.sqrt(self.N_A))
-            X_N = np.zeros((len(Replay_buff), 2, sqrt_n_a, sqrt_n_a))
-            y_N = np.zeros(len(Replay_buff))
+            X_N = np.zeros((len(Replay_buff), 2, sqrt_n_a, sqrt_n_a), dtype='float32')
+            y_N = np.zeros(len(Replay_buff), dtype='float32')
             for i, buff in enumerate(Replay_buff):
                 S, action, S_new, reward, done = buff
                 if done:
@@ -2965,7 +2964,7 @@ class Q_System_CNNDQN(Q_System_DQN):
                 for action in range(self.N_A):
                     action_buff = [0] * self.N_A
                     action_buff[action] = 1
-                    X_in = np.zeros((1, 2, sqrt_n_a, sqrt_n_a))
+                    X_in = np.zeros((1, 2, sqrt_n_a, sqrt_n_a), dtype='float32')
                     X_in[0] = self.make_X_in(S, action_buff)
                     Qsa_0_0.append(self.QSA_net[0](X_in).numpy()[0,0])
                     Qsa_1_0.append(self.QSA_net[1](X_in).numpy()[0,0])
