@@ -2596,29 +2596,21 @@ class CNN_AGENT(tf.keras.layers.Layer):
         return self.linear_1(x)
 
 
-def get_X_in_stack(N_A:int, sqrt_n_a:int, action_list_array:np.ndarray, S_array:np.ndarray):
-    # sqrt_n_a = int(np.sqrt(self.N_A))
+def get_X_in_stack(N_A:int, sqrt_n_a:int, action_list_array:np.ndarray, S_array_2d:np.ndarray):
     X_in_stack = np.zeros((len(action_list_array), 2, sqrt_n_a, sqrt_n_a))
-    action_buff_array = np.zeros((sqrt_n_a, sqrt_n_a))
     for i in range(action_list_array.shape[0]):
         a = action_list_array[i]
-        action_buff_array[a//sqrt_n_a, a%sqrt_n_a] = 1
-        X_in_stack[i, 0] = S_array.reshape(sqrt_n_a, sqrt_n_a)
-        X_in_stack[i, 1] = action_buff_array.reshape(sqrt_n_a, sqrt_n_a)
-        action_buff_array[a//sqrt_n_a, a%sqrt_n_a] = 0
+        X_in_stack[i, 0] = S_array_2d
+        X_in_stack[i, 1, a//sqrt_n_a, a%sqrt_n_a] = 1
     return X_in_stack
 
 @jit
-def get_X_in_stack_numba(N_A:int, sqrt_n_a:int, action_list_array:np.ndarray, S_array:np.ndarray):
-    # sqrt_n_a = int(np.sqrt(self.N_A))
+def get_X_in_stack_numba(N_A:int, sqrt_n_a:int, action_list_array:np.ndarray, S_array_2d:np.ndarray):
     X_in_stack = np.zeros((len(action_list_array), 2, sqrt_n_a, sqrt_n_a))
-    action_buff_array = np.zeros((sqrt_n_a, sqrt_n_a))
     for i in range(action_list_array.shape[0]):
         a = action_list_array[i]
-        action_buff_array[a//sqrt_n_a, a%sqrt_n_a] = 1
-        X_in_stack[i, 0] = S_array.reshape(sqrt_n_a, sqrt_n_a)
-        X_in_stack[i, 1] = action_buff_array.reshape(sqrt_n_a, sqrt_n_a)
-        action_buff_array[a//sqrt_n_a, a%sqrt_n_a] = 0
+        X_in_stack[i, 0] = S_array_2d
+        X_in_stack[i, 1, a//sqrt_n_a, a%sqrt_n_a] = 1
     return X_in_stack
 
 class Q_System_CNNDQN(Q_System_DQN):
@@ -2692,6 +2684,7 @@ class Q_System_CNNDQN(Q_System_DQN):
     def get_q_net(self, S:np.ndarray, action_list, P_no):
         # S_array_2d is 2-D array such as [3,3] for convolutional use
         S_array_2d = np.array(S).reshape(self.sqrt_n_a, self.sqrt_n_a)
+        #X_in_stack = get_X_in_stack_numba(self.N_A, self.sqrt_n_a, np.array(action_list), S_array_2d)
         X_in_stack = get_X_in_stack_numba(self.N_A, self.sqrt_n_a, np.array(action_list), S_array_2d)
         Qsa = self.QSA_net[P_no-1](X_in_stack).numpy()[:,0]
         action_prob = list(Qsa)
