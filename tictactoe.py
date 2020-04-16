@@ -226,9 +226,15 @@ def discounted_inplace(Buff_r, ff):
 class Q_System:
     def __init__(self, N_A=9, N_Symbols=3, epsilon=0.01, disp_flag=False):
         """
+        Q_System(N_A=9, N_Symbols=3, epsilon=0.01, disp_flag=False
+        
+        Input
+        -----
         N_A : Number of actions
+
         N_Symbols : Number of possible symbols in each point: 0, 1, 2,
         representing empty, player1, player2
+
         N_S : Number of states
         """        
         if N_A is not None:
@@ -343,7 +349,7 @@ class Q_System:
             print('S_idx', S_idx, 'action', action, 'action_list', action_list, 'action_prob', action_prob)
         return action
     
-    def policy(self, P_no, S, action_list):
+    def policy(self, P_no:int, S:List[int], action_list:List[int]):
         """Return action regardless P_no but just specify Q[P_no]
         """
         action_prob = []
@@ -1625,16 +1631,15 @@ class Tictactoe_Env:
 
 
 class Tictactoe_Env_Active(Tictactoe_Env):
-    def __init__(self, N_A:int=9, play_order:int=1, agent_type=0):
+    def __init__(self, N_A:int=9, play_order:int=1, agent_type:int=0, Q_System_Class=Q_System):
         """
         agent_type = 0(random), 1(advanced)
         """
         super(Tictactoe_Env_Active,self).__init__(N_A=N_A, play_order=play_order)
         
         self.agent_type = agent_type
-        if self.agent_type > 0: # advanved agent
-            self.q_sys = Q_System_CNNDQN(N_A=N_A, N_Symbols=3)
-            self.q_sys.load()
+        self.q_sys = Q_System_Class(N_A=N_A, N_Symbols=3)
+        self.q_sys.load()
 
     def advanced_action(self):
         P_no = 1
@@ -1651,7 +1656,7 @@ class Tictactoe_Env_Active(Tictactoe_Env):
             return self.sample_action()
         elif self.agent_type == 1: # #1, advanced
             return self.advanced_action()
-        else: # agent_type==2
+        else: # agent_type == 2, premium
             return self.premium_action()
 
 
@@ -2239,6 +2244,32 @@ class Q_System_DQN(Q_System_QL):
         if N_A is not None:
             self.QSA_net = [MLP_AGENT(self.N_A, self.N_A, self.N_A), MLP_AGENT(self.N_A, self.N_A, self.N_A)]
 
+    def save_id(self, file_name='tictactoe_data_dqn.pckl', class_name='Q_System_DQN'):
+        '''This is common for DQN and CNNDQN'''
+        f = open(file_name, 'wb')
+        W_p1 = [W.numpy() for W in self.QSA_net[0].weights]
+        W_p2 = [W.numpy() for W in self.QSA_net[1].weights]
+        obj = [self.N_A, self.N_Symbols, self.epsilon, [W_p1, W_p2], class_name]
+        pickle.dump(obj, f)
+        f.close()
+
+    def save(self):
+        self.save_id(file_name='tictactoe_data_dqn.pckl', class_name='Q_System_DQN')
+
+    def load_id(self, init_in_shape, file_name='tictactoe_data_dqn.pckl'):
+        f = open(file_name, 'rb')
+        obj = pickle.load(f)
+        [self.N_A, self.N_Symbols, self.epsilon, W_list, self.class_name] = obj
+        f.close()
+        _ = self.QSA_net[0](np.zeros(init_in_shape, dtype='float32'))
+        self.QSA_net[0].set_weights(W_list[0])
+        _ = self.QSA_net[1](np.zeros(init_in_shape, dtype='float32'))
+        self.QSA_net[1].set_weights(W_list[1])
+
+    def load(self):
+        init_in_shape = (1,self.N_A*2) # S and action
+        self.load_id(init_in_shape, file_name='tictactoe_data_dqn.pckl')
+
     def _get_q_net(self, S, action_list, P_no):
         action_prob = []
         # S_idx = self.calc_S_idx(S)
@@ -2448,7 +2479,9 @@ class Q_System_DQN(Q_System_QL):
 
         return cnt_trace
  
-    def learning_dqn_variable_epsilon(self, N_episodes=2, ff=0.9, lr=0.01, epsilon_d=0.1, print_cnt=10):
+    def learning_dqn_variable_epsilon(self, N_episodes=2, 
+            ff=0.9, lr=0.01, epsilon_d=0.1, print_cnt=10,
+            agent_type:int=0):
         """Plyaing two random players. To make baseline performance so that it will compared with learnt agents.
         - Check whethere it requires ff, lr, which may not be useful in this case since no learning is applied. 
         ------
@@ -2464,7 +2497,9 @@ class Q_System_DQN(Q_System_QL):
         # Opponent player index
         P_no = 1 # player Q function, regardless of play order (first or next)
         play_order = 1
-        ttt_env = Tictactoe_Env(self.N_A, play_order=play_order) #both X but start 1st and 2nd
+        # ttt_env = Tictactoe_Env(self.N_A, play_order=play_order) #both X but start 1st and 2nd
+        ttt_env = Tictactoe_Env_Active(self.N_A, play_order=play_order, 
+                agent_type=agent_type, Q_System_Class=Q_System_DQN)
         optimizer = tf.keras.optimizers.Adam()
         loss_f = tf.keras.losses.MeanSquaredError()   
 
@@ -2546,8 +2581,7 @@ class Q_System_DQN(Q_System_QL):
 
         return cnt_trace
 
-
-def learning_stage_dqn_variable_epsilon(N_episodes=100, epsilon_d=0.2, save_flag=True, fig_flag=False):
+def _learning_stage_dqn_variable_epsilon(N_episodes=100, epsilon_d=0.2, save_flag=True, fig_flag=False):
     if np.isscalar(epsilon_d):
         return learning_stage_dqn(N_episodes=N_episodes, epsilon=epsilon_d, save_flag=save_flag, fig_flag=fig_flag)
 
@@ -2574,7 +2608,37 @@ def learning_stage_dqn_variable_epsilon(N_episodes=100, epsilon_d=0.2, save_flag
         plot_cnt_trace_normal_order_detail(cnt_trace, title='Q-learning')
 
     return my_Q_System
+ 
+def learning_stage_dqn_variable_epsilon(N_episodes=100, epsilon_d=0.2, 
+        agent_type:int=0, save_flag=True, fig_flag=False):
+    if np.isscalar(epsilon_d):
+        return learning_stage_dqn(N_episodes=N_episodes, epsilon=epsilon_d, save_flag=save_flag, fig_flag=fig_flag)
 
+    ff = 0.9
+    lr = 0.01
+    N_Symbols = 3 # 0=empty, 1=plyaer1, 2=player2
+    N_A = 9 # (0,0), (0,1), ..., (2,2)
+    print_cnt = N_episodes / 10
+
+    my_Q_System = Q_System_DQN(N_A, N_Symbols)
+    cnt_trace = my_Q_System.learning_dqn_variable_epsilon(N_episodes=N_episodes, 
+                    ff=ff, lr=lr, epsilon_d=epsilon_d, print_cnt=print_cnt,
+                    agent_type=agent_type)
+
+    print('-------------------')
+    cnt_last = cnt_trace[-1]
+    cnt_last_normal = np.array(cnt_last) / np.sum(cnt_last[0:3])
+    # Showing normalized counts as well so as to make feel the progress.
+    # In random agent playing here, no progress should be displayed.
+    print(N_episodes, f"Last cnt:{cnt_last}, Normalized last cnt:{cnt_last_normal}")
+
+    if save_flag:
+        my_Q_System.save()
+
+    if fig_flag:
+        plot_cnt_trace_normal_order_detail(cnt_trace, title='Q-learning')
+
+    return my_Q_System
 
 class CNN_AGENT(tf.keras.layers.Layer):
     """CNN Model for our agent"""
@@ -2638,7 +2702,7 @@ class Q_System_CNNDQN(Q_System_DQN):
         for i, fname in enumerate(QSA_net_file_list):
             self.QSA_net[i].save_weights(fname)
 
-    def save(self):
+    def _r1_save(self):
         # weights should be saving to array form, in order to use in load
         f = open('tictactoe_data_cnndqn.pckl', 'wb')
         W_p1 = [W.numpy() for W in self.QSA_net[0].weights]
@@ -2646,6 +2710,10 @@ class Q_System_CNNDQN(Q_System_DQN):
         obj = [self.N_A, self.N_Symbols, self.epsilon, [W_p1, W_p2], 'Q_System_CNNDQN']
         pickle.dump(obj, f)
         f.close()
+
+    def save(self):
+        self.save_id(file_name='tictactoe_data_cnndqn.pckl', 
+                class_name='Q_System_CNNDQN')
 
     def _load(self):
         f = open('tictactoe_data.pckl', 'rb')
@@ -2656,7 +2724,7 @@ class Q_System_CNNDQN(Q_System_DQN):
         for i, fname in enumerate(QSA_net_file_list):
             self.QSA_net[i].load_weights(fname)
 
-    def load(self):
+    def _r1_load(self):
         f = open('tictactoe_data_cnndqn.pckl', 'rb')
         obj = pickle.load(f)
         [self.N_A, self.N_Symbols, self.epsilon, W_list, self.class_name] = obj
@@ -2667,6 +2735,11 @@ class Q_System_CNNDQN(Q_System_DQN):
         self.QSA_net[0].set_weights(W_list[0])
         _ = self.QSA_net[1](np.zeros((1,2,sqrt_n_a,sqrt_n_a), dtype='float32'))
         self.QSA_net[1].set_weights(W_list[1])
+
+    def load(self):
+        sqrt_n_a = self.sqrt_n_a
+        init_in_shape = (1,2,sqrt_n_a,sqrt_n_a)
+        self.load_id(init_in_shape, file_name='tictactoe_data_cnndqn.pckl')
 
     def make_X_in(self, S, action_buff):
         X_in_each = np.zeros((2, self.sqrt_n_a, self.sqrt_n_a), dtype='float32')
@@ -2883,7 +2956,6 @@ class Q_System_CNNDQN(Q_System_DQN):
 
         return cnt_trace  
 
-
     def learning_cnndqn_variable_epsilon_active(self, N_episodes=2, ff=0.9, lr=0.01, 
             epsilon_d={'first value':0.4, 'epsilon change episode': 000, 'second value':0.1}, 
             print_cnt=10, agent_type:int=0):
@@ -2897,7 +2969,8 @@ class Q_System_CNNDQN(Q_System_DQN):
         # Opponent player index
         P_no = 1 # player Q function, regardless of play order (first or next)
         play_order = 1
-        ttt_env = Tictactoe_Env_Active(self.N_A, play_order=play_order, agent_type=agent_type) #both X but start 1st and 2nd
+        ttt_env = Tictactoe_Env_Active(self.N_A, play_order=play_order, 
+                agent_type=agent_type, Q_System_Class=Q_System_CNNDQN)
         optimizer = tf.keras.optimizers.Adam()
         loss_f = tf.keras.losses.MeanSquaredError()   
 
@@ -3007,26 +3080,28 @@ def learning_stage_cnndqn_variable_epsilon(N_episodes=100,
 
 
 def q1_playing():
+    print()
     print('Loading the trained agent...')
-    Q2 = input_default('2. Do you want to start first?(0=yes,1=no,default=0) ', 0, int)
+    Q2 = input_default('Do you want to start first?(0=yes,1=no,default=0) ', 0, int)
     player_human = Q2 + 1
     if player_human == 1:
         print('You=1(X), Agent=2(O)') 
     else:
         print('Agent=1(X), You=2(O)') 
-    trained_Q_System = Q_System(None)
-    trained_Q_System.load()
     
-    print()
-    print( '********************************************************************')
-    print(f'You are going to playing with our AI agent - {trained_Q_System.class_name}.')
-    if trained_Q_System.class_name == 'Q_System_CNNDQN':
-        # In order to download model weights, a NN model should be defined. 
-        N_A = 9
-        N_Symbols = 3
-        trained_Q_System = Q_System_CNNDQN(N_A=N_A, N_Symbols=N_Symbols)
-        trained_Q_System.load()
+    class_name = input_default('Which agent do you want to play with?(0=Q-learn,1=DQN,2=CNN-DQN,default=2)', 2, int)
 
+    N_A = 9
+    N_Symbols = 3
+    if class_name == 0:
+        trained_Q_System = Q_System(None)
+    elif class_name == 1:
+        trained_Q_System = Q_System_DQN(N_A=N_A, N_Symbols=N_Symbols)
+    else: # class_name == 2 (default)
+        trained_Q_System = Q_System_CNNDQN(N_A=N_A, N_Symbols=N_Symbols)
+
+    trained_Q_System.load()
+    print(f'You are going to playing with our AI agent - {trained_Q_System.class_name}.')
     trained_Q_System.play_with_human_inference(player_human)
 
 def q1_learning():
@@ -3064,7 +3139,8 @@ def q1_learning():
         _ = learning_stage_qlearn_variable_epsilon(N_episodes=N_episodes, epsilon_d=epsilon_d, fig_flag=True)
     elif Method == 3:
         epsilon_d = {'first value':epsilon, 'second value':second_epsilon, 'epsilon change episode':epsilon_change_episode}
-        _ = learning_stage_dqn_variable_epsilon(N_episodes=N_episodes, epsilon_d=epsilon_d, fig_flag=True)
+        _ = learning_stage_dqn_variable_epsilon(N_episodes=N_episodes, epsilon_d=epsilon_d, 
+                agent_type=agent_type, fig_flag=True)
     elif Method == 4:
         epsilon_d = {'first value':epsilon, 'second value':second_epsilon, 'epsilon change episode':epsilon_change_episode}
         _ = learning_stage_cnndqn_variable_epsilon(N_episodes=N_episodes, epsilon_d=epsilon_d, 
