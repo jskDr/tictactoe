@@ -1575,41 +1575,6 @@ class Tictactoe_Env:
             self.reset()
         return S_copy, action_list_copy, reward, done
 
-    def step_op(self, action):
-        """S.copy() and action_list.copy() are returned so that internal states 
-        shuould not be changed.
-        """
-        op_action = None # Because of done
-        done = False
-        if action not in self.action_list:
-            self.action_list.append(action)
-            set_state_inplace(self.S, action, self.P_no)
-            win_player = calc_reward_numba(MASK_L, self.S)
-            if win_player == self.P_no:
-                reward = 1.0
-                done = True
-            elif len(self.action_list) == self.N_A: # Tie
-                reward = 0.5
-                done = True
-            else:
-                op_action = self.perform_player2_op()
-                win_player = calc_reward_numba(MASK_L, self.S)
-                if win_player == self.P_no_opponent:
-                    reward = 0.0
-                    done = True
-                elif len(self.action_list) == self.N_A: # Tie 
-                    reward = 0.5
-                    done = True
-                else: # Continue playing
-                    reward = 0.0
-
-        S_copy = self.S.copy()
-        action_list_copy = self.action_list.copy() 
-        if done:
-            self.reset()
-        return S_copy, action_list_copy, reward, done, op_action
-
-
     def _perform_player2(self):
         action = self.get_player_action()
         self.action_list.append(action)
@@ -1623,20 +1588,8 @@ class Tictactoe_Env:
         self.action_list.append(action)
         set_state_inplace(self.S, action, P_no)    
 
-    def perform_player_op(self, P_no):
-        """
-        perform by player P_no
-        """
-        action = self.get_player_action()
-        self.action_list.append(action)
-        set_state_inplace(self.S, action, P_no)    
-        return action
-
     def perform_player2(self):
         self.perform_player(self.P_no_opponent)
-
-    def perform_player2_op(self):
-        return self.perform_player_op(self.P_no_opponent)
 
     def _reset(self, play_order=None): # consider play_order (now we assume play_order=1)
         if play_order is not None:
@@ -1992,172 +1945,6 @@ class Q_System_QL(Q_System):
             play_order = 3 - play_order # 1 --> 2, 2 --> 1
 
         return cnt_trace
-
-    def _modeling_qlearn(self, N_episodes=2, disp_flag=False):
-        """
-        Modeling of the game system is performed. 
-
-        Return
-        ------
-        Not implemented yet.
-        """        
-        S_idx_base = np.power(self.N_Symbols,range(self.N_A))
-        All_S = np.power(self.N_Symbols,self.N_A)
-        # Model: All states x all actions x all associated new states x (reward, prob)
-        self.Model_P = np.zeros((All_S, self.N_A, self.N_A), dtype=np.float32) #(Reward, p)
-        self.Model_R = np.zeros((All_S, self.N_A), dtype=np.float32) #(Reward, p)
-        self.N_Model = np.zeros((All_S, self.N_A), dtype=np.int) #(Reward, p)
-        # Opponent player index
-        P_no = 1 # player Q function, regardless of play order (first or next)
-        play_order = 1
-        ttt_env = Tictactoe_Env(self.N_A, play_order=play_order) #both X but start 1st and 2nd
-        for episode in range(N_episodes):
-            S, _ = ttt_env.reset(play_order=play_order)
-            done = False            
-            while not done:
-                action, _ = self.get_action(P_no, S)
-                S_new, _, reward, done, op_action = ttt_env.step_op(action)
-                S_idx = np.sum(S_idx_base * S)
-                R = self.Model_R[S_idx, action]
-                N = self.N_Model[S_idx, action]
-                self.Model_R[S_idx, action] = (R*N + reward)/(N+1)
-                self.N_Model[S_idx, action] = N + 1
-                if op_action is not None:
-                    P = self.Model_P[S_idx, action, op_action]
-                    self.Model_P[S_idx, action, op_action] = (P*N + 1)/(N+1)
-
-                if disp_flag:
-                    print(f'S_idx, action, op_action = {S_idx}, {action}, {op_action}')
-                    print(f'Model_R, N_Model =',
-                            self.Model_R[S_idx, action],
-                            self.N_Model[S_idx, action])
-                    if op_action is not None:
-                        print(f'Model_P =',
-                                self.Model_P[S_idx, action, op_action])
-
-                S = S_new
-            play_order = 1 if play_order == 1 else 2            
-
-    def get_Model_P(self, S_idx, action, op_action):
-        if self.N_Model[S_idx, action]:
-            return self.Model_P_N[S_idx, action, op_action] / self.N_Model[S_idx, action]
-        else:
-            return 0.0
-
-    def get_Model_R(self, S_idx, action):
-        if self.N_Model[S_idx, action]:
-            return self.Model_R_N[S_idx, action] / self.N_Model[S_idx, action]
-        else:
-            return 0.0
-
-    def get_Model_Done1(self, S_idx, action):
-        if self.N_Model[S_idx, action]:
-            return self.Model_Done1_N[S_idx, action] / self.N_Model[S_idx, action]
-        else:
-            return 0.0            
-
-    def _get_Model_Done2(self, S_idx, action, op_action):
-        if self.N_Model[S_idx, action]:
-            return self.Model_Done2_N[S_idx, action, op_action] / self.N_Model[S_idx, action]
-        else:
-            return 0.0
-
-    def get_Model_Done2(self, S_idx, action, op_action):
-        if self.Model_Done1_N[S_idx, action]:
-            return self.Model_Done2_N[S_idx, action, op_action] / self.Model_Done1_N[S_idx, action] 
-        else:
-            return 0.0
-
-
-    def _modeling_qlearn(self, N_episodes=2, disp_flag=False):
-        """
-        Modeling of the game system is performed. 
-
-        Return
-        ------
-        Not implemented yet.
-        """        
-        S_idx_base = np.power(self.N_Symbols,range(self.N_A))
-        All_S = np.power(self.N_Symbols,self.N_A)
-        # Model: All states x all actions x all associated new states x (reward, prob)
-        self.Model_P_N = np.zeros((All_S, self.N_A, self.N_A), dtype=np.float32) #(Reward, p)
-        self.Model_R_N = np.zeros((All_S, self.N_A), dtype=np.float32) #(Reward, p)
-        self.N_Model = np.zeros((All_S, self.N_A), dtype=np.int) #(Reward, p)
-        # Opponent player index
-        P_no = 1 # player Q function, regardless of play order (first or next)
-        play_order = 1
-        ttt_env = Tictactoe_Env(self.N_A, play_order=play_order) #both X but start 1st and 2nd
-        for episode in range(N_episodes):
-            S, _ = ttt_env.reset(play_order=play_order)
-            done = False            
-            while not done:
-                action, _ = self.get_action(P_no, S)
-                S_new, _, reward, done, op_action = ttt_env.step_op(action)
-                S_idx = np.sum(S_idx_base * S)
-
-                self.Model_R_N[S_idx, action] += reward
-                self.N_Model[S_idx, action] += 1
-                if op_action is not None:
-                    self.Model_P_N[S_idx, action, op_action] += 1.0
-
-                if disp_flag:
-                    print(f'S_idx, action, op_action = {S_idx}, {action}, {op_action}')
-                    print(f'Model_R, N_Model =',
-                            self.Model_R_N[S_idx, action],
-                            self.N_Model[S_idx, action])
-                    if op_action is not None:
-                        print(f'Model_P =',
-                                self.Model_P_N[S_idx, action, op_action])
-
-                S = S_new
-            play_order = 1 if play_order == 1 else 2
-
-    def modeling_qlearn(self, N_episodes=2, disp_flag=False):
-        """
-        Modeling of the game system is performed. 
-
-        Return
-        ------
-        Not implemented yet.
-        """        
-        S_idx_base = np.power(self.N_Symbols,range(self.N_A))
-        All_S = np.power(self.N_Symbols,self.N_A)
-        # Model: All states x all actions x all associated new states x (reward, prob)
-        self.N_Model = np.zeros((All_S, self.N_A), dtype=np.int) #(Reward, p)
-        self.Model_R_N = np.zeros((All_S, self.N_A), dtype=np.float32) #(Reward, p)
-        self.Model_Done1_N = np.zeros((All_S, self.N_A), dtype=np.float32) #(Reward, p)
-        self.Model_P_N = np.zeros((All_S, self.N_A, self.N_A), dtype=np.float32) #(Reward, p)
-        self.Model_Done2_N = np.zeros((All_S, self.N_A, self.N_A), dtype=np.float32) #(Reward, p)
-        # Opponent player index
-        P_no = 1 # player Q function, regardless of play order (first or next)
-        play_order = 1
-        ttt_env = Tictactoe_Env(self.N_A, play_order=play_order) #both X but start 1st and 2nd
-        for episode in range(N_episodes):
-            S, _ = ttt_env.reset(play_order=play_order)
-            done = False            
-            while not done:
-                action, _ = self.get_action(P_no, S)
-                S_new, _, reward, done, op_action = ttt_env.step_op(action)
-                S_idx = np.sum(S_idx_base * S)
-
-                self.Model_R_N[S_idx, action] += reward
-                self.Model_Done1_N[S_idx, action] += 1 if done else 0
-                self.N_Model[S_idx, action] += 1
-                if op_action is not None:
-                    self.Model_P_N[S_idx, action, op_action] += 1.0
-                    self.Model_Done2_N[S_idx, action, op_action] += 1 if done else 0
-
-                if disp_flag:
-                    print(f'S_idx, action, op_action = {S_idx}, {action}, {op_action}')
-                    print(f'Model_R, N_Model =',
-                            self.Model_R_N[S_idx, action],
-                            self.N_Model[S_idx, action])
-                    if op_action is not None:
-                        print(f'Model_P =',
-                                self.Model_P_N[S_idx, action, op_action])
-
-                S = S_new
-            play_order = 1 if play_order == 1 else 2
 
     def learning_qlearn_variable_epsilon(self, N_episodes=2, ff=0.9, lr=0.01, epsilon_d = 0.4, print_cnt=10):
         """Return: 
@@ -3317,7 +3104,6 @@ def q1_playing():
     print(f'You are going to playing with our AI agent - {trained_Q_System.class_name}.')
     trained_Q_System.play_with_human_inference(player_human)
 
-
 def q1_learning():
     """
     1. After learning testing playing with a random playing agent and a best playing agent. 
@@ -3362,80 +3148,6 @@ def q1_learning():
     else:
         print('No such method is supported.')
 
-
-def modeling_stage_qlearn(N_episodes=100, fig_flag=False):
-    N_Symbols = 3 # 0=empty, 1=plyaer1, 2=player2
-    N_A = 9 # (0,0), (0,1), ..., (2,2)
-
-    my_Q_System = Q_System_QL(N_A, N_Symbols)
-    my_Q_System.modeling_qlearn(N_episodes=N_episodes)
-
-    return my_Q_System
-
-
-def _q1_modeling():
-    """
-    1. After learning testing playing with a random playing agent and a best playing agent. 
-       In the test, our agent should not include rule playing while the best player will has it.
-       The best player is equal to out agent with the guide rule function.
-    2. INcluding the learning method to learn with expert not random player. 
-    """
-    print()
-    print('------------------------------')
-    print('Start to model the playing system')
-    print()
-    N_episodes = input_default('How many episode do you want for modeling?(default=10000) ', 10000, int)
-
-    my_Q_System = modeling_stage_qlearn(N_episodes=N_episodes, fig_flag=True)
-
-    print()
-    print('Checking modeling results')    
-    Done = False
-    while not Done:
-        S_str = input_default('Enter State vector (S)?(defulat=[0,0,0,0,0,0,0,0,0]) ', '[0,0,0,0,0,0,0,0,0]', str)
-        S = eval(S_str)
-        action = input_default('Enter action?(defulat=0) ', 0, int)
-        S_idx_base = np.power(3, range(9))
-        S_idx = np.sum(S_idx_base * S)
-        print(f'N_Model[{S_idx},:] = ', my_Q_System.N_Model[S_idx,:])
-        print(f'Model_R[{S_idx},:] = ', [my_Q_System.get_Model_R(S_idx,i) for i in range(9)])
-        print(f'Model_P[{S_idx},{action},:] = ', [my_Q_System.get_Model_P(S_idx,action,i) for i in range(9)])
-        yn = input_default('Quit=0 or test again=1?(defalut=0) ', 0, int)
-        Done = not yn
-
-
-def q1_modeling():
-    """
-    1. After learning testing playing with a random playing agent and a best playing agent. 
-       In the test, our agent should not include rule playing while the best player will has it.
-       The best player is equal to out agent with the guide rule function.
-    2. INcluding the learning method to learn with expert not random player. 
-    """
-    print()
-    print('------------------------------')
-    print('Start to model the playing system')
-    print()
-    N_episodes = input_default('How many episode do you want for modeling?(default=10000) ', 10000, int)
-
-    my_Q_System = modeling_stage_qlearn(N_episodes=N_episodes, fig_flag=True)
-
-    print()
-    print('Checking modeling results')    
-    Done = False
-    while not Done:
-        S_str = input_default('Enter State vector (S)?(defulat=[0,0,0,0,0,0,0,0,0]) ', '[0,0,0,0,0,0,0,0,0]', str)
-        S = eval(S_str)
-        action = input_default('Enter action?(defulat=0) ', 0, int)
-        S_idx_base = np.power(3, range(9))
-        S_idx = np.sum(S_idx_base * S)
-        print(f'N_Model[{S_idx},:] = ', my_Q_System.N_Model[S_idx,:])
-        print(f'Model_R[{S_idx},:] = ', [my_Q_System.get_Model_R(S_idx,i) for i in range(9)])
-        print(f'Model_P[{S_idx},{action},:] = ', [my_Q_System.get_Model_P(S_idx,action,i) for i in range(9)])
-        print(f'Model_Done1[{S_idx},:] = ', [my_Q_System.get_Model_Done1(S_idx,i) for i in range(9)])
-        print(f'Model_Done2[{S_idx},{action},:] = ', [my_Q_System.get_Model_Done2(S_idx,action,i) for i in range(9)])
-        yn = input_default('Quit=0 or test again=1?(defalut=0) ', 0, int)
-        Done = not yn
-
 def q1_testing():
     print('Start to test code...')
     print()
@@ -3465,7 +3177,6 @@ def main():
     print('0) Playing a game')
     print('1) Learning a new agent')
     print('2) Testing code')
-    print('3) Modeling')
     Q1 = input_default('What do you want? (0=deafult) ', 0, int)
     if Q1 == 0:
         q1_playing()
@@ -3473,8 +3184,6 @@ def main():
         q1_learning()
     elif Q1 == 2:
         q1_testing()
-    elif Q1 == 3:
-        q1_modeling()
     else:
         print('Type a different option in (0,1,2)')
 
