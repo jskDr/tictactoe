@@ -8,7 +8,145 @@ from numba import jit
 import random
 from typing import List, Tuple, Union
 
-# TicTacToe game has nine stateus with nine actions. An user can put his ston on any postion in the borad except 
+# TicTacToe game has nine stateus with nine actions. 
+# An user can put his ston on any postion in the borad except 
+
+
+class ReplayBuff:
+    def __init__(self):
+        self.d = {'S':[], 'action': [], 'S_new': [], 'reward': [], 'done': []}
+    
+    def append(self, S, action, S_new, reward, done):
+        """
+        Separated copies are needed to save, so that we use copy() command
+        """
+        self.d['S'].append(S)
+        self.d['action'].append(action)
+        self.d['S_new'].append(S_new)
+        self.d['reward'].append(reward)
+        self.d['done'].append(1 if done else 0)                
+
+
+class EnvModel_TBL: # table looup model (basic model)   
+    def __init__(self, N_A, N_Symbols):
+        """
+        tbl: table look-up
+        """
+        self.N_A = N_A
+        self.N_Symbols = N_Symbols        
+        self.S_idx_base = np.power(self.N_Symbols,range(self.N_A))
+        All_S = np.power(self.N_Symbols,self.N_A)
+
+        # Model: All states x all actions x all associated new states x (reward, prob)
+        self.N_Model = np.zeros((All_S, self.N_A), dtype=np.int) #(Reward, p)
+        self.Model_R_N = np.zeros((All_S, self.N_A), dtype=np.float32) #(Reward, p)
+        self.Model_Done1_N = np.zeros((All_S, self.N_A), dtype=np.float32) #(Reward, p)
+        self.Model_P_N = np.zeros((All_S, self.N_A, self.N_A), dtype=np.float32) #(Reward, p)
+        self.Model_Done2_N = np.zeros((All_S, self.N_A, self.N_A), dtype=np.float32) #(Reward, p)
+
+    def update(self, S, action, reward, op_action, done):
+        S_idx = np.sum(self.S_idx_base * S)
+        self.Model_R_N[S_idx, action] += reward
+        self.Model_Done1_N[S_idx, action] += 1 if done else 0
+        self.N_Model[S_idx, action] += 1
+        if op_action is not None:
+            # Model_Done1_N is 1, then Done2_N is no need to consider. 
+            self.Model_P_N[S_idx, action, op_action] += 1.0                    
+            self.Model_Done2_N[S_idx, action, op_action] += 1 if done else 0
+
+    def sampling(self, shuffle_Replay_buff_d, P_no):
+        # generated_Replay_buff_d = {'S':[], 'action':[], 'reward':[], 'S_new':[]}
+        generated_Replay_buff = ReplayBuff()
+        for j in range(len(shuffle_Replay_buff_d['S'])):
+            S = shuffle_Replay_buff_d['S'][j]
+            action = shuffle_Replay_buff_d['action'][j]
+            S_idx = np.sum(self.S_idx_base * S)
+            reward = self.get_Model_R(S_idx, action)
+            S_new, done = self.get_Model_S_new(S, action, P_no, S_idx)
+            generated_Replay_buff.append(S.copy(), action, S_new.copy(), reward, done)
+        return generated_Replay_buff.d
+
+    def check(self):
+        print()
+        print('Checking modeling results')    
+        Done = False
+        while not Done:
+            S_str = input_default('Enter State vector (S)?(defulat=[0,0,0,0,0,0,0,0,0]) ', '[0,0,0,0,0,0,0,0,0]', str)
+            S = eval(S_str)
+            action = input_default('Enter action?(defulat=0) ', 0, int)
+            self.disp(S, action)
+            yn = input_default('Quit=0 or test again=1?(defalut=0) ', 0, int)
+            Done = not yn
+
+    def disp(self, S, action=0):
+        S_idx = np.sum(self.S_idx_base * S)
+        print(f'S = {S} --> S_idx = {S_idx}')
+        print(f'N_Model[{S},:] = ', self.N_Model[S_idx,:])
+        print(f'Model_R[{S},:] = ', [self.get_Model_R(S_idx,i) for i in range(9)])
+        print(f'Model_P[{S},{action},:] = ', [self.get_Model_P(S_idx,action,i) for i in range(9)])
+
+    def get_Model_P(self, S_idx, action, op_action):
+        """get_Model_P(self, S_idx, action, op_action):
+        """
+        if self.N_Model[S_idx, action]:
+            return self.Model_P_N[S_idx, action, op_action] / self.N_Model[S_idx, action]
+        else:
+            return 0.0
+
+    def get_Model_S_new(self, S, action, P_no, S_idx):
+        S_half = S.copy()
+        S_half[action] = P_no
+        op_action_list = find_remained_action_list(S_half)
+        done = 1 if len(op_action_list) < 2 else 0 # if 1, op_action will be append
+
+        if len(op_action_list) > 0:
+            P = []
+            for op_action in op_action_list:
+                P.append(self.get_Model_P(S_idx, action, op_action))
+            op_action = op_action_list[np.argmax(np.random.multinomial(1, P))]
+            P_no_op = 3 - P_no
+            S_half[op_action] = P_no_op
+        return S_half, done
+
+    def get_Model_R(self, S_idx, action):
+        if self.N_Model[S_idx, action]:
+            return self.Model_R_N[S_idx, action] / self.N_Model[S_idx, action]
+        else:
+            return 0.0
+
+    def get_Model_Done1(self, S_idx, action):
+        if self.N_Model[S_idx, action]:
+            return self.Model_Done1_N[S_idx, action] / self.N_Model[S_idx, action]
+        else:
+            return 0.0            
+
+    def get_Model_Done2(self, S_idx, action, op_action):
+        if self.Model_Done1_N[S_idx, action]:
+            return self.Model_Done2_N[S_idx, action, op_action] / self.Model_Done1_N[S_idx, action] 
+        else:
+            return 0.0
+
+class CntTrace:
+    def __init__(self):
+        self.buff = []
+        self.cnt = [0] * 9
+        self.buff.append(self.cnt.copy())
+
+    def calc_and_append(self, reward, play_order):
+        if reward == 1.0: 
+            self.cnt[1] += 1               # P_no = 1 
+            self.cnt[2 + play_order] += 1  # player_order = 1
+            self.cnt[4 + play_order] += 1  # player_order | P_no = 1, so it occupied 2 lists
+        elif reward == 0.5:
+            self.cnt[0] += 1 
+        else: # play_order = 2
+            self.cnt[2] += 1                   # P_no = 2  
+            self.cnt[2 + 3 - play_order] += 1  # player_order = 2
+            self.cnt[6 + 3 - play_order] += 1  # player_order | P_no = 2, so it start from 6
+        self.buff.append(self.cnt.copy())
+
+    def disp(self):
+        print('cnt: ', self.cnt)
 
 class color:
    PURPLE = '\033[95m'
@@ -1600,6 +1738,8 @@ class Tictactoe_Env:
                 else: # Continue playing
                     reward = 0.0
 
+        # By copying this information, S and action_list, 
+        # self.S, self.action_list can be managed separtely and safely
         S_copy = self.S.copy()
         action_list_copy = self.action_list.copy() 
         if done:
@@ -1792,17 +1932,24 @@ class Q_System_QL(Q_System):
         super(Q_System_QL, self).__init__(N_A=N_A, N_Symbols=N_Symbols)
 
     def q_learning_batch(self, Replay_buff_d, P_no=1, ff=0.9, lr=0.01):
-        random_shuffle_dict_inplace(Replay_buff_d)
+        """q_learning_batch(self, Replay_buff_d, P_no=1, ff=0.9, lr=0.01)
+        
+        Because of shuffling, (1-d) should be considered for y calculation (or td_err).
+        """
+        random_shuffle_dict_inplace(Replay_buff_d) # need to be updated to consider each list
         for j in range(len(Replay_buff_d['reward'])):
             S = Replay_buff_d['S'][j]
             action = Replay_buff_d['action'][j]
             S_new = Replay_buff_d['S_new'][j]
             reward = Replay_buff_d['reward'][j]
+            done_int = Replay_buff_d['done'][j]
             S_new_idx = calc_S_idx_numba(S_new, self.N_Symbols)
             S_idx = calc_S_idx_numba(S, self.N_Symbols)
-            y = reward + ff * np.max(self.Qsa[P_no-1][S_new_idx,:]) # ff --> (1-d)*ff should be updated
+            # if done, no future reward is generated.
+            y = reward + (1-done_int) * ff * np.max(self.Qsa[P_no-1][S_new_idx,:]) # ff --> (1-d)*ff should be updated
             td_err = y - self.Qsa[P_no-1][S_idx, action]
             self.Qsa[P_no-1][S_idx, action] += lr * td_err
+
 
     def q_learning_planning_batch(self, env_model, Replay_buff_d, N_plan=1, P_no=1, ff=0.9, lr=0.01):
         for _ in range(N_plan):
@@ -1987,17 +2134,14 @@ class Q_System_QL(Q_System):
         for episode in range(N_episodes):
             S, _ = ttt_env.reset(play_order=play_order)
             done = False            
-            Replay_buff_d = {'S':[], 'action': [], 'S_new': [], 'reward': []}
+            aReplay_buff = ReplayBuff()
             while not done:
                 self.epsilon = epsilon # epsilon is a hyperparamter for exploration
                 action, _ = self.get_action(P_no, S)
                 S_new, _, reward, done = ttt_env.step(action)
 
                 # Save to replay buffers
-                Replay_buff_d['S'].append(S.copy())
-                Replay_buff_d['action'].append(action)
-                Replay_buff_d['S_new'].append(S_new.copy())
-                Replay_buff_d['reward'].append(reward)
+                aReplay_buff.append(S.copy(), action, S_new.copy(), reward, done)
                 
                 # print(episode, [S, action, S_new, reward])
                 S = S_new
@@ -2007,11 +2151,11 @@ class Q_System_QL(Q_System):
             #######################################
             # print('play_order, P_no = ', play_order, P_no)
 
-            if Replay_buff_d['reward'][-1] == 1.0: 
+            if aReplay_buff.d['reward'][-1] == 1.0: 
                 cnt[1] += 1               # P_no = 1 
                 cnt[2 + play_order] += 1  # player_order = 1
                 cnt[4 + play_order] += 1  # player_order | P_no = 1, so it occupied 2 lists
-            elif Replay_buff_d['reward'][-1] == 0.5:
+            elif aReplay_buff.d['reward'][-1] == 0.5:
                 cnt[0] += 1 
             else: # play_order = 2
                 cnt[2] += 1                   # P_no = 2  
@@ -2028,17 +2172,7 @@ class Q_System_QL(Q_System):
                 print('Exproration: Epsilon=', self.epsilon)
 
             # Q-learning
-            random_shuffle_dict_inplace(Replay_buff_d)
-            for j in range(len(Replay_buff_d['reward'])):
-                S = Replay_buff_d['S'][j]
-                action = Replay_buff_d['action'][j]
-                S_new = Replay_buff_d['S_new'][j]
-                reward = Replay_buff_d['reward'][j]
-                S_new_idx = calc_S_idx_numba(S_new, self.N_Symbols)
-                y = reward + ff * np.max(self.Qsa[P_no-1][S_new_idx,:])
-                S_idx = calc_S_idx_numba(S, self.N_Symbols)
-                td_err = y - self.Qsa[P_no-1][S_idx, action]
-                self.Qsa[P_no-1][S_idx, action] += lr * td_err
+            self.q_learning_batch(aReplay_buff.d, P_no=P_no, ff=ff, lr=lr)            
 
             play_order = 3 - play_order # 1 --> 2, 2 --> 1
 
@@ -2317,8 +2451,9 @@ class Q_System_QL(Q_System):
         if np.isscalar(epsilon_d):
             self.learning_qlearn(N_episodes=N_episodes, ff=ff, lr=lr, epsilon = epsilon_d, print_cnt=print_cnt)
 
-        cnt = [0, 0, 0, 0, 0, 0, 0, 0, 0] # tie, p1, p2
-        cnt_trace = [cnt.copy()]        
+        #cnt = [0, 0, 0, 0, 0, 0, 0, 0, 0] # tie, p1, p2
+        #cnt_trace = [cnt.copy()]        
+        cnt_trace = CntTrace()
 
         # Opponent player index
         P_no = 1 # player Q function, regardless of play order (first or next)
@@ -2331,145 +2466,25 @@ class Q_System_QL(Q_System):
 
             S, _ = ttt_env.reset(play_order=play_order)
             done = False            
-            Replay_buff_d = {'S':[], 'action': [], 'S_new': [], 'reward': []}
+            aReplay_buff = ReplayBuff()
+            # Expereince to collect data
             while not done:
                 action, _ = self.get_action(P_no, S)
                 S_new, _, reward, done = ttt_env.step(action)
-
-                # Save to replay buffers
-                Replay_buff_d['S'].append(S.copy())
-                Replay_buff_d['action'].append(action)
-                Replay_buff_d['S_new'].append(S_new.copy())
-                Replay_buff_d['reward'].append(reward)
-                
-                # print(episode, [S, action, S_new, reward])
+                aReplay_buff.append(S.copy(), action, S_new.copy(), reward, done)
                 S = S_new
-
-            #######################################
-            # DQN start, here for learning   
-            #######################################
-            # print('play_order, P_no = ', play_order, P_no)
-
-            if Replay_buff_d['reward'][-1] == 1.0: 
-                cnt[1] += 1               # P_no = 1 
-                cnt[2 + play_order] += 1  # player_order = 1
-                cnt[4 + play_order] += 1  # player_order | P_no = 1, so it occupied 2 lists
-            elif Replay_buff_d['reward'][-1] == 0.5:
-                cnt[0] += 1 
-            else: # play_order = 2
-                cnt[2] += 1                   # P_no = 2  
-                cnt[2 + 3 - play_order] += 1  # player_order = 2
-                cnt[6 + 3 - play_order] += 1  # player_order | P_no = 2, so it start from 6
-
-            cnt_trace.append(cnt.copy())
+            # cnt_trace.calc_and_append(aReplay_buff.d['reward'][-1], play_order)   
+            cnt_trace.calc_and_append(reward, play_order)
+            # Q-learning
+            self.q_learning_batch(aReplay_buff.d, P_no=P_no, ff=ff, lr=lr)
 
             if episode % print_cnt == 0:
-                print(episode, cnt)                
-                print('S = [0,0,0, 0,0,0, 0,0,0]')
-                print('Qsa[0][0,:]', [f'{self.Qsa[0][0,a]:.1e}' for a in range(9)])
-                print('Qsa[1][0,:]', [f'{self.Qsa[1][0,a]:.1e}' for a in range(9)])
-                print('Exproration: Epsilon=', self.epsilon)
+                self.disp_Qsa_state0(episode, cnt_trace.cnt)
 
-            # Q-learning
-            random_shuffle_dict_inplace(Replay_buff_d)
-            for j in range(len(Replay_buff_d['reward'])):
-                S = Replay_buff_d['S'][j]
-                action = Replay_buff_d['action'][j]
-                S_new = Replay_buff_d['S_new'][j]
-                reward = Replay_buff_d['reward'][j]
-                S_new_idx = calc_S_idx_numba(S_new, self.N_Symbols)
-                S_idx = calc_S_idx_numba(S, self.N_Symbols)
-                y = reward + ff * np.max(self.Qsa[P_no-1][S_new_idx,:])
-                td_err = y - self.Qsa[P_no-1][S_idx, action]
-                self.Qsa[P_no-1][S_idx, action] += lr * td_err
 
             play_order = 3 - play_order # 1 --> 2, 2 --> 1
 
-        return cnt_trace   
-
-    def _learning_planning_qlearn_variable_epsilon(self, N_episodes=2, ff=0.9, lr=0.01, epsilon_d = None, print_cnt=10):
-        """Return: 
-            cnt_trace = [cnt, ...]: cnt vector are stacked in cnt_trace
-        """
-        self.env_model = EnvModel_TBL(self.N_A, self.N_Symbols)
-
-        cnt = [0, 0, 0, 0, 0, 0, 0, 0, 0] # tie, p1, p2
-        cnt_trace = [cnt.copy()]        
-
-        # Opponent player index
-        P_no = 1 # player Q function, regardless of play order (first or next)
-        play_order = 1
-        ttt_env = Tictactoe_Env(self.N_A, play_order=play_order) #both X but start 1st and 2nd
-        self.epsilon = epsilon_d['first value']
-        for episode in range(N_episodes):
-            if episode == epsilon_d['epsilon change episode']:                           
-                self.epsilon = epsilon_d['second value']
-
-            S, _ = ttt_env.reset(play_order=play_order)
-            done = False            
-            Replay_buff_d = {'S':[], 'action': [], 'S_new': [], 'reward': []}
-            while not done:
-                action, _ = self.get_action(P_no, S)
-                S_new, _, reward, done, op_action = ttt_env.step_op(action)
-
-                # Save to replay buffers
-                Replay_buff_d['S'].append(S.copy())
-                Replay_buff_d['action'].append(action)
-                Replay_buff_d['S_new'].append(S_new.copy())
-                Replay_buff_d['reward'].append(reward)
-                
-                self.env_model.update(S, action, reward, op_action, done)
-
-                # print(episode, [S, action, S_new, reward])
-                S = S_new
-
-            #######################################
-            # DQN start, here for learning   
-            #######################################
-            # print('play_order, P_no = ', play_order, P_no)
-
-            if Replay_buff_d['reward'][-1] == 1.0: 
-                cnt[1] += 1               # P_no = 1 
-                cnt[2 + play_order] += 1  # player_order = 1
-                cnt[4 + play_order] += 1  # player_order | P_no = 1, so it occupied 2 lists
-            elif Replay_buff_d['reward'][-1] == 0.5:
-                cnt[0] += 1 
-            else: # play_order = 2
-                cnt[2] += 1                   # P_no = 2  
-                cnt[2 + 3 - play_order] += 1  # player_order = 2
-                cnt[6 + 3 - play_order] += 1  # player_order | P_no = 2, so it start from 6
-
-            cnt_trace.append(cnt.copy())
-
-            if episode % print_cnt == 0:
-                print('-------------------------')
-                print(episode, cnt)                
-                print('S = [0,0,0, 0,0,0, 0,0,0]')
-                print('Qsa[0][0,:]', [f'{self.Qsa[0][0,a]:.1e}' for a in range(9)])
-                print('Qsa[1][0,:]', [f'{self.Qsa[1][0,a]:.1e}' for a in range(9)])
-                print('Exproration: Epsilon=', self.epsilon)
-                print()
-                print('Display modeling status')
-                S = [1, 1, 0, 2, 2, 0, 0, 0, 0]
-                self.env_model.disp(S, action=2)
-                print()
-
-            # Q-learning
-            random_shuffle_dict_inplace(Replay_buff_d)
-            for j in range(len(Replay_buff_d['reward'])):
-                S = Replay_buff_d['S'][j]
-                action = Replay_buff_d['action'][j]
-                S_new = Replay_buff_d['S_new'][j]
-                reward = Replay_buff_d['reward'][j]
-                S_new_idx = calc_S_idx_numba(S_new, self.N_Symbols)
-                S_idx = calc_S_idx_numba(S, self.N_Symbols)
-                y = reward + ff * np.max(self.Qsa[P_no-1][S_new_idx,:])
-                td_err = y - self.Qsa[P_no-1][S_idx, action]
-                self.Qsa[P_no-1][S_idx, action] += lr * td_err
-
-            play_order = 3 - play_order # 1 --> 2, 2 --> 1
-
-        return cnt_trace       
+        return cnt_trace.buff   
 
     def learning_planning_qlearn_variable_epsilon(self, N_episodes=2, N_plan=0, ff=0.9, lr=0.01, epsilon_d = None, print_cnt=10):
         """Return: 
@@ -2477,8 +2492,7 @@ class Q_System_QL(Q_System):
         """
         env_model = EnvModel_TBL(self.N_A, self.N_Symbols)
 
-        cnt = [0, 0, 0, 0, 0, 0, 0, 0, 0] # tie, p1, p2
-        cnt_trace = [cnt.copy()]        
+        cnt_trace = CntTrace()
 
         # Opponent player index
         P_no = 1 # player Q function, regardless of play order (first or next)
@@ -2491,61 +2505,39 @@ class Q_System_QL(Q_System):
 
             S, _ = ttt_env.reset(play_order=play_order)
             done = False            
-            Replay_buff_d = {'S':[], 'action': [], 'S_new': [], 'reward': []}
+            aReplay_buff = ReplayBuff()
+            # Expereince to collect data
             while not done:
                 action, _ = self.get_action(P_no, S)
                 S_new, _, reward, done, op_action = ttt_env.step_op(action)
-
-                # Save to replay buffers
-                Replay_buff_d['S'].append(S.copy())
-                Replay_buff_d['action'].append(action)
-                Replay_buff_d['S_new'].append(S_new.copy())
-                Replay_buff_d['reward'].append(reward)
-                
+                aReplay_buff.append(S.copy(), action, S_new.copy(), reward, done)
                 env_model.update(S, action, reward, op_action, done)
-
-                # print(episode, [S, action, S_new, reward])
                 S = S_new
-
-            #######################################
-            # DQN start, here for learning   
-            #######################################
-            # print('play_order, P_no = ', play_order, P_no)
-
-            if Replay_buff_d['reward'][-1] == 1.0: 
-                cnt[1] += 1               # P_no = 1 
-                cnt[2 + play_order] += 1  # player_order = 1
-                cnt[4 + play_order] += 1  # player_order | P_no = 1, so it occupied 2 lists
-            elif Replay_buff_d['reward'][-1] == 0.5:
-                cnt[0] += 1 
-            else: # play_order = 2
-                cnt[2] += 1                   # P_no = 2  
-                cnt[2 + 3 - play_order] += 1  # player_order = 2
-                cnt[6 + 3 - play_order] += 1  # player_order | P_no = 2, so it start from 6
-
-            cnt_trace.append(cnt.copy())
+            # cnt_trace.calc_and_append(aReplay_buff.d['reward'][-1], play_order)
+            cnt_trace.calc_and_append(reward, play_order)
+            # Q-learning
+            self.q_learning_batch(aReplay_buff.d, P_no=P_no, ff=ff, lr=lr)
+            self.q_learning_planning_batch(env_model, aReplay_buff.d, N_plan=N_plan, P_no=P_no, ff=ff, lr=lr)
 
             if episode % print_cnt == 0:
-                print('-------------------------')
-                print(episode, cnt)                
-                print('S = [0,0,0, 0,0,0, 0,0,0]')
-                print('Qsa[0][0,:]', [f'{self.Qsa[0][0,a]:.1e}' for a in range(9)])
-                print('Qsa[1][0,:]', [f'{self.Qsa[1][0,a]:.1e}' for a in range(9)])
-                print('Exproration: Epsilon=', self.epsilon)
-                print()
+                self.disp_Qsa_state0(episode, cnt_trace.cnt)
                 print('Display modeling status')
                 S = [1, 1, 0, 2, 2, 0, 0, 0, 0]
                 env_model.disp(S, action=2)
                 print()
 
-            # Q-learning
-            self.q_learning_batch(Replay_buff_d, P_no=P_no, ff=ff, lr=lr)
-            self.q_learning_planning_batch(env_model, Replay_buff_d, N_plan=N_plan, P_no=P_no, ff=ff, lr=lr)
-
             play_order = 3 - play_order # 1 --> 2, 2 --> 1
 
-        return cnt_trace       
+        return cnt_trace.buff       
 
+    def disp_Qsa_state0(self, episode, cnt):
+        print('-------------------------')
+        print(episode, cnt)                
+        print('S = [0,0,0, 0,0,0, 0,0,0]')
+        print('Qsa[0][0,:]', [f'{self.Qsa[0][0,a]:.1e}' for a in range(9)])
+        print('Qsa[1][0,:]', [f'{self.Qsa[1][0,a]:.1e}' for a in range(9)])
+        print('Exproration: Epsilon=', self.epsilon)
+        print()
 
     def playing_random(self, N_episodes=2, print_cnt=10):
         """Plyaing two random players. To make baseline performance so that it will compared with learnt agents.
@@ -3820,113 +3812,6 @@ def main():
         else:
             print('Type a different option in (0,1,2)')
 
-class EnvModel_TBL: # table looup model (basic model)   
-    def __init__(self, N_A, N_Symbols):
-        """
-        tbl: table look-up
-        """
-        self.N_A = N_A
-        self.N_Symbols = N_Symbols        
-        self.S_idx_base = np.power(self.N_Symbols,range(self.N_A))
-        All_S = np.power(self.N_Symbols,self.N_A)
-
-        # Model: All states x all actions x all associated new states x (reward, prob)
-        self.N_Model = np.zeros((All_S, self.N_A), dtype=np.int) #(Reward, p)
-        self.Model_R_N = np.zeros((All_S, self.N_A), dtype=np.float32) #(Reward, p)
-        self.Model_Done1_N = np.zeros((All_S, self.N_A), dtype=np.float32) #(Reward, p)
-        self.Model_P_N = np.zeros((All_S, self.N_A, self.N_A), dtype=np.float32) #(Reward, p)
-        self.Model_Done2_N = np.zeros((All_S, self.N_A, self.N_A), dtype=np.float32) #(Reward, p)
-
-    def update(self, S, action, reward, op_action, done):
-        S_idx = np.sum(self.S_idx_base * S)
-        self.Model_R_N[S_idx, action] += reward
-        self.Model_Done1_N[S_idx, action] += 1 if done else 0
-        self.N_Model[S_idx, action] += 1
-        if op_action is not None:
-            # Model_Done1_N is 1, then Done2_N is no need to consider. 
-            self.Model_P_N[S_idx, action, op_action] += 1.0                    
-            self.Model_Done2_N[S_idx, action, op_action] += 1 if done else 0
-
-    def sampling(self, shuffle_Replay_buff_d, P_no):
-        generated_Replay_buff_d = {'S':[], 'action':[], 'reward':[], 'S_new':[]}
-        for j in range(len(shuffle_Replay_buff_d['S'])):
-            S = shuffle_Replay_buff_d['S'][j]
-            action = shuffle_Replay_buff_d['action'][j]
-            S_idx = np.sum(self.S_idx_base * S)
-            reward = self.get_Model_R(S_idx, action)
-            # print("S, action, P_no, S_idx", S, action, P_no, S_idx)
-            S_new = self.get_Model_S_new(S, action, P_no, S_idx)
-            # print("j , S, action, S_new", j, S, action, S_new)
-
-            generated_Replay_buff_d['S'].append(S.copy())
-            generated_Replay_buff_d['action'].append(action)
-            generated_Replay_buff_d['S_new'].append(S_new.copy())
-            generated_Replay_buff_d['reward'].append(reward)
-            # print('Looping in ', j)
-        return generated_Replay_buff_d
-
-    def check(self):
-        print()
-        print('Checking modeling results')    
-        Done = False
-        while not Done:
-            S_str = input_default('Enter State vector (S)?(defulat=[0,0,0,0,0,0,0,0,0]) ', '[0,0,0,0,0,0,0,0,0]', str)
-            S = eval(S_str)
-            action = input_default('Enter action?(defulat=0) ', 0, int)
-            self.disp(S, action)
-            yn = input_default('Quit=0 or test again=1?(defalut=0) ', 0, int)
-            Done = not yn
-
-    def disp(self, S, action=0):
-        S_idx = np.sum(self.S_idx_base * S)
-        print(f'S = {S} --> S_idx = {S_idx}')
-        print(f'N_Model[{S},:] = ', self.N_Model[S_idx,:])
-        print(f'Model_R[{S},:] = ', [self.get_Model_R(S_idx,i) for i in range(9)])
-        print(f'Model_P[{S},{action},:] = ', [self.get_Model_P(S_idx,action,i) for i in range(9)])
-
-    def get_Model_P(self, S_idx, action, op_action):
-        """get_Model_P(self, S_idx, action, op_action):
-        """
-        if self.N_Model[S_idx, action]:
-            return self.Model_P_N[S_idx, action, op_action] / self.N_Model[S_idx, action]
-        else:
-            return 0.0
-
-    def get_Model_S_new(self, S, action, P_no, S_idx):
-        S_half = S.copy()
-        S_half[action] = P_no
-        op_action_list = find_remained_action_list(S_half)
-        #print("S, action, P_no, S_idx", S, action, P_no, S_idx)
-        #print("S_half, op_action_list", S_half, op_action_list)
-        if len(op_action_list) > 0:
-            P = []
-            for op_action in op_action_list:
-                P.append(self.get_Model_P(S_idx, action, op_action))
-            op_action = op_action_list[np.argmax(np.random.multinomial(1, P))]
-            # print("P, op_action", P, op_action)
-            P_no_op = 3 - P_no
-            S_half[op_action] = P_no_op
-            # print("P_no_op, S_half", P_no_op, S_half)
-        return S_half
-
-    def get_Model_R(self, S_idx, action):
-        if self.N_Model[S_idx, action]:
-            return self.Model_R_N[S_idx, action] / self.N_Model[S_idx, action]
-        else:
-            return 0.0
-
-    def get_Model_Done1(self, S_idx, action):
-        if self.N_Model[S_idx, action]:
-            return self.Model_Done1_N[S_idx, action] / self.N_Model[S_idx, action]
-        else:
-            return 0.0            
-
-    def get_Model_Done2(self, S_idx, action, op_action):
-        if self.Model_Done1_N[S_idx, action]:
-            return self.Model_Done2_N[S_idx, action, op_action] / self.Model_Done1_N[S_idx, action] 
-        else:
-            return 0.0
-
 
 def q1_dyna(): 
     """
@@ -3936,8 +3821,8 @@ def q1_dyna():
     print('------------------------------')
     print('Start to learn and plain a new agent...')
     print()
-    N_episodes = input_default_with('How many episode do you want to learn?', 100, int) #10000
-    N_plan = input_default('How many plan times do you try?(default=1)', 1, int)
+    N_episodes = input_default_with('How many episode do you want to learn?', 10000, int) #10000
+    N_plan = input_default_with('How many plan times do you plan?', 10, int)
 
     print()
     epsilon = input_default('What is initial Epsilon for exploration?(default=0.4) ', 0.4, float)
