@@ -603,7 +603,7 @@ class Q_System:
 
     def play_by_scenario(self, P_no=1, action_list=[4, 1, 3, 5, 6, 2, 0]):
         """ 
-        Buff = play(self, P_no=1, action_list=[4, 1, 3, 5, 6, 2, 0]):
+        Buff = play(self, P_no)
         
         [Inputs]  
             P_no: player number, which is 1 or 2
@@ -1385,19 +1385,13 @@ def calc_total_states(N_A=9):
         N += np.prod(range(N_A-i,N_A+1))
     return N
 
-def input_default_with(str, defalut_value, dtype=int):
-    answer = input(str+f"[default={defalut_value}] ")
-    if answer == '':
-        return defalut_value
-    else:
-        return dtype(answer)
-
 def input_default(str, defalut_value, dtype=int):
     answer = input(str)
     if answer == '':
         return defalut_value
     else:
         return dtype(answer)
+
 
 def check_play_by_scenario():
     ff = 0.9
@@ -1800,7 +1794,7 @@ class Q_System_QL(Q_System):
             reward = Replay_buff_d['reward'][j]
             S_new_idx = calc_S_idx_numba(S_new, self.N_Symbols)
             S_idx = calc_S_idx_numba(S, self.N_Symbols)
-            y = reward + ff * np.max(self.Qsa[P_no-1][S_new_idx,:]) # ff --> (1-d)*ff should be updated
+            y = reward + ff * np.max(self.Qsa[P_no-1][S_new_idx,:])
             td_err = y - self.Qsa[P_no-1][S_idx, action]
             self.Qsa[P_no-1][S_idx, action] += lr * td_err
 
@@ -1808,7 +1802,7 @@ class Q_System_QL(Q_System):
         for _ in range(N_plan):
             random_shuffle_dict_inplace(Replay_buff_d)
             generated_Replay_buff_d = env_model.sampling(Replay_buff_d, P_no)
-            self.q_learning_batch(generated_Replay_buff_d, P_no=P_no, ff=ff, lr=lr)
+            # self.q_learning_batch(generated_Replay_buff_d, P_no=P_no, ff=ff, lr=lr)
 
     def _learning(self, N_episodes=2, ff=0.9, lr=0.01, print_cnt=10):
         """Return: 
@@ -2475,6 +2469,8 @@ class Q_System_QL(Q_System):
         """Return: 
             cnt_trace = [cnt, ...]: cnt vector are stacked in cnt_trace
         """
+        print_cnt = 1
+
         env_model = EnvModel_TBL(self.N_A, self.N_Symbols)
 
         cnt = [0, 0, 0, 0, 0, 0, 0, 0, 0] # tie, p1, p2
@@ -2525,7 +2521,8 @@ class Q_System_QL(Q_System):
 
             cnt_trace.append(cnt.copy())
 
-            if episode % print_cnt == 0:
+            # if episode % print_cnt == 0:
+            if True:
                 print('-------------------------')
                 print(episode, cnt)                
                 print('S = [0,0,0, 0,0,0, 0,0,0]')
@@ -3699,6 +3696,33 @@ def q1_learning():
         print('No such method is supported.')
 
 
+def q1_dyna(): 
+    """
+    Learning and Planning
+    """
+    print()
+    print('------------------------------')
+    print('Start to learn and plain a new agent...')
+    print()
+    N_episodes = input_default('How many episode do you want to learn?(default=10000) ', 10000, int)
+    N_plan = input_default('How many plan times do you try?(default=1)', 1, int)
+
+    print()
+    epsilon = input_default('What is initial Epsilon for exploration?(default=0.4) ', 0.4, float)
+    second_epsilon = input_default('What is second Epsilon for exploration?(default=0.1) ', 0.1, float)
+    epsilon_change_episode = input_default('What episode do you want to change Epsilon?(default=2000) ', 2000, int)
+    # agent_type = input_default('Which type of a computer agent do you want to play with?(default=0:random, 1:advanced, 2:premium) ', 0, int)
+    
+    print()
+    print('0) Q-learning with variable esplison')
+    Method = input_default('What learning method do you want to use?(0=default) ', 0 , int)
+    if Method == 0:
+        epsilon_d = {'first value':epsilon, 'second value':second_epsilon, 'epsilon change episode':epsilon_change_episode}
+        _ = learning_planning_stage_qlearn_variable_epsilon(N_episodes=N_episodes, epsilon_d=epsilon_d, N_plan=N_plan, fig_flag=True)
+    else:
+        print('No such method is supported.')
+
+
 def modeling_stage_qlearn(N_episodes=100, fig_flag=False):
     N_Symbols = 3 # 0=empty, 1=plyaer1, 2=player2
     N_A = 9 # (0,0), (0,1), ..., (2,2)
@@ -3854,15 +3878,12 @@ class EnvModel_TBL: # table looup model (basic model)
             action = shuffle_Replay_buff_d['action'][j]
             S_idx = np.sum(self.S_idx_base * S)
             reward = self.get_Model_R(S_idx, action)
-            # print("S, action, P_no, S_idx", S, action, P_no, S_idx)
             S_new = self.get_Model_S_new(S, action, P_no, S_idx)
-            # print("j , S, action, S_new", j, S, action, S_new)
 
             generated_Replay_buff_d['S'].append(S.copy())
             generated_Replay_buff_d['action'].append(action)
             generated_Replay_buff_d['S_new'].append(S_new.copy())
             generated_Replay_buff_d['reward'].append(reward)
-            # print('Looping in ', j)
         return generated_Replay_buff_d
 
     def check(self):
@@ -3885,8 +3906,6 @@ class EnvModel_TBL: # table looup model (basic model)
         print(f'Model_P[{S},{action},:] = ', [self.get_Model_P(S_idx,action,i) for i in range(9)])
 
     def get_Model_P(self, S_idx, action, op_action):
-        """get_Model_P(self, S_idx, action, op_action):
-        """
         if self.N_Model[S_idx, action]:
             return self.Model_P_N[S_idx, action, op_action] / self.N_Model[S_idx, action]
         else:
@@ -3896,17 +3915,12 @@ class EnvModel_TBL: # table looup model (basic model)
         S_half = S.copy()
         S_half[action] = P_no
         op_action_list = find_remained_action_list(S_half)
-        #print("S, action, P_no, S_idx", S, action, P_no, S_idx)
-        #print("S_half, op_action_list", S_half, op_action_list)
-        if len(op_action_list) > 0:
-            P = []
-            for op_action in op_action_list:
-                P.append(self.get_Model_P(S_idx, action, op_action))
-            op_action = op_action_list[np.argmax(np.random.multinomial(1, P))]
-            # print("P, op_action", P, op_action)
-            P_no_op = 3 - P_no
-            S_half[op_action] = P_no_op
-            # print("P_no_op, S_half", P_no_op, S_half)
+        P = []
+        for op_action in op_action_list:
+            P.append(self.get_Model_P(S_idx, action, op_action))
+        op_action = op_action_list[np.argmax(np.random.multinomial(1, P))]
+        P_no_op = 3 - P_no
+        S_half[op_action] = P_no_op
         return S_half
 
     def get_Model_R(self, S_idx, action):
@@ -3926,33 +3940,6 @@ class EnvModel_TBL: # table looup model (basic model)
             return self.Model_Done2_N[S_idx, action, op_action] / self.Model_Done1_N[S_idx, action] 
         else:
             return 0.0
-
-
-def q1_dyna(): 
-    """
-    Learning and Planning
-    """
-    print()
-    print('------------------------------')
-    print('Start to learn and plain a new agent...')
-    print()
-    N_episodes = input_default_with('How many episode do you want to learn?', 100, int) #10000
-    N_plan = input_default('How many plan times do you try?(default=1)', 1, int)
-
-    print()
-    epsilon = input_default('What is initial Epsilon for exploration?(default=0.4) ', 0.4, float)
-    second_epsilon = input_default('What is second Epsilon for exploration?(default=0.1) ', 0.1, float)
-    epsilon_change_episode = input_default('What episode do you want to change Epsilon?(default=2000) ', 2000, int)
-    # agent_type = input_default('Which type of a computer agent do you want to play with?(default=0:random, 1:advanced, 2:premium) ', 0, int)
-    
-    print()
-    print('0) Q-learning with variable esplison')
-    Method = input_default('What learning method do you want to use?(0=default) ', 0 , int)
-    if Method == 0:
-        epsilon_d = {'first value':epsilon, 'second value':second_epsilon, 'epsilon change episode':epsilon_change_episode}
-        _ = learning_planning_stage_qlearn_variable_epsilon(N_episodes=N_episodes, epsilon_d=epsilon_d, N_plan=N_plan, fig_flag=True)
-    else:
-        print('No such method is supported.')
 
 if __name__ == "__main__":
     # This is the main function.
