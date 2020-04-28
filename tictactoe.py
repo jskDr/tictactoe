@@ -3915,38 +3915,72 @@ class RL_System:
         self.Vs = np.zeros(N_S, dtype=np.float) + 0.5
         self.lr_alpha = lr_alpha
 
-    def update_Qsa_mc(self, replay_buff):
-        discounted_return = np.array(replay_buff.d['reward'])
+    def update_Qsa_mc(self, replay_buff_d):
+        discounted_return = np.array(replay_buff_d['reward'])
         calc_discounted_return_inplace(discounted_return)
 
         for idx in range(len(discounted_return)):
-            S = replay_buff.d['S'][idx]
-            action = replay_buff.d['action'][idx]
+            S = replay_buff_d['S'][idx]
+            action = replay_buff_d['action'][idx]
             mc_error = discounted_return[idx] - self.Qsa[S, action]
             self.Qsa[S, action] += self.lr_alpha * mc_error
 
-    def update_Vs_mc(self, replay_buff):
-        discounted_return = np.array(replay_buff.d['reward'])
+    def update_Vs_mc(self, replay_buff_d):
+        discounted_return = np.array(replay_buff_d['reward'])
         calc_discounted_return_inplace(discounted_return)
 
         for idx in range(len(discounted_return)):
-            S = replay_buff.d['S'][idx]
+            S = replay_buff_d['S'][idx]
             # action = replay_buff.d['action'][idx]
             mc_error = discounted_return[idx] - self.Vs[S]
             self.Vs[S] += self.lr_alpha * mc_error
 
-    def update_mc(self, replay_buff):
-        self.update_Qsa_mc(replay_buff)
-        self.update_Vs_mc(replay_buff)
+    def update_mc(self, replay_buff_d):
+        self.update_Qsa_mc(replay_buff_d)
+        self.update_Vs_mc(replay_buff_d)
+
+    def update_Qsa_td(self, replay_buff_d, gamma = 1.0):
+        S = replay_buff_d['S'][0]
+        action = replay_buff_d['action'][0]
+        reward = replay_buff_d['reward'][0]
+        done = replay_buff_d['done'][0]
+        for idx in range(1, len(replay_buff_d['S'])):
+            # SARSA
+            S_new = replay_buff_d['S'][idx]
+            action_new = replay_buff_d['action'][idx]
+            td_error = (reward + (1-done) * gamma * self.Qsa[S_new, action_new]) - self.Qsa[S, action]
+            self.Qsa[S, action] += self.lr_alpha * td_error        
+            S = S_new
+            action = action_new
+            reward = replay_buff_d['reward'][idx]
+            done = replay_buff_d['done'][idx]
+        td_error = reward - self.Qsa[S, action]
+        self.Qsa[S, action] += self.lr_alpha * td_error
+
+    def update_Vs_td(self, replay_buff_d, gamma = 1.0):
+        for idx in range(len(replay_buff_d['S'])):
+            S = replay_buff_d['S'][idx]
+            # action = replay_buff_d['S'][idx]
+            S_new = replay_buff_d['S_new'][idx]
+            reward = replay_buff_d['reward'][idx]
+            done = replay_buff_d['done'][idx]
+            td_error = (reward + (1-done) * gamma * self.Vs[S_new]) - self.Vs[S]
+            self.Vs[S] += self.lr_alpha * td_error        
+
+    def update_td(self, replay_buff_d):
+        self.update_Qsa_td(replay_buff_d)
+        self.update_Vs_td(replay_buff_d)
 
 
 def randomwalk_main():
     print('Testing random walk')
     N_episodes = input_default_with('How many episodes do you want to run?', 1)
-    randomwalk_run(N_episodes=N_episodes)
+    rl_mode_index = input_default_with('Which mode do you want to use?(0=td,1=mc)', 0)
+    rl_mode = ['td', 'mc'][rl_mode_index]
+    randomwalk_run(N_episodes=N_episodes, rl_mode=rl_mode)
 
 
-def randomwalk_run(N_episodes=1):
+def randomwalk_run(N_episodes=1, rl_mode='td'):
     rl_system = RL_System(5, 2)
     random_walk_env = RandomWalkEnv()
     S = random_walk_env.reset()
@@ -3965,9 +3999,11 @@ def randomwalk_run(N_episodes=1):
         # print("Replay buff:")
         # print(replay_buff.d)
 
-        rl_system.update_mc(replay_buff)
-        # rl_system.update_Qsa_mc(replay_buff)
-        # rl_system.update_Vs_mc(replay_buff)
+        if rl_mode == 'mc':
+            rl_system.update_mc(replay_buff.d)
+        else: # rl_mode == 'td' (default mode)
+            rl_system.update_td(replay_buff.d)
+            
         replay_buff.reset()
     print('Qsa:')
     print(rl_system.Qsa)
