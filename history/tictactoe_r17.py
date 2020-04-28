@@ -14,7 +14,7 @@ from typing import List, Tuple, Union
 
 class ReplayBuff:
     def __init__(self):
-        self.reset()
+        self.d = {'S':[], 'action': [], 'S_new': [], 'reward': [], 'done': []}
     
     def append(self, S, action, S_new, reward, done):
         """
@@ -25,9 +25,6 @@ class ReplayBuff:
         self.d['S_new'].append(S_new)
         self.d['reward'].append(reward)
         self.d['done'].append(1 if done else 0)                
-
-    def reset(self):
-        self.d = {'S':[], 'action': [], 'S_new': [], 'reward': [], 'done': []}
 
 
 class EnvModel_TBL: # table looup model (basic model)   
@@ -369,6 +366,7 @@ def buff_depart(Buff, disp_flag=False):
             print('i, p, Buff_dual[p-1]')
             print(i, p, Buff_dual[p-1])                
     return Buff_dual                
+
 
 
 def discounted_inplace(Buff_r, ff):
@@ -3783,6 +3781,36 @@ def q1_testing():
         print('Playing between our dqn player and a random player')
         playing_stage_dqn(N_episodes=Q1, fig_flag=True)
 
+def main():
+    """
+    Three types of starting questions will be given to a user.
+    """
+    Done = False
+    while not Done:
+        print()
+        print('== Start TicTacToe Aget Framework ==')
+        print('- Developed by Sungjin Kim, 2020')
+        print()
+        print('0) Playing a game')
+        print('1) Learning a new agent')
+        print('2) Testing code')
+        print('3) Modeling')
+        print('4) Dyna - Learning & Plaining')
+        Q1 = input_default('What do you want? (0=deafult,99=quit) ', 0, int)
+        if Q1 == 0:
+            q1_playing()
+        elif Q1 == 1:
+            q1_learning()
+        elif Q1 == 2:
+            q1_testing()
+        elif Q1 == 3:
+            q1_modeling()
+        elif Q1 == 4:
+            q1_dyna()
+        elif Q1 == 99:
+            Done = True
+        else:
+            print('Type a different option in (0,1,2)')
 
 
 def q1_dyna(): 
@@ -3810,170 +3838,6 @@ def q1_dyna():
         _ = learning_planning_stage_qlearn_variable_epsilon(N_episodes=N_episodes, epsilon_d=epsilon_d, N_plan=N_plan, fig_flag=True)
     else:
         print('No such method is supported.')
-
-def tictactoe_main():
-    """
-    Three types of starting questions will be given to a user.
-    """
-    Done = False
-    while not Done:
-        print()
-        print('== Start TicTacToe Aget Framework ==')
-        print('- Developed by Sungjin Kim, 2020')
-        print()
-        print('0) Playing a game')
-        print('1) Learning a new agent')
-        print('2) Testing code')
-        print('3) Modeling')
-        print('4) Dyna - Learning & Plaining')
-        print('999) Quit')
-        Q1 = input_default_with('What do you want?', 999, int)
-        if Q1 == 0:
-            q1_playing()
-        elif Q1 == 1:
-            q1_learning()
-        elif Q1 == 2:
-            q1_testing()
-        elif Q1 == 3:
-            q1_modeling()
-        elif Q1 == 4:
-            q1_dyna()
-        elif Q1 == 999:
-            Done = True
-        else:
-            print('Type a different option listed in the above table.')
-
-
-def main():
-    """
-    Futher than Tictactoe applications are considered, including random walk, maze, etc. 
-    """
-    Done = False
-    while not Done:
-        print()
-        print('==RL Aget Testing Framework ==')
-        print('- Developed by Sungjin Kim, 2020')
-        print()
-        print('0) Tictactoe')
-        print('1) Random walk')
-        print('999) Quit')
-        Q1 = input_default_with('Which application do you want to perform?', 999, int)
-        if Q1 == 0:
-            tictactoe_main()
-        elif Q1 == 1:
-            randomwalk_main()
-        elif Q1 == 999:
-            Done = True
-        else:
-            print('Type a different option listed in the above table.')            
-
-
-class RandomWalkEnv:
-    def __init__(self):
-        self.N_S = 5 # 0, 1, 2, 3, 4 (A,B,C,D,E)
-        self.S = 2 
-        self.action_value_list = np.array([-1, 1]) # left: -1, right: +1
-        self.N_A = len(self.action_value_list)
-
-        self.reward_table = np.zeros((self.N_S, self.N_A), dtype=np.float)
-        self.reward_table[4, 1] = 1.0
-
-        self.done_table = np.zeros((self.N_S, self.N_A), dtype=np.int)
-        self.done_table[4, 1] = 1
-        self.done_table[0, 0] = 1
-
-    def reset_internal(self):
-        self.S = 2
-
-    def reset(self):
-        self.reset_internal()
-        return self.S
-
-    def sample_action(self):
-        action = np.random.randint(self.N_A)
-        return action
-
-    def step(self, action):
-        reward = self.reward_table[self.S, action]
-        done = self.done_table[self.S, action]
-        if done:
-            self.reset_internal()
-        else:    
-            self.S += self.action_value_list[action]
-        return self.S, reward, done
-
-@jit
-def calc_discounted_return_inplace(discounted_return, gamma=1.0):
-    r_future = 0.0
-    for idx in range(len(discounted_return)):
-        discounted_return[-idx] += gamma * r_future
-        r_future = discounted_return[-idx]
-
-class RL_System:
-    def __init__(self, N_S, N_A, lr_alpha = 0.1):
-        self.Qsa = np.zeros((N_S, N_A), dtype=np.float) + 0.5
-        self.Vs = np.zeros(N_S, dtype=np.float) + 0.5
-        self.lr_alpha = lr_alpha
-
-    def update_Qsa_mc(self, replay_buff):
-        discounted_return = np.array(replay_buff.d['reward'])
-        calc_discounted_return_inplace(discounted_return)
-
-        for idx in range(len(discounted_return)):
-            S = replay_buff.d['S'][idx]
-            action = replay_buff.d['action'][idx]
-            mc_error = discounted_return[idx] - self.Qsa[S, action]
-            self.Qsa[S, action] += self.lr_alpha * mc_error
-
-    def update_Vs_mc(self, replay_buff):
-        discounted_return = np.array(replay_buff.d['reward'])
-        calc_discounted_return_inplace(discounted_return)
-
-        for idx in range(len(discounted_return)):
-            S = replay_buff.d['S'][idx]
-            # action = replay_buff.d['action'][idx]
-            mc_error = discounted_return[idx] - self.Vs[S]
-            self.Vs[S] += self.lr_alpha * mc_error
-
-    def update_mc(self, replay_buff):
-        self.update_Qsa_mc(replay_buff)
-        self.update_Vs_mc(replay_buff)
-
-
-def randomwalk_main():
-    print('Testing random walk')
-    N_episodes = input_default_with('How many episodes do you want to run?', 1)
-    randomwalk_run(N_episodes=N_episodes)
-
-
-def randomwalk_run(N_episodes=1):
-    rl_system = RL_System(5, 2)
-    random_walk_env = RandomWalkEnv()
-    S = random_walk_env.reset()
-    # print(f'Current state: {S}')
-
-    replay_buff = ReplayBuff()
-    for _ in range(N_episodes):
-        done = False
-        while not done:
-            action = random_walk_env.sample_action()
-            S_new, reward, done = random_walk_env.step(action)
-            replay_buff.append(S, action, S_new, reward, done)
-            # print(f'S:{S}, action:{action}, S_new:{S_new}, reward:{reward}, done:{done}')
-            S = S_new
-
-        # print("Replay buff:")
-        # print(replay_buff.d)
-
-        rl_system.update_mc(replay_buff)
-        # rl_system.update_Qsa_mc(replay_buff)
-        # rl_system.update_Vs_mc(replay_buff)
-        replay_buff.reset()
-    print('Qsa:')
-    print(rl_system.Qsa)
-    print('Vs:')
-    print(rl_system.Vs)
-
 
 if __name__ == "__main__":
     # This is the main function.
