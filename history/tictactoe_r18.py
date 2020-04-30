@@ -3902,14 +3902,12 @@ class RandomWalkEnv:
             self.S += self.action_value_list[action]
         return self.S, reward, done
 
-
 @jit
 def calc_discounted_return_inplace(discounted_return, gamma=1.0):
     r_future = 0.0
     for idx in range(len(discounted_return)):
         discounted_return[-idx] += gamma * r_future
         r_future = discounted_return[-idx]
-
 
 class RL_System:
     def __init__(self, N_S, N_A, lr_alpha = 0.1):
@@ -3976,13 +3974,10 @@ class RL_System:
 
 def randomwalk_main():
     print('Testing random walk')
-    N_episodes = input_default_with('How many episodes do you want to run?', 10)
-    rl_mode_index = input_default_with('Which mode do you want to use?(0=td,1=mc,2=pg)', 0)
-    rl_mode = ['td', 'mc', 'pg'][rl_mode_index]
-    if rl_mode == 'pg':
-        randomwalk_run_pg(N_episodes=N_episodes)
-    else:
-        randomwalk_run(N_episodes=N_episodes, rl_mode=rl_mode)
+    N_episodes = input_default_with('How many episodes do you want to run?', 1)
+    rl_mode_index = input_default_with('Which mode do you want to use?(0=td,1=mc)', 0)
+    rl_mode = ['td', 'mc'][rl_mode_index]
+    randomwalk_run(N_episodes=N_episodes, rl_mode=rl_mode)
 
 
 def randomwalk_run(N_episodes=1, rl_mode='td'):
@@ -4015,54 +4010,6 @@ def randomwalk_run(N_episodes=1, rl_mode='td'):
     print('Vs:')
     print(rl_system.Vs)
 
-
-class RL_System_PG(RL_System):
-    def __init__(self, N_S, N_A, lr_alpha = 0.1):
-        super(RL_System_PG, self).__init__(N_S, N_A, lr_alpha=lr_alpha)
-
-        assert N_A == 2, 'N_A=2 is supported only.'
-        self.function_approx_binary = np.zeros(N_S, dtype=np.float) + 0.5 
-
-    def get_action(self, S):        
-        prob_action_0 = self.function_approx_binary[S]
-        sample = np.random.uniform()
-        if sample < prob_action_0:
-            return 0
-        else:
-            return 1
-
-
-def randomwalk_run_pg(N_episodes=1, rl_mode='td'):
-    print('Plocy gradient mode (Under development)')
-    rl_system = RL_System_PG(5, 2)
-    random_walk_env = RandomWalkEnv()
-    S = random_walk_env.reset()
-    # print(f'Current state: {S}')
-
-    replay_buff = ReplayBuff()
-    for _ in range(N_episodes):
-        done = False
-        while not done:
-            #action = random_walk_env.sample_action()
-            action = rl_system.get_action(S)
-            S_new, reward, done = random_walk_env.step(action)
-            replay_buff.append(S, action, S_new, reward, done)
-            # print(f'S:{S}, action:{action}, S_new:{S_new}, reward:{reward}, done:{done}')
-            S = S_new
-
-        # print("Replay buff:")
-        # print(replay_buff.d)
-
-        if rl_mode == 'mc':
-            rl_system.update_mc(replay_buff.d)
-        else: # rl_mode == 'td' (default mode)
-            rl_system.update_td(replay_buff.d)
-            
-        replay_buff.reset()
-    print('Qsa:')
-    print(rl_system.Qsa)
-    print('Vs:')
-    print(rl_system.Vs)
 
 if __name__ == "__main__":
     # This is the main function.
