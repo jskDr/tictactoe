@@ -11,25 +11,6 @@ from typing import List, Tuple, Union
 # TicTacToe game has nine stateus with nine actions. 
 # An user can put his ston on any postion in the borad except 
 
-
-class ReplayBuff:
-    def __init__(self):
-        self.reset()
-    
-    def append(self, S, action, S_new, reward, done):
-        """
-        Separated copies are needed to save, so that we use copy() command
-        """
-        self.d['S'].append(S)
-        self.d['action'].append(action)
-        self.d['S_new'].append(S_new)
-        self.d['reward'].append(reward)
-        self.d['done'].append(1 if done else 0)                
-
-    def reset(self):
-        self.d = {'S':[], 'action': [], 'S_new': [], 'reward': [], 'done': []}
-
-
 class EnvModel_TBL: # table looup model (basic model)   
     def __init__(self, N_A, N_Symbols):
         """
@@ -3977,10 +3958,10 @@ class RL_System:
 def randomwalk_main():
     print('Testing random walk')
     N_episodes = input_default_with('How many episodes do you want to run?', 10)
-    rl_mode_index = input_default_with('Which mode do you want to use?(0=td,1=mc,2=pg)', 0)
+    rl_mode_index = input_default_with('Which mode do you want to use?(0=td,1=mc,2=pg_learning)', 0)
     rl_mode = ['td', 'mc', 'pg'][rl_mode_index]
     if rl_mode == 'pg':
-        randomwalk_run_pg(N_episodes=N_episodes)
+        randomwalk_run_pg_learning(N_episodes=N_episodes)
     else:
         randomwalk_run(N_episodes=N_episodes, rl_mode=rl_mode)
 
@@ -4016,6 +3997,42 @@ def randomwalk_run(N_episodes=1, rl_mode='td'):
     print(rl_system.Vs)
 
 
+class ReplayBuff:
+    def __init__(self):
+        self.reset()
+    
+    def append(self, S, action, S_new, reward, done):
+        """
+        Separated copies are needed to save, so that we use copy() command
+        """
+        self.d['S'].append(S)
+        self.d['action'].append(action)
+        self.d['S_new'].append(S_new)
+        self.d['reward'].append(reward)
+        self.d['done'].append(1 if done else 0)                
+
+    def reset(self):
+        self.d = {'S':[], 'action': [], 'S_new': [], 'reward': [], 'done': []}
+
+class ReplayBuff_PG:
+    def __init__(self):
+        self.reset()
+    
+    def append(self, S, action, S_new, reward, done, prob):
+        """
+        Separated copies are needed to save, so that we use copy() command
+        """
+        self.d['S'].append(S)
+        self.d['action'].append(action)
+        self.d['S_new'].append(S_new)
+        self.d['reward'].append(reward)
+        self.d['done'].append(1 if done else 0)          
+        self.d['prob'].append(prob)      
+
+    def reset(self):
+        self.d = {'S':[], 'action':[], 'S_new':[], 'reward':[], 'done':[], 'prob':[]}
+
+
 class RL_System_PG(RL_System):
     def __init__(self, N_S, N_A, lr_alpha = 0.1):
         super(RL_System_PG, self).__init__(N_S, N_A, lr_alpha=lr_alpha)
@@ -4023,42 +4040,119 @@ class RL_System_PG(RL_System):
         assert N_A == 2, 'N_A=2 is supported only.'
         self.function_approx_binary = np.zeros(N_S, dtype=np.float) + 0.5 
 
-    def get_action(self, S):        
+    def get_action_prob(self, S):        
         prob_action_0 = self.function_approx_binary[S]
         sample = np.random.uniform()
         if sample < prob_action_0:
-            return 0
+            return 0, prob_action_0 
         else:
-            return 1
+            return 1, 1 - prob_action_0
+
+    def update_Qsa_mc(self, replay_buff_d):
+        discounted_return = np.array(replay_buff_d['reward'])
+        calc_discounted_return_inplace(discounted_return)
+
+        for idx in range(len(discounted_return)):
+            S = replay_buff_d['S'][idx]
+            action = replay_buff_d['action'][idx]
+            mc_error = discounted_return[idx] - self.Qsa[S, action]
+            self.Qsa[S, action] += self.lr_alpha * mc_error
+
+    def update_pg(self, replay_buff_d):
+        discounted_return = np.array(replay_buff_d['reward'])
+        calc_discounted_return_inplace(discounted_return)
+        prob = np.array(replay_buff_d['prob'], dtype=np.float)
+        
+        # Total performance regardless of 
+        performance = np.log(prob) * discounted_return
+
+    def update_mc(self, replay_buff_d):
+        self.update_pg(replay_buff_d)
+
+        self.update_Qsa_mc(replay_buff_d)
+        self.update_Vs_mc(replay_buff_d)
 
 
-def randomwalk_run_pg(N_episodes=1, rl_mode='td'):
+class DNN_Random_Walk(tf.keras.layers.Layer):
+    def __init__(self, N_A=2):
+        super(DNN_Random_Walk, self).__init__()
+        self.linear = tf.keras.layers.Dense(N_A)
+
+    def call(self, x):
+        logits = self.linear(x)
+        probs = tf.nn.softmax(logits)
+        return probs
+
+class RL_System_PG_TF(RL_System_PG):
+    def __init__(self, N_S, N_A, lr_alpha = 0.1):
+        super(RL_System_PG_TF, self).__init__(N_S, N_A, lr_alpha=lr_alpha)
+        
+        self.N_S = N_S
+        self.N_A = N_A
+        self.function_approx = DNN_Random_Walk(N_A=N_A)
+
+    def get_action_prob_tf(self, S):
+        """
+        Return
+        ------
+        action, probs_tf
+        """        
+        S_a = np.zeros((1,self.N_S), dtype=np.float16)
+        S_a[0, S] = 1.0
+        S_tf = tf.Variable(S_a)
+        probs_tf = self.function_approx(S_tf)
+        action = np.random.choice(self.N_A, p=probs_tf.numpy()[0])
+        return action, tf.reshape(probs_tf[:,action], (-1,1))
+
+    def update_Qsa_mc(self, replay_buff_d):
+        discounted_return = np.array(replay_buff_d['reward'])
+        calc_discounted_return_inplace(discounted_return)
+
+        for idx in range(len(discounted_return)):
+            S = replay_buff_d['S'][idx]
+            action = replay_buff_d['action'][idx]
+            mc_error = discounted_return[idx] - self.Qsa[S, action]
+            self.Qsa[S, action] += self.lr_alpha * mc_error
+
+    def learning_pg(self, replay_buff_d, tape, optimizer):
+        discounted_return = np.array(replay_buff_d['reward'])
+        calc_discounted_return_inplace(discounted_return)
+        prob = tf.concat(replay_buff_d['prob'], 0)
+        
+        # Once tf is chagned to numpy, no gradient is able to be calculated.
+        performance = tf.reduce_sum(tf.math.log(prob) * discounted_return)
+        gradients = tape.gradient(-performance, self.function_approx.trainable_weights)
+        optimizer.apply_gradients(zip(gradients, self.function_approx.trainable_weights))
+
+    def update_mc(self, replay_buff_d):
+        self.update_Qsa_mc(replay_buff_d)
+        self.update_Vs_mc(replay_buff_d)
+
+
+def randomwalk_run_pg_learning(N_episodes=1, learning_mode=True):
     print('Plocy gradient mode (Under development)')
-    rl_system = RL_System_PG(5, 2)
+    N_S = 5
+    N_A = 2
+    rl_system = RL_System_PG_TF(N_S, N_A)
     random_walk_env = RandomWalkEnv()
     S = random_walk_env.reset()
-    # print(f'Current state: {S}')
 
-    replay_buff = ReplayBuff()
+    optimizer = tf.keras.optimizers.Adam()
+    replay_buff = ReplayBuff_PG()
     for _ in range(N_episodes):
-        done = False
-        while not done:
-            #action = random_walk_env.sample_action()
-            action = rl_system.get_action(S)
-            S_new, reward, done = random_walk_env.step(action)
-            replay_buff.append(S, action, S_new, reward, done)
-            # print(f'S:{S}, action:{action}, S_new:{S_new}, reward:{reward}, done:{done}')
-            S = S_new
-
-        # print("Replay buff:")
-        # print(replay_buff.d)
-
-        if rl_mode == 'mc':
-            rl_system.update_mc(replay_buff.d)
-        else: # rl_mode == 'td' (default mode)
-            rl_system.update_td(replay_buff.d)
+        with tf.GradientTape() as tape:
+            done = False        
+            while not done:
+                action, prob = rl_system.get_action_prob_tf(S)
+                S_new, reward, done = random_walk_env.step(action)
+                replay_buff.append(S, action, S_new, reward, done, prob)
+                S = S_new
             
+            rl_system.update_mc(replay_buff.d)
+            if learning_mode:
+                rl_system.learning_pg(replay_buff.d, tape, optimizer)
         replay_buff.reset()
+    
     print('Qsa:')
     print(rl_system.Qsa)
     print('Vs:')
