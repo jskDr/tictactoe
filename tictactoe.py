@@ -4104,6 +4104,13 @@ class RL_System_PG_TF(RL_System_PG):
         action = np.random.choice(self.N_A, p=probs_tf.numpy()[0])
         return action, tf.reshape(probs_tf[:,action], (-1,1))
 
+    def get_policy(self, S):
+        S_a = np.zeros((1,self.N_S), dtype=np.float16)
+        S_a[0, S] = 1.0
+        S_tf = tf.Variable(S_a)
+        probs_tf = self.function_approx(S_tf)
+        return probs_tf
+
     def update_Qsa_mc(self, replay_buff_d):
         discounted_return = np.array(replay_buff_d['reward'])
         calc_discounted_return_inplace(discounted_return)
@@ -4120,7 +4127,12 @@ class RL_System_PG_TF(RL_System_PG):
         prob = tf.concat(replay_buff_d['prob'], 0)
         
         # Once tf is chagned to numpy, no gradient is able to be calculated.
-        performance = tf.reduce_sum(tf.math.log(prob) * discounted_return)
+        performance_vec = tf.math.log(prob) * discounted_return.reshape(-1,1)
+        #print(prob)
+        #print(discounted_return.reshape(-1,))
+        #print(performance_vec)
+
+        performance = tf.reduce_sum(performance_vec)
         gradients = tape.gradient(-performance, self.function_approx.trainable_weights)
         optimizer.apply_gradients(zip(gradients, self.function_approx.trainable_weights))
 
@@ -4157,6 +4169,10 @@ def randomwalk_run_pg_learning(N_episodes=1, learning_mode=True):
     print(rl_system.Qsa)
     print('Vs:')
     print(rl_system.Vs)
+
+    print('Policy:')
+    for S in range(N_S):
+        print(f'Policy({S}) =', rl_system.get_policy(S).numpy())
 
 if __name__ == "__main__":
     # This is the main function.
