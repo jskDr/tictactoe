@@ -3825,6 +3825,30 @@ def tictactoe_main():
             print('Type a different option listed in the above table.')
 
 
+def main():
+    """
+    Futher than Tictactoe applications are considered, including random walk, maze, etc. 
+    """
+    Done = False
+    while not Done:
+        print()
+        print('==RL Aget Testing Framework ==')
+        print('- Developed by Sungjin Kim, 2020')
+        print()
+        print('0) Tictactoe')
+        print('1) Random walk')
+        print('999) Quit')
+        Q1 = input_default_with('Which application do you want to perform?', 999, int)
+        if Q1 == 0:
+            tictactoe_main()
+        elif Q1 == 1:
+            randomwalk_main()
+        elif Q1 == 999:
+            Done = True
+        else:
+            print('Type a different option listed in the above table.')            
+
+
 class RandomWalkEnv:
     def __init__(self):
         self.N_S = 5 # 0, 1, 2, 3, 4 (A,B,C,D,E)
@@ -3931,6 +3955,17 @@ class RL_System:
         self.update_Vs_td(replay_buff_d)
 
 
+def randomwalk_main():
+    print('Testing random walk')
+    N_episodes = input_default_with('How many episodes do you want to run?', 10)
+    rl_mode_index = input_default_with('Which mode do you want to use?(0=td,1=mc,2=pg_learning)', 0)
+    rl_mode = ['td', 'mc', 'pg'][rl_mode_index]
+    if rl_mode == 'pg':
+        randomwalk_run_pg_learning(N_episodes=N_episodes)
+    else:
+        randomwalk_run(N_episodes=N_episodes, rl_mode=rl_mode)
+
+
 def randomwalk_run(N_episodes=1, rl_mode='td'):
     rl_system = RL_System(5, 2)
     random_walk_env = RandomWalkEnv()
@@ -4029,7 +4064,7 @@ class RL_System_PG(RL_System):
         prob = np.array(replay_buff_d['prob'], dtype=np.float)
         
         # Total performance regardless of 
-        # performance = np.log(prob) * discounted_return
+        performance = np.log(prob) * discounted_return
 
     def update_mc(self, replay_buff_d):
         self.update_pg(replay_buff_d)
@@ -4090,7 +4125,13 @@ class RL_System_PG_TF(RL_System_PG):
         discounted_return = np.array(replay_buff_d['reward'])
         calc_discounted_return_inplace(discounted_return)
         prob = tf.concat(replay_buff_d['prob'], 0)
+        
+        # Once tf is chagned to numpy, no gradient is able to be calculated.
         performance_vec = tf.math.log(prob) * discounted_return.reshape(-1,1)
+        #print(prob)
+        #print(discounted_return.reshape(-1,))
+        #print(performance_vec)
+
         performance = tf.reduce_sum(performance_vec)
         gradients = tape.gradient(-performance, self.function_approx.trainable_weights)
         optimizer.apply_gradients(zip(gradients, self.function_approx.trainable_weights))
@@ -4100,7 +4141,7 @@ class RL_System_PG_TF(RL_System_PG):
         self.update_Vs_mc(replay_buff_d)
 
 
-def _randomwalk_run_pg_learning(N_episodes=1, learning_mode=True, lr=0.01):
+def randomwalk_run_pg_learning(N_episodes=1, learning_mode=True):
     print('Plocy gradient mode (Under development)')
     N_S = 5
     N_A = 2
@@ -4108,7 +4149,7 @@ def _randomwalk_run_pg_learning(N_episodes=1, learning_mode=True, lr=0.01):
     random_walk_env = RandomWalkEnv()
     S = random_walk_env.reset()
 
-    optimizer = tf.keras.optimizers.SGD()
+    optimizer = tf.keras.optimizers.Adam()
     replay_buff = ReplayBuff_PG()
     for _ in range(N_episodes):
         with tf.GradientTape() as tape:
@@ -4132,146 +4173,6 @@ def _randomwalk_run_pg_learning(N_episodes=1, learning_mode=True, lr=0.01):
     print('Policy:')
     for S in range(N_S):
         print(f'Policy({S}) =', rl_system.get_policy(S).numpy())
-
-
-def randomwalk_run_pg_learning(N_episodes=2000, learning_mode=True, lr = 0.01, disp_flag = True):
-    print('Plocy gradient mode (Under development)')
-    N_S = 5
-    N_A = 2
-    rl_system = RL_System_PG_TF(N_S, N_A)
-    random_walk_env = RandomWalkEnv()
-    S = random_walk_env.reset()
-
-    #optimizer = tf.keras.optimizers.SGD(lr=lr)
-    optimizer = tf.keras.optimizers.Adam(lr=lr)
-    replay_buff = ReplayBuff_PG()
-    policy_array= np.zeros((N_episodes+1,N_S, N_A),dtype=float)
-    for episode in range(N_episodes):
-        if disp_flag:
-            #print('Before episode ', episode)
-            for S in range(N_S):
-                #print(f'Policy({S}) =', rl_system.get_policy(S).numpy())    
-                policy_array[episode, S] = rl_system.get_policy(S).numpy()
-
-        with tf.GradientTape() as tape:
-            done = False        
-            while not done:
-                action, prob = rl_system.get_action_prob_tf(S)
-                S_new, reward, done = random_walk_env.step(action)
-                replay_buff.append(S, action, S_new, reward, done, prob)
-                S = S_new
-
-            rl_system.update_mc(replay_buff.d)
-            if learning_mode:
-                rl_system.learning_pg(replay_buff.d, tape, optimizer)
-        replay_buff.reset()
-
-    print('Qsa:')
-    print(rl_system.Qsa)
-    print('Vs:')
-    print(rl_system.Vs)
-
-    print('After learning:')
-    for S in range(N_S):
-        print(f'Policy({S}) =', rl_system.get_policy(S).numpy())
-        policy_array[N_episodes, S] = rl_system.get_policy(S).numpy()
-
-    if disp_flag:
-        plt.figure(figsize=(15,7))
-        plt.subplot(1,2,1)
-        plt.plot(policy_array[:,0,0], label="0,0")
-        plt.plot(policy_array[:,1,0], label="1,0")
-        plt.plot(policy_array[:,2,0], label="2,0")
-        plt.plot(policy_array[:,3,0], label="3,0")
-        plt.plot(policy_array[:,4,0], label="4,0")
-        plt.legend(loc=0)
-        plt.subplot(1,2,2)
-        plt.plot(policy_array[:,0,1], label="0,1")
-        plt.plot(policy_array[:,1,1], label="1,1")
-        plt.plot(policy_array[:,2,1], label="2,1")
-        plt.plot(policy_array[:,3,1], label="3,1")
-        plt.plot(policy_array[:,4,1], label="4,1")
-        plt.legend(loc=0)
-        plt.show()
-
-
-def randomwalk_main():
-    print('Testing random walk')
-    N_episodes = input_default_with('How many episodes do you want to run?', 10)
-    rl_mode_index = input_default_with('Which mode do you want to use?(0=td,1=mc,2=pg_learning)', 0)
-    rl_mode = ['td', 'mc', 'pg'][rl_mode_index]
-    if rl_mode == 'pg':
-        randomwalk_run_pg_learning(N_episodes=N_episodes, disp_flag = True)
-    else:
-        randomwalk_run(N_episodes=N_episodes, rl_mode=rl_mode)
-
-def main():
-    """
-    Futher than Tictactoe applications are considered, including random walk, maze, etc. 
-    """
-    Done = False
-    while not Done:
-        print()
-        print('==RL Aget Testing Framework ==')
-        print('- Developed by Sungjin Kim, 2020')
-        print()
-        print('0) Tictactoe')
-        print('1) Random walk')
-        print('2) MAB')
-        print('999) Quit')
-        Q1 = input_default_with('Which application do you want to perform?', 999, int)
-        if Q1 == 0:
-            tictactoe_main()
-        elif Q1 == 1:
-            randomwalk_main()
-        elif Q1 == 2:
-            MAB_main()
-        elif Q1 == 999:
-            Done = True
-        else:
-            print('Type a different option listed in the above table.')            
-
-# from scipy.stats import norm
-class MAB_Env:
-    def __init__(self, mean_array, std_array):
-        self.mean_array = mean_array
-        self.std_array = std_array
-        assert len(mean_array) == len(std_array), 'The lengths of mean and std arries must be the same.'
-        self.N = len(self.std_array)
-
-    def get_reward(self, action):
-        assert action >= 0 and action < self.N, 'action should be smaller than len(mean_array)'
-        reward = np.random.randn() * self.std_array[action] + self.mean_array[action]
-        return reward
-
-def MAB_main():
-    mean_array = np.array([1.,2.,3], dtype=np.float)
-    std_array = np.array([1.,1.,1.], dtype=np.float)
-    mab_env = MAB_Env(mean_array, std_array)
-    
-    # Testing for reward for every actions
-    #for action in range(mab_env.N):
-    #    print(action, '-->', mab_env.get_reward(action))    
-
-    MeanStd = np.array([[1,1],[2,1],[3,1]], dtype=np.float) # 0=mean, 1=std
-    Qa = run_episodes(MeanStd, N_episodes=1000)
-    print('Qa:', Qa)
-
-#from numba import float32, int32
-# @jit #('float[:](float[:,:],int32)')
-def run_episodes(MeanStd, N_episodes=10):
-    N_A = MeanStd.shape[0]
-    Qa = np.zeros(N_A, dtype=np.float)
-    Na = np.zeros(N_A, dtype=np.float)
-    Ra = np.zeros(N_A, dtype=np.float)
-    for _ in range(N_episodes):
-        action = np.argmax(Qa)
-        reward = np.random.randn() * MeanStd[action,1] + MeanStd[action,0]        
-        Na[action] += 1
-        Ra[action] += reward 
-        Qa[action] = Ra[action] / Na[action]
-    return Qa      
-
 
 if __name__ == "__main__":
     # This is the main function.
