@@ -95,17 +95,27 @@ def mab_bernoulli_low_bound(mu_a, N_actions=10, N_episodes=100):
     exp_regrets_a[1:] = np.log(range(1, N_episodes)) * exp_regrets
     return exp_regrets_a
 
+def mab_bernoulli_ucb1_run(mu_a, N_actions=10, N_episodes=100):
+    return mab_bernoulli_greedy_run(mu_a, N_actions=N_actions, N_episodes=N_episodes, mode='UCB1')
 
-def mab_bernoulli_greedy_run(mu_a, N_actions=10, N_episodes=100):
+def mab_bernoulli_greedy_run(mu_a, N_actions=10, N_episodes=100, mode='greedy'):
     max_action_a = np.zeros(N_episodes,dtype=int)    
     q_val = np.zeros(N_actions,dtype=float)
+    q_ucb = np.zeros(N_actions,dtype=float)
     n_action = np.zeros(N_actions,dtype=int)
 
     for e in range(N_episodes):
         if e == 0:
             max_action = np.random.randint(N_actions)    
         else:
-            max_action = np.argmax(q_val)
+            if mode == 'UCB1':
+                q_ucb[:] = q_val
+                for action in range(N_actions):
+                    if n_action[action] > 0:
+                        q_ucb[action] += np.sqrt(2 * np.log(e) / n_action[action])
+                max_action = np.argmax(q_ucb)
+            else: # greedy
+                max_action = np.argmax(q_val)
         reward = stats.bernoulli.rvs(mu_a[max_action])
         n_action[max_action] += 1
         q_val[max_action] = (q_val[max_action] * (n_action[max_action]-1) + reward) / n_action[max_action]
@@ -134,25 +144,24 @@ def mab_bernoulli_fn_episodes_repeats(mu_a, N_actions=10, N_episodes=100, N_repe
     return regrets_a_ts_repeat
 
 
-
-def mab_bernoulli_ts(plot_type='seaborn'):
+def mab_bernoulli(T_interval = 100, N_actions=3, N_episodes=1000, N_repeats = 10, plot_type='seaborn'):
     """
     mab_bernoulli_ts()
 
     Multi-armed bandit (MAB) system with Bernoulli reward optimized by Thompson sampling (TS)
     """
     print('Hello, MAB')
-    N_actions=10
-    N_episodes=1000
-    N_repeats = 10
     epsilon=0.1
     mu_a = np.zeros(N_actions, dtype=float) + 0.5 - epsilon
     mu_a[0] = 0.5
-    regrets_a_ts_repeat = mab_bernoulli_ts_episodes_repeats(mu_a, N_actions=N_actions, N_episodes=N_episodes, N_repeats=N_repeats)
+    regrets_a_ts_repeat = mab_bernoulli_fn_episodes_repeats(mu_a, N_actions=N_actions, N_episodes=N_episodes, N_repeats=N_repeats, fn_run=mab_bernoulli_ts_run)
+    regrets_a_greedy_repeat = mab_bernoulli_fn_episodes_repeats(mu_a, N_actions=N_actions, N_episodes=N_episodes, N_repeats=N_repeats, fn_run=mab_bernoulli_greedy_run)
+    regrets_a_ucb1_repeat = mab_bernoulli_fn_episodes_repeats(mu_a, N_actions=N_actions, N_episodes=N_episodes, N_repeats=N_repeats, fn_run=mab_bernoulli_ucb1_run)
     regrets_a_lb = mab_bernoulli_low_bound(mu_a, N_actions=N_actions, N_episodes=N_episodes)
 
     if plot_type == 'seaborn':
-        sns_lineplot(regrets_a_ts_repeat)
+        regrets_d = {'TS':regrets_a_ts_repeat[:,::T_interval], 'Greedy':regrets_a_greedy_repeat[:,::T_interval], 'UCB1':regrets_a_ucb1_repeat[:,::T_interval]}    
+        sns_lineplot_dic(regrets_d, T_interval=T_interval)
     else:
         plt.semilogx(np.mean(regrets_a_ts_repeat,axis=0), label='TS')
         plt.semilogx(regrets_a_lb, label='LB')
@@ -162,40 +171,35 @@ def mab_bernoulli_ts(plot_type='seaborn'):
         plt.show()
     plt.show()
 
-def mab_bernoulli_fn(plot_type='seaborn'):
+
+def mab_bernoulli_no_ts(T_interval = 100, N_actions=3, N_episodes=1000, N_repeats = 10):
     """
     mab_bernoulli_ts()
 
     Multi-armed bandit (MAB) system with Bernoulli reward optimized by Thompson sampling (TS)
     """
     print('Hello, MAB')
-    N_actions=10
-    N_episodes=1000
-    N_repeats = 10
     epsilon=0.1
     mu_a = np.zeros(N_actions, dtype=float) + 0.5 - epsilon
     mu_a[0] = 0.5
-    regrets_a_ts_repeat = mab_bernoulli_fn_episodes_repeats(mu_a, N_actions=N_actions, N_episodes=N_episodes, N_repeats=N_repeats, fn_run=mab_bernoulli_ts_run)
+    # regrets_a_ts_repeat = mab_bernoulli_fn_episodes_repeats(mu_a, N_actions=N_actions, N_episodes=N_episodes, N_repeats=N_repeats, fn_run=mab_bernoulli_ts_run)
     regrets_a_greedy_repeat = mab_bernoulli_fn_episodes_repeats(mu_a, N_actions=N_actions, N_episodes=N_episodes, N_repeats=N_repeats, fn_run=mab_bernoulli_greedy_run)
+    regrets_a_ucb1_repeat = mab_bernoulli_fn_episodes_repeats(mu_a, N_actions=N_actions, N_episodes=N_episodes, N_repeats=N_repeats, fn_run=mab_bernoulli_ucb1_run)
     regrets_a_lb = mab_bernoulli_low_bound(mu_a, N_actions=N_actions, N_episodes=N_episodes)
 
-    if plot_type == 'seaborn':
-        regrets_d = {'TS':regrets_a_ts_repeat, 'Greedy':regrets_a_greedy_repeat}    
-        sns_lineplot_dic(regrets_d)
-    else:
-        plt.semilogx(np.mean(regrets_a_ts_repeat,axis=0), label='TS')
-        plt.semilogx(regrets_a_lb, label='LB')
-        plt.xlabel('T')
-        plt.ylabel('regrets')
-        plt.legend(loc=0)
-        plt.show()
+    # regrets_d = {'TS':regrets_a_ts_repeat[:,::T_interval], 'Greedy':regrets_a_greedy_repeat[:,::T_interval], 'UCB1':regrets_a_ucb1_repeat[:,::T_interval]}    
+    regrets_d = {'Greedy':regrets_a_greedy_repeat[:,::T_interval], 'UCB1':regrets_a_ucb1_repeat[:,::T_interval]}    
+    sns_lineplot_dic(regrets_d, T_interval=T_interval)
     plt.show()
 
 
 def main():
     # mab_bernoulli_ts(plot_type='matplotlib')
     # mab_bernoulli_fn(plot_type='matplotlib')
-    mab_bernoulli_fn(plot_type='seaborn')
+    # mab_bernoulli(plot_type='seaborn')
+    mab_bernoulli(T_interval=100, N_actions=3, N_episodes=20000, N_repeats = 20, plot_type='seaborn')
+    # mab_bernoulli(plot_type='seaborn')
+    mab_bernoulli_no_ts(T_interval=100, N_actions=3, N_episodes=20000, N_repeats = 20)
 
 
 if __name__ == '__main__':
