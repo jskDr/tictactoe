@@ -1092,7 +1092,7 @@ def plot_cnt_trace_normal_order(cnt_trace_from0, title=''):
     plt.title('Normalized win counts: ' + title)
     plt.show()
 
-def plot_cnt_trace_normal_order_detail(cnt_trace_from0, title=''):
+def plot_cnt_trace_normal_order_detail(cnt_trace_from0, title='', fig_mode='Full'):
     """Detail analysis is applied so that player 1 (our agent) performance history is divided it play first and second. 
     """
     cnt_trace = cnt_trace_from0[1:]
@@ -1104,26 +1104,36 @@ def plot_cnt_trace_normal_order_detail(cnt_trace_from0, title=''):
     cnt_trace_a = cnt_trace_a / cnt_trace_sum
 
     label_list = ['Tie', 'Player1', 'Player2', 'Order1', 'Order2', 'P1O1', 'P1O2', 'P2O1', 'P2O2']
-    plt.figure(figsize=(16,7))
-    plt.subplot(1,2,1)
-    for i in range(5):
-        plt.plot(range(N_cnt), cnt_trace_a[:,i], label=label_list[i])
-    plt.grid()
-    plt.xlabel('Episode')
-    plt.ylabel('Normalized Counts')
-    plt.legend(loc=0)
-    plt.title('Normalized win counts: ' + title)
 
-    plt.subplot(1,2,2)
-    for i in [0,5,6,7,8]:
-        plt.plot(range(N_cnt), cnt_trace_a[:,i], label=label_list[i])    
-    plt.grid()
-    plt.xlabel('Episode')
-    plt.ylabel('Normalized Counts')
-    plt.legend(loc=0)
-    plt.title('Normalized win counts: ' + title)
+    if fig_mode == 'Basic':
+        for i in range(3):
+            plt.plot(range(N_cnt), cnt_trace_a[:,i], label=label_list[i])
+        plt.grid()
+        plt.xlabel('Episode')
+        plt.ylabel('Normalized Counts')
+        plt.legend(loc=0)
+        plt.title('Normalized win counts: ' + title)        
+    else: # mode == 'Full':
+        plt.figure(figsize=(16,7))
+        plt.subplot(1,2,1)
+        for i in range(5):
+            plt.plot(range(N_cnt), cnt_trace_a[:,i], label=label_list[i])
+        plt.grid()
+        plt.xlabel('Episode')
+        plt.ylabel('Normalized Counts')
+        plt.legend(loc=0)
+        plt.title('Normalized win counts: ' + title)
 
-    plt.show()
+        plt.subplot(1,2,2)
+        for i in [0,5,6,7,8]:
+            plt.plot(range(N_cnt), cnt_trace_a[:,i], label=label_list[i])    
+        plt.grid()
+        plt.xlabel('Episode')
+        plt.ylabel('Normalized Counts')
+        plt.legend(loc=0)
+        plt.title('Normalized win counts: ' + title)
+
+        plt.show()
 
 
 def learning_stage_mc(N_episodes=100, save_flag=True, fig_flag=False):
@@ -2579,7 +2589,7 @@ class Q_System_QL(Q_System):
         return cnt_trace
 
 
-def learning_stage_qlearn(N_episodes=100, epsilon=0.4, save_flag=True, fig_flag=False):
+def learning_stage_qlearn(N_episodes=100, epsilon=0.4, save_flag=True, fig_flag=False, fig_mode='Full'):
     ff = 0.9
     lr = 0.01
     N_Symbols = 3 # 0=empty, 1=plyaer1, 2=player2
@@ -2600,7 +2610,7 @@ def learning_stage_qlearn(N_episodes=100, epsilon=0.4, save_flag=True, fig_flag=
         my_Q_System.save()
 
     if fig_flag:
-        plot_cnt_trace_normal_order_detail(cnt_trace, title='Q-learning')
+        plot_cnt_trace_normal_order_detail(cnt_trace, title='Q-learning', fig_mode=fig_mode)
 
     return my_Q_System
 
@@ -3830,4 +3840,3 @@ def main():
 if __name__ == "__main__":
     # This is the main function.
     main()
-
