@@ -1092,7 +1092,7 @@ def plot_cnt_trace_normal_order(cnt_trace_from0, title=''):
     plt.title('Normalized win counts: ' + title)
     plt.show()
 
-def plot_cnt_trace_normal_order_detail(cnt_trace_from0, title='', fig_mode='Full'):
+def plot_cnt_trace_normal_order_detail(cnt_trace_from0, title='', fig_mode='Basic'):
     """Detail analysis is applied so that player 1 (our agent) performance history is divided it play first and second. 
     """
     cnt_trace = cnt_trace_from0[1:]
@@ -1923,7 +1923,7 @@ def _main():
         # print(len(my_Q_System.Qsa))
 
 class Q_System_QL(Q_System):
-    def __init__(self, N_A, N_Symbols):
+    def __init__(self, N_A=9, N_Symbols=3):
         super(Q_System_QL, self).__init__(N_A=N_A, N_Symbols=N_Symbols)
 
     def q_learning_batch(self, Replay_buff_d, P_no=1, ff=0.9, lr=0.01):
@@ -2115,7 +2115,7 @@ class Q_System_QL(Q_System):
 
         return cnt_trace        
 
-    def learning_qlearn(self, N_episodes=2, ff=0.9, lr=0.01, epsilon = 0.4, print_cnt=10):
+    def learning_qlearn(self, N_episodes=2, ff=0.9, lr=0.01, epsilon = 0.2, print_cnt=10):
         """Return: 
             cnt_trace = [cnt, ...]: cnt vector are stacked in cnt_trace
         """
@@ -2589,7 +2589,7 @@ class Q_System_QL(Q_System):
         return cnt_trace
 
 
-def learning_stage_qlearn(N_episodes=100, epsilon=0.4, save_flag=True, fig_flag=False, fig_mode='Full'):
+def learning_stage_qlearn(N_episodes=100, epsilon=0.4, save_flag=True, fig_flag=False, fig_mode='Basic'):
     ff = 0.9
     lr = 0.01
     N_Symbols = 3 # 0=empty, 1=plyaer1, 2=player2
