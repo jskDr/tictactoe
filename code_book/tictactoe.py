@@ -3873,7 +3873,7 @@ def state_comb_all(S):
 def get_all_states(L=[0,1,2,3,4,5,6,7], fisrt_loc=8):
     # action들 중에 고정할 것을 제외하고 변화할 것을 모두 리스트함
     # 현재는 한가지만 고정이 되는데 정확한 Qsa 계산을 위해서는 복수개 고정이 가능해져야함.
-    R = tictactoe.state_comb_all(L)
+    R = state_comb_all(L)
     R1 = np.concatenate([np.ones((len(R),1),dtype=int)*fisrt_loc, np.array(R)], axis=1)
     
     # 모든 가능한 행동 조합을 구함 --> R1.
@@ -3883,7 +3883,7 @@ def get_all_states(L=[0,1,2,3,4,5,6,7], fisrt_loc=8):
     for action_list in R1:
         S[:] = 0 # 모든 위치의 액션을 초기화함
         P_no = 1
-        for i, a in enumerate(action_list):
+        for a in action_list:
             S[a] = P_no
             P_no = 1 if P_no == 2 else 2
             reward = calc_reward_numba(MASK_L, S)
